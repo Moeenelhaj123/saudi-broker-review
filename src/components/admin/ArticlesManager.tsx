@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useKV } from "@github/spark/hooks";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { articles as initialArticles, Article as ArticleInterface } from "@/lib/articles";
 import { 
   Plus, 
   Edit3, 
@@ -19,7 +20,7 @@ import {
   Calendar
 } from "lucide-react";
 
-interface Article {
+interface AdminArticle {
   id: string;
   title: string;
   excerpt: string;
@@ -29,48 +30,53 @@ interface Article {
   category: string;
   isPublished: boolean;
   slug: string;
+  readTime?: string;
+  image?: string;
+  metaDescription?: string;
+  tags?: string[];
 }
 
 export function ArticlesManager() {
-  const [articles, setArticles] = useKV("admin-articles", [
-    {
-      id: "1",
-      title: "دليل شامل لاختيار أفضل وسيط للتداول",
-      excerpt: "تعرف على أهم المعايير التي يجب مراعاتها عند اختيار وسيط التداول المناسب لك",
-      content: "المحتوى التفصيلي للمقال...",
-      author: "فريق التحرير",
-      publishDate: "2024-01-15",
-      category: "دليل المتداول",
-      isPublished: true,
-      slug: "guide-choosing-best-broker"
-    },
-    {
-      id: "2", 
-      title: "أهم استراتيجيات إدارة المخاطر في التداول",
-      excerpt: "تعلم كيفية حماية رأس مالك وإدارة المخاطر بطريقة احترافية",
-      content: "المحتوى التفصيلي للمقال...",
-      author: "محمد الأحمد",
-      publishDate: "2024-01-10",
-      category: "استراتيجيات التداول",
-      isPublished: true,
-      slug: "risk-management-strategies"
-    },
-    {
-      id: "3",
-      title: "التحليل الفني للمبتدئين: الأساسيات والمبادئ",
-      excerpt: "دليل مبسط لفهم التحليل الفني وأهم الأدوات المستخدمة",
-      content: "المحتوى التفصيلي للمقال...",
-      author: "سارة المطيري",
-      publishDate: "2024-01-05",
-      category: "تعليم التداول",
-      isPublished: true,
-      slug: "technical-analysis-basics"
-    }
-  ]);
+  // Convert the initial articles to admin format
+  const convertToAdminFormat = (article: ArticleInterface): AdminArticle => {
+    // Combine all content into a single string for editing
+    let fullContent = article.content.introduction + "\n\n";
+    article.content.sections.forEach(section => {
+      fullContent += `## ${section.title}\n\n${section.content}\n\n`;
+    });
+    fullContent += `## الخلاصة\n\n${article.content.conclusion}`;
 
-  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
+    return {
+      id: article.id,
+      title: article.title,
+      excerpt: article.excerpt,
+      content: fullContent,
+      author: "فريق التحرير", // Default author
+      publishDate: article.date,
+      category: article.category,
+      isPublished: true,
+      slug: article.slug,
+      readTime: article.readTime,
+      image: article.image,
+      metaDescription: article.metaDescription,
+      tags: article.tags
+    };
+  };
+
+  // Initialize articles from stored data or convert from initial articles
+  const [articles, setArticles] = useKV("admin-articles", [] as AdminArticle[]);
+  
+  // Initialize articles if empty
+  useEffect(() => {
+    if (articles.length === 0) {
+      const convertedArticles = initialArticles.map(convertToAdminFormat);
+      setArticles(convertedArticles);
+    }
+  }, [articles.length]);
+
+  const [editingArticle, setEditingArticle] = useState<AdminArticle | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newArticle, setNewArticle] = useState<Partial<Article>>({
+  const [newArticle, setNewArticle] = useState<Partial<AdminArticle>>({
     title: "",
     excerpt: "",
     content: "",
@@ -78,7 +84,11 @@ export function ArticlesManager() {
     publishDate: new Date().toISOString().split('T')[0],
     category: "",
     isPublished: false,
-    slug: ""
+    slug: "",
+    readTime: "5 دقائق قراءة",
+    image: "",
+    metaDescription: "",
+    tags: []
   });
 
   const generateSlug = (title: string) => {
@@ -96,10 +106,14 @@ export function ArticlesManager() {
       return;
     }
 
-    const article: Article = {
-      ...newArticle as Article,
+    const article: AdminArticle = {
+      ...newArticle as AdminArticle,
       id: Date.now().toString(),
-      slug: newArticle.slug || generateSlug(newArticle.title || "")
+      slug: newArticle.slug || generateSlug(newArticle.title || ""),
+      readTime: newArticle.readTime || "5 دقائق قراءة",
+      image: newArticle.image || "",
+      metaDescription: newArticle.metaDescription || newArticle.excerpt || "",
+      tags: newArticle.tags || []
     };
 
     setArticles(prev => [...prev, article]);
@@ -111,7 +125,11 @@ export function ArticlesManager() {
       publishDate: new Date().toISOString().split('T')[0],
       category: "",
       isPublished: false,
-      slug: ""
+      slug: "",
+      readTime: "5 دقائق قراءة",
+      image: "",
+      metaDescription: "",
+      tags: []
     });
     setShowAddForm(false);
     toast.success("تم إضافة المقال بنجاح");
@@ -149,7 +167,9 @@ export function ArticlesManager() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">إدارة المقالات</h2>
-          <p className="text-muted-foreground">إضافة وتعديل وحذف مقالات الموقع</p>
+          <p className="text-muted-foreground">
+            إضافة وتعديل وحذف مقالات الموقع ({articles.length} مقال)
+          </p>
         </div>
         <Button onClick={() => setShowAddForm(true)} className="gap-2">
           <Plus className="h-4 w-4" />
@@ -221,6 +241,18 @@ export function ArticlesManager() {
                 />
               </div>
               <div>
+                <Label htmlFor="new-readTime">وقت القراءة</Label>
+                <Input
+                  id="new-readTime"
+                  value={newArticle.readTime}
+                  onChange={(e) => setNewArticle(prev => ({ ...prev, readTime: e.target.value }))}
+                  placeholder="5 دقائق قراءة"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
                 <Label htmlFor="new-slug">الرابط (slug)</Label>
                 <Input
                   id="new-slug"
@@ -229,6 +261,26 @@ export function ArticlesManager() {
                   placeholder="article-url-slug"
                 />
               </div>
+              <div>
+                <Label htmlFor="new-image">رابط الصورة</Label>
+                <Input
+                  id="new-image"
+                  value={newArticle.image}
+                  onChange={(e) => setNewArticle(prev => ({ ...prev, image: e.target.value }))}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="new-metaDescription">وصف SEO</Label>
+              <Textarea
+                id="new-metaDescription"
+                value={newArticle.metaDescription}
+                onChange={(e) => setNewArticle(prev => ({ ...prev, metaDescription: e.target.value }))}
+                placeholder="وصف المقال لمحركات البحث"
+                rows={2}
+              />
             </div>
 
             <div>
@@ -248,9 +300,12 @@ export function ArticlesManager() {
                 id="new-content"
                 value={newArticle.content}
                 onChange={(e) => setNewArticle(prev => ({ ...prev, content: e.target.value }))}
-                placeholder="محتوى المقال الكامل"
-                rows={8}
+                placeholder="محتوى المقال الكامل - استخدم ## للعناوين الفرعية"
+                rows={12}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                نصيحة: استخدم ## لإنشاء عناوين فرعية، مثل: ## العنوان الفرعي
+              </p>
             </div>
 
             <div className="flex gap-2">
@@ -296,6 +351,74 @@ export function ArticlesManager() {
                     </div>
                   </div>
 
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div>
+                      <Label>التصنيف</Label>
+                      <Input
+                        value={editingArticle.category}
+                        onChange={(e) => setEditingArticle(prev => ({ 
+                          ...prev!, 
+                          category: e.target.value 
+                        }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>تاريخ النشر</Label>
+                      <Input
+                        value={editingArticle.publishDate}
+                        onChange={(e) => setEditingArticle(prev => ({ 
+                          ...prev!, 
+                          publishDate: e.target.value 
+                        }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>وقت القراءة</Label>
+                      <Input
+                        value={editingArticle.readTime || ""}
+                        onChange={(e) => setEditingArticle(prev => ({ 
+                          ...prev!, 
+                          readTime: e.target.value 
+                        }))}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label>الرابط (slug)</Label>
+                      <Input
+                        value={editingArticle.slug}
+                        onChange={(e) => setEditingArticle(prev => ({ 
+                          ...prev!, 
+                          slug: e.target.value 
+                        }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>رابط الصورة</Label>
+                      <Input
+                        value={editingArticle.image || ""}
+                        onChange={(e) => setEditingArticle(prev => ({ 
+                          ...prev!, 
+                          image: e.target.value 
+                        }))}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>وصف SEO</Label>
+                    <Textarea
+                      value={editingArticle.metaDescription || ""}
+                      onChange={(e) => setEditingArticle(prev => ({ 
+                        ...prev!, 
+                        metaDescription: e.target.value 
+                      }))}
+                      rows={2}
+                    />
+                  </div>
+
                   <div>
                     <Label>الملخص</Label>
                     <Textarea
@@ -316,8 +439,11 @@ export function ArticlesManager() {
                         ...prev!, 
                         content: e.target.value 
                       }))}
-                      rows={6}
+                      rows={10}
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      استخدم ## للعناوين الفرعية
+                    </p>
                   </div>
 
                   <div className="flex gap-2">
@@ -346,6 +472,9 @@ export function ArticlesManager() {
                       )}
                     </div>
                     <p className="text-muted-foreground mb-3 line-clamp-2">{article.excerpt}</p>
+                    <div className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                      المحتوى: {article.content.substring(0, 150)}...
+                    </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
@@ -353,6 +482,7 @@ export function ArticlesManager() {
                       </span>
                       <span>بواسطة: {article.author}</span>
                       <span>التصنيف: {article.category}</span>
+                      {article.readTime && <span>{article.readTime}</span>}
                     </div>
                   </div>
 

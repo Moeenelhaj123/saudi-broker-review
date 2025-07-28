@@ -32,13 +32,13 @@ export function Header() {
             <Link to="/articles" className="text-foreground hover:text-primary transition-colors">
               مقالات
             </Link>
+            
+            <Link to="/contact" className="text-foreground hover:text-primary transition-colors">
+              تواصل معنا
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">
-            <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground hidden sm:inline-flex">
-              اتصل بنا
-            </Button>
-            
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -77,11 +77,13 @@ export function Header() {
                 مقالات
               </Link>
               
-              <div className="px-4 pt-2">
-                <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                  اتصل بنا
-                </Button>
-              </div>
+              <Link 
+                to="/contact" 
+                className="block px-4 py-2 text-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                تواصل معنا
+              </Link>
             </nav>
           </div>
         )}

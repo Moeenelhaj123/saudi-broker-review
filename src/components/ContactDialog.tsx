@@ -133,14 +133,14 @@ export function ContactDialog({ open, onOpenChange }: ContactDialogProps) {
           
           <div className="space-y-2">
             <Label htmlFor="question" className="text-right block">
-              استفسارك *
+              الوصف *
             </Label>
             <Textarea
               id="question"
               value={formData.question}
               onChange={(e) => handleInputChange("question", e.target.value)}
               className="text-right min-h-[100px]"
-              placeholder="اكتب استفسارك هنا..."
+              placeholder="اكتب وصف استفسارك هنا..."
               required
             />
           </div>

@@ -61,7 +61,7 @@ export function BrokerCard({ broker }: BrokerCardProps) {
         <div className="space-y-3 mb-6">
           <div className="flex justify-between items-center">
             <span className="text-gray-800 font-medium">التراخيص</span>
-            <span className="text-gray-600">{broker.regulation.join(', ')}</span>
+            <span className="text-gray-600">{broker.regulation && Array.isArray(broker.regulation) ? broker.regulation.join(', ') : 'مرخص'}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-800 font-medium">حساب اسلامي</span>

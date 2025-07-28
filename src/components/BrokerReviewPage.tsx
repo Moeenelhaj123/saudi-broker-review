@@ -74,7 +74,7 @@ export function BrokerReviewPage() {
         },
         "datePublished": new Date().toISOString().split('T')[0],
         "headline": `مراجعة شركة ${broker.nameAr} ${broker.name}`,
-        "reviewBody": `مراجعة شاملة لشركة ${broker.nameAr} تشمل التراخيص والتنظيم من ${broker.regulation.join(', ')}، الحد الأدنى للإيداع ${broker.minDeposit} دولار، وفروقات تبدأ من ${broker.spreads}.`
+        "reviewBody": `مراجعة شاملة لشركة ${broker.nameAr} تشمل التراخيص والتنظيم من ${broker.regulation && Array.isArray(broker.regulation) ? broker.regulation.join(', ') : 'مؤسسات مالية مرخصة'}، الحد الأدنى للإيداع ${broker.minDeposit} دولار، وفروقات تبدأ من ${broker.spreads}.`
       };
 
       const script = document.createElement('script');

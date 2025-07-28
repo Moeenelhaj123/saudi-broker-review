@@ -4,9 +4,17 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, CheckCircle, ArrowLeft, Shield, TrendUp, DollarSign, ThumbsUp, ThumbsDown, Warning } from "@phosphor-icons/react";
+import { Star, CheckCircle, ArrowLeft } from "@phosphor-icons/react";
 import { brokers } from "@/lib/data";
 import { useEffect } from "react";
+import { 
+  ExnessContent, 
+  AvaTradeContent, 
+  XMContent, 
+  PepperstoneContent, 
+  ICMarketsContent, 
+  EToroContent 
+} from "@/components/broker-content";
 
 export function BrokerReviewPage() {
   const { brokerId } = useParams<{ brokerId: string }>();
@@ -110,6 +118,25 @@ export function BrokerReviewPage() {
     );
   };
 
+  const getBrokerContent = () => {
+    switch (broker.id) {
+      case 'exness':
+        return <ExnessContent />;
+      case 'avatrade':
+        return <AvaTradeContent />;
+      case 'xm':
+        return <XMContent />;
+      case 'pepperstone':
+        return <PepperstoneContent />;
+      case 'ic-markets':
+        return <ICMarketsContent />;
+      case 'etoro':
+        return <EToroContent />;
+      default:
+        return <div>محتوى غير متاح</div>;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <Header />
@@ -194,137 +221,15 @@ export function BrokerReviewPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Quick Facts */}
+        {/* SEO-Optimized Comprehensive Content */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            معلومات أساسية
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-2 text-blue-900 flex items-center gap-2">
-                <Shield size={20} />
-                التراخيص
-              </h3>
-              <p className="text-gray-700">
-                {broker.regulation.join(', ')}
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-2 text-green-900 flex items-center gap-2">
-                <DollarSign size={20} />
-                الحد الأدنى
-              </h3>
-              <p className="text-gray-700">
-                ${broker.minDeposit}
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-2 text-orange-900 flex items-center gap-2">
-                <TrendUp size={20} />
-                الفروقات
-              </h3>
-              <p className="text-gray-700">
-                من {broker.spreads}
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-2 text-purple-900">
-                المنصات
-              </h3>
-              <p className="text-gray-700">
-                {broker.platforms.join(', ')}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Pros and Cons */}
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">المزايا والعيوب</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg font-semibold text-green-700 mb-3 flex items-center gap-2">
-                <ThumbsUp size={20} />
-                المزايا
-              </h3>
-              <div className="space-y-2">
-                {broker.pros.map((pro, index) => (
-                  <div key={index} className="flex items-start gap-2">
-                    <CheckCircle className="text-green-600 mt-1 flex-shrink-0" size={16} />
-                    <p className="text-gray-700 text-sm">{pro}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold text-red-700 mb-3 flex items-center gap-2">
-                <ThumbsDown size={20} />
-                العيوب
-              </h3>
-              <div className="space-y-2">
-                {broker.cons.map((con, index) => (
-                  <div key={index} className="flex items-start gap-2">
-                    <Warning className="text-red-600 mt-1 flex-shrink-0" size={16} />
-                    <p className="text-gray-700 text-sm">{con}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Company Overview */}
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">نظرة عامة</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">عن الشركة</h3>
-              <p className="text-gray-700 leading-relaxed">
-                شركة {broker.nameAr} ({broker.name}) من الوسطاء الماليين المعروفين عالمياً. 
-                تقدم خدمات تداول متنوعة للعملات، المؤشرات، والسلع.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-2">أنواع الحسابات</h3>
-              <ul className="list-disc list-inside text-gray-700 space-y-1">
-                {broker.accountTypes.map((account, index) => (
-                  <li key={index}>{account}</li>
-                ))}
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-2">التقييم النهائي</h3>
-              <p className="text-gray-700 leading-relaxed">
-                شركة {broker.nameAr} خيار جيد للمتداولين السعوديين نظراً لتراخيصها المتعددة 
-                وخدماتها المتنوعة. ننصح بقراءة الشروط والأحكام قبل بدء التداول.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Info */}
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">معلومات الاتصال</h2>
-          <div className="bg-gray-100 rounded-lg p-4 space-y-2">
-            <p><strong>الموقع الإلكتروني:</strong> <a href={broker.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{broker.website}</a></p>
-            <p><strong>الهاتف:</strong> {broker.phone}</p>
-            <p><strong>البريد الإلكتروني:</strong> {broker.email}</p>
-          </div>
+          {getBrokerContent()}
         </section>
         
         {/* Action Button */}
-        <div className="text-center pt-6">
+        <div className="text-center pt-8 mt-8 border-t">
           <Button 
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white px-8"

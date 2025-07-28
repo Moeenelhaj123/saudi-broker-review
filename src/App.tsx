@@ -5,6 +5,7 @@ import { BestBrokersPage } from "@/components/BestBrokersPage";
 import { ArticlesPage } from "@/components/ArticlesPage";
 import { ArticlePage } from "@/components/ArticlePage";
 import { ContactPage } from "@/components/ContactPage";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { Toaster } from "@/components/ui/sonner";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/articles/:slug" element={<ArticlePage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/broker/:brokerId" element={<BrokerReviewPage />} />
+        <Route path="/cadmin/*" element={<AdminDashboard />} />
       </Routes>
       <Toaster />
     </Router>

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useKV } from "@github/spark/hooks";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { BrokerCard } from "@/components/BrokerCard";
@@ -22,6 +23,14 @@ export function HomePage() {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   
+  // Get admin-managed content
+  const [adminBrokers] = useKV("admin-brokers", []);
+  const [adminArticles] = useKV("admin-articles", []);
+  
+  // Use admin brokers if available, otherwise fallback to static data
+  const displayBrokers = adminBrokers.length > 0 ? adminBrokers.filter((broker: any) => broker.isFeatured) : brokers;
+  const displayArticles = adminArticles.length > 0 ? adminArticles.filter((article: any) => article.isPublished).slice(0, 3) : articles.slice(0, 3);
+  
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -31,7 +40,7 @@ export function HomePage() {
     const interval = setInterval(() => {
       if (sliderRef.current && !isAutoScrolling) {
         setIsAutoScrolling(true);
-        const nextSlide = (currentSlide + 1) % brokers.length;
+        const nextSlide = (currentSlide + 1) % displayBrokers.length;
         
         const container = sliderRef.current;
         const targetCard = container.children[nextSlide] as HTMLElement;
@@ -55,7 +64,7 @@ export function HomePage() {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [currentSlide, isAutoScrolling, brokers.length]);
+  }, [currentSlide, isAutoScrolling, displayBrokers.length]);
 
   // Handle manual scroll to update current slide indicator with throttling
   const handleScroll = useCallback(() => {
@@ -67,7 +76,7 @@ export function HomePage() {
       
       if (cardWidth > 0) {
         const newSlide = Math.round(scrollLeft / (cardWidth + gap));
-        if (newSlide !== currentSlide && newSlide >= 0 && newSlide < brokers.length) {
+        if (newSlide !== currentSlide && newSlide >= 0 && newSlide < displayBrokers.length) {
           setCurrentSlide(newSlide);
         }
       }
@@ -149,11 +158,11 @@ export function HomePage() {
                 }
               }}
               className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-lg border flex items-center justify-center transition-all ${
-                currentSlide === brokers.length - 1 
+                currentSlide === displayBrokers.length - 1 
                   ? 'opacity-50 cursor-not-allowed' 
                   : 'hover:bg-gray-50 active:scale-95'
               }`}
-              disabled={currentSlide === brokers.length - 1}
+              disabled={currentSlide === displayBrokers.length - 1}
             >
               <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -165,7 +174,7 @@ export function HomePage() {
               onScroll={handleScroll}
               className="flex gap-4 pb-4 px-2 overflow-x-auto mobile-slider scroll-snap-x"
             >
-              {brokers.map((broker, index) => (
+              {displayBrokers.map((broker, index) => (
                 <div 
                   key={broker.id} 
                   className="flex-shrink-0 w-[85vw] max-w-[320px] scroll-snap-center"
@@ -178,7 +187,7 @@ export function HomePage() {
 
           {/* Scroll indicator dots */}
           <div className="flex justify-center mt-4 gap-2">
-            {brokers.map((_, index) => (
+            {displayBrokers.map((_, index) => (
               <button
                 key={index}
                 onClick={() => {
@@ -213,7 +222,7 @@ export function HomePage() {
 
         {/* Desktop Grid */}
         <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {brokers.map((broker) => (
+          {displayBrokers.map((broker) => (
             <BrokerCard
               key={broker.id}
               broker={broker}
@@ -322,21 +331,21 @@ export function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {articles.slice(0, 3).map((article) => (
+            {displayArticles.map((article) => (
               <Link key={article.id} to={`/articles/${article.slug}`} className="group block">
                 <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                   <div className="h-48 overflow-hidden bg-gray-100">
                     <img 
-                      src={article.image} 
+                      src={article.image || "/api/placeholder/400/200"} 
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                   <div className="p-6">
                     <div className="flex items-center text-sm text-gray-500 mb-3">
-                      <span>{article.date}</span>
+                      <span>{article.publishDate || article.date}</span>
                       <span className="mx-2">•</span>
-                      <span>{article.readTime}</span>
+                      <span>{article.readTime || "5 دقائق"}</span>
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
                       {article.title}

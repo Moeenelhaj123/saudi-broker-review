@@ -1,4 +1,5 @@
 import { useParams, Link, Navigate } from "react-router-dom";
+import { useKV } from "@github/spark/hooks";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,13 @@ import {
 
 export function BrokerReviewPage() {
   const { brokerId } = useParams<{ brokerId: string }>();
-  const broker = brokers.find(b => b.id === brokerId);
+  
+  // Get admin-managed brokers
+  const [adminBrokers] = useKV("admin-brokers", []);
+  const [brokerContent] = useKV(`broker-content-${brokerId}`, {});
+  
+  // Use admin broker if available, otherwise fallback to static data
+  const broker = adminBrokers.find((b: any) => b.id === brokerId) || brokers.find(b => b.id === brokerId);
   
   // State for comment form
   const [commentForm, setCommentForm] = useState({

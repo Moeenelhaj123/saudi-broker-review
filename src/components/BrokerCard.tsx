@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Shield, TrendUp, ArrowUpRight, CheckCircle } from "@phosphor-icons/react";
+import { Star, CheckCircle, ArrowLeft } from "@phosphor-icons/react";
 import { Broker } from "@/lib/data";
 
 interface BrokerCardProps {
@@ -11,113 +11,80 @@ interface BrokerCardProps {
 }
 
 export function BrokerCard({ broker, onCompare, isComparing }: BrokerCardProps) {
+  const getLogoDisplay = () => {
+    if (broker.name.toLowerCase() === 'exness') {
+      return (
+        <div className="w-16 h-16 rounded-xl bg-yellow-400 flex items-center justify-center text-xs font-bold text-gray-800 shadow-sm">
+          exness
+        </div>
+      );
+    }
+    if (broker.name.toLowerCase() === 'avatrade') {
+      return (
+        <div className="w-16 h-16 rounded-xl bg-green-500 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+          AvaTrade
+        </div>
+      );
+    }
+    return (
+      <div className="w-16 h-16 rounded-xl bg-blue-500 flex items-center justify-center text-2xl shadow-sm">
+        {broker.logo}
+      </div>
+    );
+  };
+
   return (
-    <Card className="group relative overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 bg-white border-0 shadow-lg">
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      
-      {/* Popular badge for high rated brokers */}
-      {broker.rating >= 4.5 && (
-        <div className="absolute top-4 left-4 z-10">
-          <Badge className="bg-accent text-accent-foreground font-medium px-3 py-1">
-            الأكثر شعبية
+    <Card className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-100 overflow-hidden">
+      <CardContent className="p-6">
+        {/* Header with name and logo */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-1">{broker.name}</h3>
+            <div className="flex items-center gap-1">
+              <span className="text-lg font-medium text-gray-600">{broker.rating}</span>
+              <span className="text-gray-400">/</span>
+              <span className="text-lg font-medium text-gray-600">4.5</span>
+              <Star weight="fill" className="text-blue-500 ml-1" size={20} />
+            </div>
+          </div>
+          {getLogoDisplay()}
+        </div>
+
+        {/* Trust indicator */}
+        <div className="mb-6">
+          <Badge className="w-full flex items-center justify-center gap-2 bg-green-100 text-green-700 py-3 rounded-xl font-medium text-sm border-0 hover:bg-green-100">
+            <CheckCircle size={16} />
+            شركة موثوقة
           </Badge>
         </div>
-      )}
 
-      <CardContent className="p-6 relative z-10">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-              {broker.logo}
-            </div>
-            <div>
-              <h3 className="font-bold text-xl text-foreground mb-1">{broker.nameAr}</h3>
-              <p className="text-sm text-muted-foreground font-medium">{broker.name}</p>
-            </div>
+        {/* Regulatory info */}
+        <div className="space-y-3 mb-6">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-800 font-medium">التراخيص</span>
+            <span className="text-gray-600">{broker.regulation.join(', ')}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-800 font-medium">حساب اسلامي</span>
+            <span className="text-gray-600">موجود</span>
           </div>
         </div>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex items-center gap-1 bg-accent/10 px-3 py-1 rounded-full">
-            <Star weight="fill" className="text-accent" size={16} />
-            <span className="font-bold text-sm">{broker.rating}</span>
-          </div>
-          <span className="text-xs text-muted-foreground">({broker.reviewCount.toLocaleString('ar-SA')} تقييم)</span>
-        </div>
-
-        {/* Regulations */}
-        <div className="flex flex-wrap gap-2 mb-5">
-          {broker.regulation.slice(0, 3).map((reg) => (
-            <Badge key={reg} variant="outline" className="flex items-center gap-1 border-primary/20 text-primary">
-              <Shield size={12} />
-              {reg}
-            </Badge>
-          ))}
-          {broker.regulation.length > 3 && (
-            <Badge variant="outline" className="text-muted-foreground">
-              +{broker.regulation.length - 3}
-            </Badge>
-          )}
-        </div>
-
-        {/* Key Features */}
-        <div className="grid grid-cols-2 gap-3 mb-5">
-          <div className="bg-muted/30 rounded-lg p-3">
-            <p className="text-xs text-muted-foreground mb-1">الحد الأدنى</p>
-            <p className="font-bold text-sm text-foreground">
-              {broker.minDeposit === 0 ? "مجاني" : 
-               broker.minDeposit < 100 ? `$${broker.minDeposit}` : 
-               `$${broker.minDeposit.toLocaleString()}`}
-            </p>
-          </div>
-          <div className="bg-muted/30 rounded-lg p-3">
-            <p className="text-xs text-muted-foreground mb-1">الفروقات</p>
-            <p className="font-bold text-sm text-foreground">{broker.spreads}</p>
-          </div>
-        </div>
-
-        {/* Highlights */}
-        <div className="space-y-2 mb-6">
-          {broker.pros.slice(0, 2).map((pro, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
-              <span className="text-xs text-muted-foreground">{pro}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Description */}
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-6">
-          {broker.descriptionAr}
-        </p>
 
         {/* Action buttons */}
         <div className="flex gap-3">
           <Button 
-            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200"
-            size="sm"
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium py-3 flex items-center justify-center gap-2"
           >
-            <TrendUp size={16} className="ml-2" />
-            عرض التفاصيل
-            <ArrowUpRight size={14} className="mr-1 opacity-70" />
+            <ArrowLeft size={16} />
+            زيارة {broker.name}
           </Button>
-          {onCompare && (
-            <Button 
-              variant={isComparing ? "default" : "outline"}
-              size="sm"
-              onClick={() => onCompare(broker)}
-              className={`transition-all duration-200 ${
-                isComparing 
-                  ? "bg-accent hover:bg-accent/90 text-accent-foreground shadow-md" 
-                  : "hover:bg-muted border-muted-foreground/20"
-              }`}
-            >
-              {isComparing ? "إزالة" : "مقارنة"}
-            </Button>
-          )}
+          <Button 
+            variant="outline"
+            className="px-6 rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50"
+            onClick={() => onCompare && onCompare(broker)}
+          >
+            ملف الشركة
+          </Button>
         </div>
       </CardContent>
     </Card>

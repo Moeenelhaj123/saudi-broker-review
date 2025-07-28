@@ -137,31 +137,6 @@ export const brokers: Broker[] = [
     }
   },
   {
-    id: "fxtm",
-    name: "FXTM",
-    nameAr: "إف إكس تي إم",
-    logo: "🚀",
-    rating: 4.2,
-    reviewCount: 956,
-    regulation: ["FCA", "CySEC", "FSCA"],
-    minDeposit: 10,
-    spreads: "من 1.3 نقطة",
-    platforms: ["MetaTrader 4", "MetaTrader 5", "FXTM Trader"],
-    accountTypes: ["حساب قياسي", "حساب ECN", "حساب Advantage", "حساب إسلامي"],
-    website: "https://www.fxtm.com",
-    phone: "+357-25-052-430",
-    email: "support@fxtm.com",
-    description: "Global broker with strong educational resources",
-    descriptionAr: "وسيط عالمي مع موارد تعليمية قوية وخدمة متميزة",
-    pros: ["موارد تعليمية ممتازة", "حد أدنى منخفض", "دعم متعدد اللغات", "منصات متنوعة"],
-    cons: ["فروقات أوسع في الأوقات غير النشطة", "رسوم السحب في بعض الطرق"],
-    fees: {
-      commission: "0%",
-      withdrawal: "2 دولار",
-      inactivity: "5 دولار شهرياً"
-    }
-  },
-  {
     id: "ic-markets",
     name: "IC Markets",
     nameAr: "آي سي ماركتس",
@@ -184,6 +159,31 @@ export const brokers: Broker[] = [
       commission: "3 دولار لكل لوت",
       withdrawal: "مجاني",
       inactivity: "غير متاح"
+    }
+  },
+  {
+    id: "etoro",
+    name: "eToro",
+    nameAr: "إي تورو",
+    logo: "🎯",
+    rating: 4.2,
+    reviewCount: 1845,
+    regulation: ["FCA", "CySEC", "ASIC"],
+    minDeposit: 50,
+    spreads: "متغيرة",
+    platforms: ["eToro Platform", "eToro Mobile"],
+    accountTypes: ["حساب قياسي", "حساب إسلامي", "حساب محترف"],
+    website: "https://www.etoro.com",
+    phone: "+357-25-029-900",
+    email: "customerservice@etoro.com",
+    description: "Social trading platform with copy trading features",
+    descriptionAr: "منصة تداول اجتماعي مع خاصية نسخ التداول والاستثمار الآلي",
+    pros: ["تداول اجتماعي", "نسخ المتداولين", "واجهة سهلة", "تنوع الأصول"],
+    cons: ["رسوم السحب", "فروقات واسعة", "خيارات محدودة للمحترفين"],
+    fees: {
+      commission: "0% للأسهم",
+      withdrawal: "5 دولار",
+      inactivity: "10 دولار شهرياً"
     }
   }
 ];

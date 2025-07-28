@@ -1,14 +1,24 @@
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { BrokerCard } from "@/components/BrokerCard";
 import { Footer } from "@/components/Footer";
+import { ContactDialog } from "@/components/ContactDialog";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
 import { brokers } from "@/lib/data";
 import { articles } from "@/lib/articles";
-import { ArrowUp } from "@phosphor-icons/react";
+import { ArrowUp, Question } from "@phosphor-icons/react";
 
 export function HomePage() {
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+  
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -176,9 +186,109 @@ export function HomePage() {
             </Button>
           </div>
         </div>
+
+        {/* FAQ Section */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              الأسئلة الشائعة
+            </h2>
+            <p className="text-gray-600">
+              إجابات على أهم الأسئلة حول اختيار الوسطاء الماليين
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <Accordion type="single" collapsible className="space-y-4">
+              <AccordionItem value="question-1" className="bg-white rounded-lg border shadow-sm">
+                <AccordionTrigger className="px-6 py-4 text-right hover:no-underline">
+                  <span className="text-lg font-medium">كيف أختار الوسيط المالي المناسب؟</span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-gray-600">
+                  <p>
+                    عند اختيار الوسيط المالي، يجب التأكد من حصوله على ترخيص من هيئة السوق المالية السعودية أو مؤسسة النقد العربي السعودي. كما يُنصح بمراجعة هيكل الرسوم، جودة منصة التداول، خدمة العملاء، والمنتجات المالية المتاحة. تأكد أيضاً من قراءة تقييمات العملاء والتحقق من سمعة الشركة في السوق.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="question-2" className="bg-white rounded-lg border shadow-sm">
+                <AccordionTrigger className="px-6 py-4 text-right hover:no-underline">
+                  <span className="text-lg font-medium">ما هي الرسوم المتوقعة عند التداول؟</span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-gray-600">
+                  <p>
+                    تختلف الرسوم بين الوسطاء، ولكن عادة تشمل: رسوم العمولة على كل صفقة (تتراوح من 0.05% إلى 0.25%)، رسوم حفظ الأوراق المالية، رسوم التحويل والسحب، ورسوم عدم النشاط في بعض الحالات. يُنصح بمقارنة إجمالي التكاليف بدلاً من التركيز على رسم واحد فقط.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="question-3" className="bg-white rounded-lg border shadow-sm">
+                <AccordionTrigger className="px-6 py-4 text-right hover:no-underline">
+                  <span className="text-lg font-medium">هل التداول آمن مع الوسطاء المرخصين؟</span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-gray-600">
+                  <p>
+                    نعم، التداول مع الوسطاء المرخصين من الجهات التنظيمية السعودية آمن بشكل كبير. هذه الشركات تخضع لرقابة صارمة وتلتزم بمعايير الأمان والشفافية. أموال العملاء محمية ومفصولة عن أموال الشركة، كما أن هناك صندوق حماية المستثمرين لضمان حقوق المتداولين.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="question-4" className="bg-white rounded-lg border shadow-sm">
+                <AccordionTrigger className="px-6 py-4 text-right hover:no-underline">
+                  <span className="text-lg font-medium">ما هو الحد الأدنى للاستثمار؟</span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-gray-600">
+                  <p>
+                    يختلف الحد الأدنى للاستثمار بين الوسطاء، ولكن معظم الشركات تتطلب حداً أدنى يتراوح بين 1,000 إلى 10,000 ريال سعودي لفتح الحساب. بعض الوسطاء قد يطلبون مبالغ أعلى للحصول على خدمات مميزة أو للاستثمار في منتجات معينة مثل الصناديق الاستثمارية.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="question-5" className="bg-white rounded-lg border shadow-sm">
+                <AccordionTrigger className="px-6 py-4 text-right hover:no-underline">
+                  <span className="text-lg font-medium">كم من الوقت يستغرق فتح حساب التداول؟</span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4 text-gray-600">
+                  <p>
+                    عادة ما يستغرق فتح حساب التداول من يوم إلى 3 أيام عمل، حسب الوسيط ومدى اكتمال المستندات المطلوبة. تحتاج إلى تقديم صورة الهوية الوطنية، إثبات الدخل، وملء نماذج التقييم المالي. بعض الوسطاء يوفرون خدمة الفتح الفوري إلكترونياً للعملاء السعوديين.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+
+          {/* Contact CTA */}
+          <div className="text-center mt-12">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-8 max-w-2xl mx-auto">
+              <div className="flex items-center justify-center mb-4">
+                <div className="bg-blue-600 p-3 rounded-full">
+                  <Question size={24} className="text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                لديك سؤال آخر؟
+              </h3>
+              <p className="text-gray-600 mb-6">
+                لا تتردد في التواصل معنا للحصول على إجابات مخصصة لاستفساراتك
+              </p>
+              <Button 
+                onClick={() => setIsContactDialogOpen(true)}
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                اطرح سؤالك الآن
+              </Button>
+            </div>
+          </div>
+        </div>
       </main>
 
       <Footer />
+
+      <ContactDialog 
+        open={isContactDialogOpen} 
+        onOpenChange={setIsContactDialogOpen} 
+      />
 
       <Button
         className="fixed bottom-6 left-6 w-14 h-14 rounded-full shadow-xl bg-blue-600 hover:bg-blue-700 transition-all duration-200 hover:scale-110 text-white"

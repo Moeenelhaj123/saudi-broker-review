@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useKV } from "@github/spark/hooks";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -6,7 +8,40 @@ import { articles } from "@/lib/articles";
 import { ArrowUp, Clock, Calendar } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 
+interface AdminArticle {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  contentSections?: any[];
+  author: string;
+  publishDate: string;
+  category: string;
+  isPublished: boolean;
+  slug: string;
+  readTime?: string;
+  image?: string;
+  metaDescription?: string;
+  tags?: string[];
+}
+
 export function ArticlesPage() {
+  const [adminArticles] = useKV<AdminArticle[]>("admin-articles", []);
+  const [allArticles, setAllArticles] = useState<any[]>([]);
+
+  // Combine admin articles and static articles
+  useEffect(() => {
+    const publishedAdminArticles = (adminArticles || []).filter(article => article.isPublished);
+    const combined = [...publishedAdminArticles, ...articles];
+    // Sort by date (newest first)
+    combined.sort((a, b) => {
+      const dateA = new Date(a.publishDate || a.date || '2024-01-01');
+      const dateB = new Date(b.publishDate || b.date || '2024-01-01');
+      return dateB.getTime() - dateA.getTime();
+    });
+    setAllArticles(combined);
+  }, [adminArticles]);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -32,17 +67,19 @@ export function ArticlesPage() {
         
         {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.map((article) => (
+          {allArticles.map((article) => (
             <Link key={article.id} to={`/articles/${article.slug}`} className="group block">
               <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 {/* Article Image */}
-                <div className="h-48 overflow-hidden bg-gray-100">
-                  <img 
-                    src={article.image} 
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
+                {article.image && (
+                  <div className="h-48 overflow-hidden bg-gray-100">
+                    <img 
+                      src={article.image} 
+                      alt={article.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                )}
                 
                 {/* Article Content */}
                 <div className="p-6">
@@ -57,11 +94,11 @@ export function ArticlesPage() {
                   <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                     <div className="flex items-center gap-1">
                       <Calendar size={14} />
-                      <span>{article.date}</span>
+                      <span>{article.date || article.publishDate}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock size={14} />
-                      <span>{article.readTime}</span>
+                      <span>{article.readTime || "5 دقائق قراءة"}</span>
                     </div>
                   </div>
                   

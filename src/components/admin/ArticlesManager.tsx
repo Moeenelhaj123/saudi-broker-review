@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { articles as initialArticles, Article as ArticleInterface } from "@/lib/articles";
 import { 
@@ -17,14 +19,26 @@ import {
   ExternalLink,
   Save,
   X,
-  Calendar
+  Calendar,
+  ChevronUp,
+  ChevronDown,
+  Type,
+  AlignLeft
 } from "lucide-react";
+
+interface ContentSection {
+  id: string;
+  type: 'heading' | 'subheading' | 'paragraph';
+  content: string;
+  order: number;
+}
 
 interface AdminArticle {
   id: string;
   title: string;
   excerpt: string;
   content: string;
+  contentSections?: ContentSection[]; // New structured content
   author: string;
   publishDate: string;
   category: string;
@@ -79,10 +93,12 @@ export function ArticlesManager() {
 
   const [editingArticle, setEditingArticle] = useState<AdminArticle | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [useStructuredEditor, setUseStructuredEditor] = useState(false);
   const [newArticle, setNewArticle] = useState<Partial<AdminArticle>>({
     title: "",
     excerpt: "",
     content: "",
+    contentSections: [],
     author: "",
     publishDate: new Date().toISOString().split('T')[0],
     category: "",
@@ -103,9 +119,169 @@ export function ArticlesManager() {
       .trim();
   };
 
+  // Convert structured content to text
+  const sectionsToText = (sections: ContentSection[]) => {
+    return sections
+      .sort((a, b) => a.order - b.order)
+      .map(section => {
+        switch (section.type) {
+          case 'heading':
+            return `## ${section.content}`;
+          case 'subheading':
+            return `### ${section.content}`;
+          case 'paragraph':
+            return section.content;
+          default:
+            return section.content;
+        }
+      })
+      .join('\n\n');
+  };
+
+  // Convert text content to structured sections
+  const textToSections = (text: string): ContentSection[] => {
+    const lines = text.split('\n').filter(line => line.trim());
+    const sections: ContentSection[] = [];
+    let order = 0;
+
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('### ')) {
+        sections.push({
+          id: Date.now().toString() + order,
+          type: 'subheading',
+          content: trimmed.replace('### ', ''),
+          order: order++
+        });
+      } else if (trimmed.startsWith('## ')) {
+        sections.push({
+          id: Date.now().toString() + order,
+          type: 'heading',
+          content: trimmed.replace('## ', ''),
+          order: order++
+        });
+      } else if (trimmed) {
+        sections.push({
+          id: Date.now().toString() + order,
+          type: 'paragraph',
+          content: trimmed,
+          order: order++
+        });
+      }
+    });
+
+    return sections;
+  };
+
+  // Add new content section
+  const addContentSection = (type: 'heading' | 'subheading' | 'paragraph', isEditing = false) => {
+    const newSection: ContentSection = {
+      id: Date.now().toString(),
+      type,
+      content: '',
+      order: isEditing 
+        ? (editingArticle?.contentSections?.length || 0)
+        : (newArticle.contentSections?.length || 0)
+    };
+
+    if (isEditing && editingArticle) {
+      setEditingArticle(prev => ({
+        ...prev!,
+        contentSections: [...(prev!.contentSections || []), newSection]
+      }));
+    } else {
+      setNewArticle(prev => ({
+        ...prev,
+        contentSections: [...(prev.contentSections || []), newSection]
+      }));
+    }
+  };
+
+  // Update content section
+  const updateContentSection = (sectionId: string, content: string, isEditing = false) => {
+    if (isEditing && editingArticle) {
+      setEditingArticle(prev => ({
+        ...prev!,
+        contentSections: (prev!.contentSections || []).map(section =>
+          section.id === sectionId ? { ...section, content } : section
+        )
+      }));
+    } else {
+      setNewArticle(prev => ({
+        ...prev,
+        contentSections: (prev.contentSections || []).map(section =>
+          section.id === sectionId ? { ...section, content } : section
+        )
+      }));
+    }
+  };
+
+  // Remove content section
+  const removeContentSection = (sectionId: string, isEditing = false) => {
+    if (isEditing && editingArticle) {
+      setEditingArticle(prev => ({
+        ...prev!,
+        contentSections: (prev!.contentSections || []).filter(section => section.id !== sectionId)
+      }));
+    } else {
+      setNewArticle(prev => ({
+        ...prev,
+        contentSections: (prev.contentSections || []).filter(section => section.id !== sectionId)
+      }));
+    }
+  };
+
+  // Move section up/down
+  const moveSectionOrder = (sectionId: string, direction: 'up' | 'down', isEditing = false) => {
+    const sections = isEditing ? editingArticle?.contentSections || [] : newArticle.contentSections || [];
+    const sectionIndex = sections.findIndex(s => s.id === sectionId);
+    
+    if (sectionIndex === -1) return;
+    
+    const newSections = [...sections];
+    const targetIndex = direction === 'up' ? sectionIndex - 1 : sectionIndex + 1;
+    
+    if (targetIndex >= 0 && targetIndex < newSections.length) {
+      // Swap elements
+      [newSections[sectionIndex], newSections[targetIndex]] = [newSections[targetIndex], newSections[sectionIndex]];
+      
+      // Update order values
+      newSections.forEach((section, index) => {
+        section.order = index;
+      });
+
+      if (isEditing && editingArticle) {
+        setEditingArticle(prev => ({
+          ...prev!,
+          contentSections: newSections
+        }));
+      } else {
+        setNewArticle(prev => ({
+          ...prev,
+          contentSections: newSections
+        }));
+      }
+    }
+  };
+
   const handleAddArticle = () => {
-    if (!newArticle.title || !newArticle.excerpt || !newArticle.content) {
+    if (!newArticle.title || !newArticle.excerpt) {
       toast.error("يرجى ملء جميع الحقول المطلوبة");
+      return;
+    }
+
+    // Ensure we have content in either format
+    let finalContent = newArticle.content || "";
+    let finalSections = newArticle.contentSections || [];
+
+    if (useStructuredEditor && finalSections.length > 0) {
+      finalContent = sectionsToText(finalSections);
+    } else if (!useStructuredEditor && finalContent) {
+      finalSections = textToSections(finalContent);
+    }
+
+    if (!finalContent && finalSections.length === 0) {
+      toast.error("يرجى إضافة محتوى للمقال");
       return;
     }
 
@@ -116,7 +292,9 @@ export function ArticlesManager() {
       readTime: newArticle.readTime || "5 دقائق قراءة",
       image: newArticle.image || "",
       metaDescription: newArticle.metaDescription || newArticle.excerpt || "",
-      tags: newArticle.tags || []
+      tags: newArticle.tags || [],
+      content: finalContent,
+      contentSections: finalSections
     };
 
     setArticles((prev) => [...(prev || []), article]);
@@ -124,6 +302,7 @@ export function ArticlesManager() {
       title: "",
       excerpt: "",
       content: "",
+      contentSections: [],
       author: "",
       publishDate: new Date().toISOString().split('T')[0],
       category: "",
@@ -135,15 +314,32 @@ export function ArticlesManager() {
       tags: []
     });
     setShowAddForm(false);
+    setUseStructuredEditor(false);
     toast.success("تم إضافة المقال بنجاح");
   };
 
   const handleUpdateArticle = () => {
     if (!editingArticle) return;
 
+    // Sync content between text and structured formats
+    let finalContent = editingArticle.content;
+    let finalSections = editingArticle.contentSections || [];
+
+    if (finalSections.length > 0) {
+      finalContent = sectionsToText(finalSections);
+    } else if (finalContent) {
+      finalSections = textToSections(finalContent);
+    }
+
+    const updatedArticle = {
+      ...editingArticle,
+      content: finalContent,
+      contentSections: finalSections
+    };
+
     setArticles((prev) => 
       (prev || []).map(article => 
-        article.id === editingArticle.id ? editingArticle : article
+        article.id === editingArticle.id ? updatedArticle : article
       )
     );
     setEditingArticle(null);
@@ -164,6 +360,132 @@ export function ArticlesManager() {
       )
     );
   };
+
+  // Structured Content Editor Component
+  const StructuredContentEditor = ({ 
+    sections, 
+    onAddSection, 
+    onUpdateSection, 
+    onRemoveSection, 
+    onMoveSection 
+  }: {
+    sections: ContentSection[];
+    onAddSection: (type: 'heading' | 'subheading' | 'paragraph') => void;
+    onUpdateSection: (id: string, content: string) => void;
+    onRemoveSection: (id: string) => void;
+    onMoveSection: (id: string, direction: 'up' | 'down') => void;
+  }) => (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2 mb-4">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onAddSection('heading')}
+          className="gap-2"
+        >
+          <Type className="h-4 w-4" />
+          عنوان رئيسي
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onAddSection('subheading')}
+          className="gap-2"
+        >
+          <Type className="h-3 w-3" />
+          عنوان فرعي
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onAddSection('paragraph')}
+          className="gap-2"
+        >
+          <AlignLeft className="h-4 w-4" />
+          فقرة
+        </Button>
+      </div>
+
+      {sections
+        .sort((a, b) => a.order - b.order)
+        .map((section, index) => (
+          <Card key={section.id} className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex flex-col gap-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onMoveSection(section.id, 'up')}
+                  disabled={index === 0}
+                  className="h-6 w-6 p-0"
+                >
+                  <ChevronUp className="h-3 w-3" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onMoveSection(section.id, 'down')}
+                  disabled={index === sections.length - 1}
+                  className="h-6 w-6 p-0"
+                >
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </div>
+
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Badge variant={
+                    section.type === 'heading' ? 'default' :
+                    section.type === 'subheading' ? 'secondary' : 'outline'
+                  }>
+                    {section.type === 'heading' && 'عنوان رئيسي'}
+                    {section.type === 'subheading' && 'عنوان فرعي'}
+                    {section.type === 'paragraph' && 'فقرة'}
+                  </Badge>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onRemoveSection(section.id)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {section.type === 'paragraph' ? (
+                  <Textarea
+                    value={section.content}
+                    onChange={(e) => onUpdateSection(section.id, e.target.value)}
+                    placeholder="اكتب محتوى الفقرة..."
+                    rows={3}
+                  />
+                ) : (
+                  <Input
+                    value={section.content}
+                    onChange={(e) => onUpdateSection(section.id, e.target.value)}
+                    placeholder={section.type === 'heading' ? 'العنوان الرئيسي...' : 'العنوان الفرعي...'}
+                  />
+                )}
+              </div>
+            </div>
+          </Card>
+        ))}
+
+      {sections.length === 0 && (
+        <div className="text-center py-8 text-muted-foreground">
+          <AlignLeft className="h-12 w-12 mx-auto mb-4 opacity-50" />
+          <p>لم يتم إضافة أي محتوى بعد</p>
+          <p className="text-sm">استخدم الأزرار أعلاه لإضافة عناوين وفقرات</p>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -298,17 +620,53 @@ export function ArticlesManager() {
             </div>
 
             <div>
-              <Label htmlFor="new-content">المحتوى *</Label>
-              <Textarea
-                id="new-content"
-                value={newArticle.content}
-                onChange={(e) => setNewArticle(prev => ({ ...prev, content: e.target.value }))}
-                placeholder="محتوى المقال الكامل - استخدم ## للعناوين الفرعية"
-                rows={12}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                نصيحة: استخدم ## لإنشاء عناوين فرعية، مثل: ## العنوان الفرعي
-              </p>
+              <div className="flex items-center justify-between mb-2">
+                <Label>المحتوى *</Label>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="editor-toggle" className="text-sm font-normal">
+                    محرر منظم
+                  </Label>
+                  <input
+                    id="editor-toggle"
+                    type="checkbox"
+                    checked={useStructuredEditor}
+                    onChange={(e) => {
+                      setUseStructuredEditor(e.target.checked);
+                      if (e.target.checked && newArticle.content) {
+                        // Convert existing text to sections
+                        setNewArticle(prev => ({
+                          ...prev,
+                          contentSections: textToSections(prev.content || "")
+                        }));
+                      }
+                    }}
+                    className="rounded"
+                  />
+                </div>
+              </div>
+
+              {useStructuredEditor ? (
+                <StructuredContentEditor
+                  sections={newArticle.contentSections || []}
+                  onAddSection={(type) => addContentSection(type)}
+                  onUpdateSection={(id, content) => updateContentSection(id, content)}
+                  onRemoveSection={(id) => removeContentSection(id)}
+                  onMoveSection={(id, direction) => moveSectionOrder(id, direction)}
+                />
+              ) : (
+                <>
+                  <Textarea
+                    id="new-content"
+                    value={newArticle.content}
+                    onChange={(e) => setNewArticle(prev => ({ ...prev, content: e.target.value }))}
+                    placeholder="محتوى المقال الكامل - استخدم ## للعناوين الفرعية"
+                    rows={12}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    نصيحة: استخدم ## للعناوين الرئيسية و ### للعناوين الفرعية
+                  </p>
+                </>
+              )}
             </div>
 
             <div className="flex gap-2">
@@ -435,18 +793,61 @@ export function ArticlesManager() {
                   </div>
 
                   <div>
-                    <Label>المحتوى</Label>
-                    <Textarea
-                      value={editingArticle.content}
-                      onChange={(e) => setEditingArticle(prev => ({ 
-                        ...prev!, 
-                        content: e.target.value 
-                      }))}
-                      rows={10}
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      استخدم ## للعناوين الفرعية
-                    </p>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>المحتوى</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (!editingArticle.contentSections || editingArticle.contentSections.length === 0) {
+                            // Convert text to sections
+                            setEditingArticle(prev => ({
+                              ...prev!,
+                              contentSections: textToSections(prev!.content)
+                            }));
+                          }
+                        }}
+                        className="gap-2"
+                      >
+                        <Type className="h-4 w-4" />
+                        تبديل للمحرر المنظم
+                      </Button>
+                    </div>
+
+                    {editingArticle.contentSections && editingArticle.contentSections.length > 0 ? (
+                      <div className="space-y-4">
+                        <StructuredContentEditor
+                          sections={editingArticle.contentSections}
+                          onAddSection={(type) => addContentSection(type, true)}
+                          onUpdateSection={(id, content) => updateContentSection(id, content, true)}
+                          onRemoveSection={(id) => removeContentSection(id, true)}
+                          onMoveSection={(id, direction) => moveSectionOrder(id, direction, true)}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setEditingArticle(prev => ({ ...prev!, contentSections: [] }))}
+                        >
+                          العودة للمحرر النصي
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <Textarea
+                          value={editingArticle.content}
+                          onChange={(e) => setEditingArticle(prev => ({ 
+                            ...prev!, 
+                            content: e.target.value 
+                          }))}
+                          rows={10}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          استخدم ## للعناوين الرئيسية و ### للعناوين الفرعية
+                        </p>
+                      </>
+                    )}
                   </div>
 
                   <div className="flex gap-2">

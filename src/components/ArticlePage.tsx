@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useKV } from "@github/spark/hooks";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,9 +8,49 @@ import { Badge } from "@/components/ui/badge";
 import { articles } from "@/lib/articles";
 import { ArrowUp, ArrowRight, Clock, Calendar, Tag } from "@phosphor-icons/react";
 
+interface AdminArticle {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  contentSections?: ContentSection[];
+  author: string;
+  publishDate: string;
+  category: string;
+  isPublished: boolean;
+  slug: string;
+  readTime?: string;
+  image?: string;
+  metaDescription?: string;
+  tags?: string[];
+}
+
+interface ContentSection {
+  id: string;
+  type: 'heading' | 'subheading' | 'paragraph';
+  content: string;
+  order: number;
+}
+
 export function ArticlePage() {
   const { slug } = useParams<{ slug: string }>();
-  const article = articles.find(a => a.slug === slug);
+  const [adminArticles] = useKV<AdminArticle[]>("admin-articles", []);
+  const [currentArticle, setCurrentArticle] = useState<any>(null);
+
+  // Find article from either source
+  useEffect(() => {
+    // First check admin articles
+    const adminArticle = adminArticles?.find(a => a.slug === slug && a.isPublished);
+    if (adminArticle) {
+      setCurrentArticle(adminArticle);
+    } else {
+      // Fall back to static articles
+      const staticArticle = articles.find(a => a.slug === slug);
+      setCurrentArticle(staticArticle);
+    }
+  }, [slug, adminArticles]);
+
+  const article = currentArticle;
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -22,23 +63,25 @@ export function ArticlePage() {
       
       // Meta description
       const metaDescription = document.querySelector('meta[name="description"]');
+      const description = article.metaDescription || article.excerpt || "";
       if (metaDescription) {
-        metaDescription.setAttribute('content', article.metaDescription);
+        metaDescription.setAttribute('content', description);
       } else {
         const meta = document.createElement('meta');
         meta.name = 'description';
-        meta.content = article.metaDescription;
+        meta.content = description;
         document.head.appendChild(meta);
       }
 
       // Keywords meta tag
       const metaKeywords = document.querySelector('meta[name="keywords"]');
+      const keywords = article.tags ? article.tags.join(', ') : '';
       if (metaKeywords) {
-        metaKeywords.setAttribute('content', article.tags.join(', '));
-      } else {
+        metaKeywords.setAttribute('content', keywords);
+      } else if (keywords) {
         const meta = document.createElement('meta');
         meta.name = 'keywords';
-        meta.content = article.tags.join(', ');
+        meta.content = keywords;
         document.head.appendChild(meta);
       }
 
@@ -162,33 +205,42 @@ export function ArticlePage() {
             <div className="flex items-center gap-6 text-sm text-gray-600 mb-6">
               <div className="flex items-center gap-2">
                 <Calendar size={16} />
-                <span>{article.date}</span>
+                <span>{article.date || article.publishDate}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock size={16} />
-                <span>{article.readTime}</span>
+                <span>{article.readTime || "5 دقائق قراءة"}</span>
               </div>
+              {article.author && (
+                <div className="flex items-center gap-2">
+                  <span>بواسطة: {article.author}</span>
+                </div>
+              )}
             </div>
 
             {/* Tags */}
-            <div className="flex items-center gap-2 flex-wrap mb-8">
-              <Tag size={16} className="text-gray-500" />
-              {article.tags.map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            {article.tags && article.tags.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap mb-8">
+                <Tag size={16} className="text-gray-500" />
+                {article.tags.map((tag, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Article Image */}
-          <div className="mb-8 rounded-lg overflow-hidden">
-            <img 
-              src={article.image} 
-              alt={article.title}
-              className="w-full h-64 md:h-80 object-cover"
-            />
-          </div>
+          {article.image && (
+            <div className="mb-8 rounded-lg overflow-hidden">
+              <img 
+                src={article.image} 
+                alt={article.title}
+                className="w-full h-64 md:h-80 object-cover"
+              />
+            </div>
+          )}
         </div>
       </section>
 
@@ -196,40 +248,110 @@ export function ArticlePage() {
       <main className="max-w-4xl mx-auto px-4 pb-12">
         <article className="prose prose-lg max-w-none">
           
-          {/* Introduction */}
-          <div className="bg-primary/5 border-r-4 border-primary p-6 rounded-lg mb-8">
-            <p className="text-lg leading-relaxed text-gray-800 m-0">
-              {article.content.introduction}
-            </p>
-          </div>
+          {/* Check if it's an admin article with structured content */}
+          {article.contentSections && article.contentSections.length > 0 ? (
+            // Render structured content from admin
+            <div className="space-y-6">
+              {article.contentSections
+                .sort((a, b) => a.order - b.order)
+                .map((section) => (
+                  <div key={section.id}>
+                    {section.type === 'heading' && (
+                      <h2 className="text-2xl font-bold text-gray-900 border-b-2 border-primary/20 pb-2 mt-8 mb-4">
+                        {section.content}
+                      </h2>
+                    )}
+                    {section.type === 'subheading' && (
+                      <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
+                        {section.content}
+                      </h3>
+                    )}
+                    {section.type === 'paragraph' && (
+                      <div className="text-gray-700 leading-relaxed text-lg space-y-4">
+                        {section.content.split('\n').map((paragraph, pIndex) => (
+                          paragraph.trim() && (
+                            <p key={pIndex} className="leading-8">
+                              {paragraph.trim()}
+                            </p>
+                          )
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          ) : article.content && typeof article.content === 'string' ? (
+            // Render plain text content from admin (parse markdown-style headings)
+            <div className="space-y-6">
+              {article.content.split('\n').map((line, index) => {
+                const trimmed = line.trim();
+                if (!trimmed) return null;
+                
+                if (trimmed.startsWith('### ')) {
+                  return (
+                    <h3 key={index} className="text-xl font-semibold text-gray-900 mt-6 mb-3">
+                      {trimmed.replace('### ', '')}
+                    </h3>
+                  );
+                } else if (trimmed.startsWith('## ')) {
+                  return (
+                    <h2 key={index} className="text-2xl font-bold text-gray-900 border-b-2 border-primary/20 pb-2 mt-8 mb-4">
+                      {trimmed.replace('## ', '')}
+                    </h2>
+                  );
+                } else {
+                  return (
+                    <p key={index} className="text-gray-700 leading-relaxed text-lg leading-8">
+                      {trimmed}
+                    </p>
+                  );
+                }
+              })}
+            </div>
+          ) : article.content ? (
+            // Render legacy structured content format
+            <>
+              {/* Introduction */}
+              <div className="bg-primary/5 border-r-4 border-primary p-6 rounded-lg mb-8">
+                <p className="text-lg leading-relaxed text-gray-800 m-0">
+                  {article.content.introduction}
+                </p>
+              </div>
 
-          {/* Article Sections */}
-          <div className="space-y-8">
-            {article.content.sections.map((section, index) => (
-              <section key={index} className="space-y-4">
-                <h2 className="text-2xl font-bold text-gray-900 border-b-2 border-primary/20 pb-2">
-                  {section.title}
-                </h2>
-                <div className="text-gray-700 leading-relaxed text-lg space-y-4">
-                  {section.content.split('\n').map((paragraph, pIndex) => (
-                    paragraph.trim() && (
-                      <p key={pIndex} className="leading-8">
-                        {paragraph.trim()}
-                      </p>
-                    )
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
+              {/* Article Sections */}
+              <div className="space-y-8">
+                {article.content.sections.map((section, index) => (
+                  <section key={index} className="space-y-4">
+                    <h2 className="text-2xl font-bold text-gray-900 border-b-2 border-primary/20 pb-2">
+                      {section.title}
+                    </h2>
+                    <div className="text-gray-700 leading-relaxed text-lg space-y-4">
+                      {section.content.split('\n').map((paragraph, pIndex) => (
+                        paragraph.trim() && (
+                          <p key={pIndex} className="leading-8">
+                            {paragraph.trim()}
+                          </p>
+                        )
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
 
-          {/* Conclusion */}
-          <div className="bg-accent/10 border border-accent/20 p-6 rounded-lg mt-12">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">الخلاصة</h3>
-            <p className="text-lg leading-relaxed text-gray-800 m-0">
-              {article.content.conclusion}
-            </p>
-          </div>
+              {/* Conclusion */}
+              <div className="bg-accent/10 border border-accent/20 p-6 rounded-lg mt-12">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">الخلاصة</h3>
+                <p className="text-lg leading-relaxed text-gray-800 m-0">
+                  {article.content.conclusion}
+                </p>
+              </div>
+            </>
+          ) : (
+            // Fallback for articles with just excerpt
+            <div className="text-gray-700 leading-relaxed text-lg">
+              <p className="leading-8">{article.excerpt}</p>
+            </div>
+          )}
 
         </article>
 

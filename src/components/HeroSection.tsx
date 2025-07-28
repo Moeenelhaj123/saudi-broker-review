@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { TrendUp, Shield, Star, Users } from "@phosphor-icons/react";
+import { TrendUp } from "@phosphor-icons/react";
 
 export function HeroSection() {
   return (
@@ -26,43 +25,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <Card className="bg-white hover:shadow-lg transition-shadow">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Shield className="text-primary" size={24} />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">وسطاء منظمون</h3>
-              <p className="text-muted-foreground">
-                جميع الوسطاء مرخصون من هيئة السوق المالية ومؤسسة النقد العربي السعودي
-              </p>
-            </CardContent>
-          </Card>
 
-          <Card className="bg-white hover:shadow-lg transition-shadow">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Star className="text-accent" size={24} />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">تقييمات حقيقية</h3>
-              <p className="text-muted-foreground">
-                آراء وتجارب حقيقية من متداولين سعوديين لمساعدتك في اتخاذ القرار الصحيح
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white hover:shadow-lg transition-shadow">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Users className="text-primary" size={24} />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">مقارنات شاملة</h3>
-              <p className="text-muted-foreground">
-                قارن الرسوم والمنصات والخدمات بسهولة لتجد الوسيط الأنسب لك
-              </p>
-            </CardContent>
-          </Card>
-        </div>
 
         <div className="bg-muted/30 rounded-xl p-8 text-center">
           <h2 className="text-2xl font-bold mb-4">إحصائيات الموقع</h2>

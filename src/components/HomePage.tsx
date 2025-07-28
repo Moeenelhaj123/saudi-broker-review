@@ -139,25 +139,11 @@ export function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {articles.map((article) => (
               <article key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="h-48 overflow-hidden">
+                <div className="h-48 overflow-hidden bg-gray-100">
                   <img 
                     src={article.image} 
                     alt={article.title}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      // Fallback to gradient background if image fails to load
-                      e.currentTarget.style.display = 'none';
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.className = "h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center";
-                        parent.innerHTML = `
-                          <div class="text-white text-center">
-                            <div class="text-4xl mb-2">📊</div>
-                            <p class="text-sm">${article.category}</p>
-                          </div>
-                        `;
-                      }
-                    }}
                   />
                 </div>
                 <div className="p-6">

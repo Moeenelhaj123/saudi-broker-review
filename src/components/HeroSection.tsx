@@ -7,7 +7,7 @@ export function HeroSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Text Content - Left Side */}
           <div className="text-right lg:text-right space-y-8">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
               أفضل وسطاء التداول
               <br />
               <span className="text-primary">في السعودية</span>

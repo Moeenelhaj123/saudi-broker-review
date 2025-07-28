@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Star, CheckCircle, ArrowRight, User, ThumbsUp, Plus } from "@phosphor-icons/react";
+import { Star, CheckCircle, ArrowRight, User, ThumbsUp, Plus, X } from "@phosphor-icons/react";
 import { brokers, reviews } from "@/lib/data";
 import { brokerLogos } from "@/lib/logos";
 import { useEffect, useState } from "react";
@@ -48,18 +48,20 @@ export function BrokerReviewPage() {
   // Update document title for SEO
   useEffect(() => {
     if (broker) {
-      document.title = `مراجعة شركة ${broker.nameAr} ${broker.name} - تقييم شامل وآراء المتداولين`;
+      // Use admin-managed SEO content if available
+      const title = brokerContent?.metaTitle || `مراجعة شركة ${broker.nameAr} ${broker.name} - تقييم شامل وآراء المتداولين`;
+      const description = brokerContent?.metaDescription || `مراجعة شاملة لشركة ${broker.nameAr} ${broker.name} - تقييم ${broker.rating}/5 من ${broker.reviewCount} متداول سعودي.`;
+      
+      document.title = title;
       
       // Add meta description for SEO
       const metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription) {
-        metaDescription.setAttribute('content', 
-          `مراجعة شاملة لشركة ${broker.nameAr} ${broker.name} - تقييم ${broker.rating}/5 من ${broker.reviewCount} متداول سعودي.`
-        );
+        metaDescription.setAttribute('content', description);
       } else {
         const meta = document.createElement('meta');
         meta.name = 'description';
-        meta.content = `مراجعة شاملة لشركة ${broker.nameAr} ${broker.name} - تقييم ${broker.rating}/5 من ${broker.reviewCount} متداول سعودي.`;
+        meta.content = description;
         document.head.appendChild(meta);
       }
 
@@ -75,7 +77,7 @@ export function BrokerReviewPage() {
         "itemReviewed": {
           "@type": "FinancialService",
           "name": `${broker.name} - ${broker.nameAr}`,
-          "description": broker.descriptionAr,
+          "description": brokerContent?.companyOverview || broker.descriptionAr,
           "url": broker.website,
           "telephone": broker.phone,
           "email": broker.email
@@ -98,8 +100,8 @@ export function BrokerReviewPage() {
           "worstRating": 1
         },
         "datePublished": new Date().toISOString().split('T')[0],
-        "headline": `مراجعة شركة ${broker.nameAr} ${broker.name}`,
-        "reviewBody": `مراجعة شاملة لشركة ${broker.nameAr} تشمل التراخيص والتنظيم من ${broker.regulation && Array.isArray(broker.regulation) ? broker.regulation.join(', ') : 'مؤسسات مالية مرخصة'}، الحد الأدنى للإيداع ${broker.minDeposit} دولار، وفروقات تبدأ من ${broker.spreads}.`
+        "headline": title,
+        "reviewBody": brokerContent?.companyOverview || `مراجعة شاملة لشركة ${broker.nameAr} تشمل التراخيص والتنظيم من ${broker.regulation && Array.isArray(broker.regulation) ? broker.regulation.join(', ') : 'مؤسسات مالية مرخصة'}، الحد الأدنى للإيداع ${broker.minDeposit} دولار، وفروقات تبدأ من ${broker.spreads}.`
       };
 
       const script = document.createElement('script');
@@ -115,13 +117,314 @@ export function BrokerReviewPage() {
         if (script) script.remove();
       };
     }
-  }, [broker]);
+  }, [broker, brokerContent]);
 
   if (!broker) {
     return <Navigate to="/" replace />;
   }
 
   const getBrokerContent = () => {
+    // If we have comprehensive admin content, use it
+    if (brokerContent && Object.keys(brokerContent).length > 0) {
+      return (
+        <div className="space-y-8">
+          {/* Company Overview */}
+          {brokerContent.companyOverview && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">نظرة عامة على الشركة</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  {brokerContent.companyOverview}
+                </p>
+                {(brokerContent.foundedYear || brokerContent.headquarters || brokerContent.employeeCount) && (
+                  <div className="bg-gray-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {brokerContent.foundedYear && (
+                      <div className="text-center">
+                        <div className="text-xl font-bold text-primary">{brokerContent.foundedYear}</div>
+                        <div className="text-sm text-gray-600">سنة التأسيس</div>
+                      </div>
+                    )}
+                    {brokerContent.headquarters && (
+                      <div className="text-center">
+                        <div className="text-xl font-bold text-primary">{brokerContent.headquarters}</div>
+                        <div className="text-sm text-gray-600">المقر الرئيسي</div>
+                      </div>
+                    )}
+                    {brokerContent.employeeCount && (
+                      <div className="text-center">
+                        <div className="text-xl font-bold text-primary">{brokerContent.employeeCount}</div>
+                        <div className="text-sm text-gray-600">عدد الموظفين</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Regulation & Licenses */}
+          {brokerContent.regulation && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">التنظيم والتراخيص</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  {brokerContent.regulation}
+                </p>
+                {brokerContent.licenses && brokerContent.licenses.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">التراخيص الحالية:</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {brokerContent.licenses.map((license, index) => (
+                        <span key={index} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                          {license}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Trading Platforms */}
+          {brokerContent.tradingPlatforms && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">منصات التداول</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  {brokerContent.tradingPlatforms}
+                </p>
+                {brokerContent.platformsList && brokerContent.platformsList.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {brokerContent.platformsList.map((platform, index) => (
+                      <div key={index} className="bg-blue-50 text-blue-800 px-3 py-2 rounded-lg text-center font-medium">
+                        {platform}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Account Types */}
+          {brokerContent.accountTypes && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">أنواع الحسابات</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  {brokerContent.accountTypes}
+                </p>
+                {brokerContent.accountTypesList && brokerContent.accountTypesList.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {brokerContent.accountTypesList.map((accountType, index) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="font-semibold text-gray-900">{accountType}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Spreads & Commissions */}
+          {brokerContent.spreadsCommissions && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">الفروقات والعمولات</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  {brokerContent.spreadsCommissions}
+                </p>
+                {(brokerContent.minimumDeposit || brokerContent.maximumLeverage) && (
+                  <div className="bg-yellow-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {brokerContent.minimumDeposit && (
+                      <div>
+                        <div className="text-lg font-bold text-gray-900">{brokerContent.minimumDeposit}</div>
+                        <div className="text-sm text-gray-600">الحد الأدنى للإيداع</div>
+                      </div>
+                    )}
+                    {brokerContent.maximumLeverage && (
+                      <div>
+                        <div className="text-lg font-bold text-gray-900">{brokerContent.maximumLeverage}</div>
+                        <div className="text-sm text-gray-600">أقصى رافعة مالية</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Advantages & Disadvantages */}
+          {(brokerContent.advantages?.length > 0 || brokerContent.disadvantages?.length > 0) && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">المزايا والعيوب</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {brokerContent.advantages?.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-green-700 mb-3 flex items-center gap-2">
+                      <CheckCircle size={20} />
+                      المزايا
+                    </h3>
+                    <ul className="space-y-2">
+                      {brokerContent.advantages.map((advantage, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <CheckCircle size={16} className="text-green-600 mt-1 flex-shrink-0" />
+                          <span className="text-gray-700">{advantage}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {brokerContent.disadvantages?.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-red-700 mb-3 flex items-center gap-2">
+                      <X size={20} />
+                      العيوب
+                    </h3>
+                    <ul className="space-y-2">
+                      {brokerContent.disadvantages.map((disadvantage, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <X size={16} className="text-red-600 mt-1 flex-shrink-0" />
+                          <span className="text-gray-700">{disadvantage}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Customer Support */}
+          {brokerContent.customerSupport && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">دعم العملاء</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  {brokerContent.customerSupport}
+                </p>
+                {(brokerContent.supportHours || brokerContent.supportLanguages?.length > 0) && (
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    {brokerContent.supportHours && (
+                      <div className="mb-3">
+                        <span className="font-semibold text-gray-900">ساعات الدعم: </span>
+                        <span className="text-gray-700">{brokerContent.supportHours}</span>
+                      </div>
+                    )}
+                    {brokerContent.supportLanguages?.length > 0 && (
+                      <div>
+                        <span className="font-semibold text-gray-900">اللغات المتاحة: </span>
+                        <span className="text-gray-700">{brokerContent.supportLanguages.join(', ')}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Deposit & Withdrawal */}
+          {brokerContent.depositWithdrawal && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">الإيداع والسحب</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  {brokerContent.depositWithdrawal}
+                </p>
+                {(brokerContent.depositMethods?.length > 0 || brokerContent.withdrawalMethods?.length > 0) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {brokerContent.depositMethods?.length > 0 && (
+                      <div className="bg-green-50 rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2">طرق الإيداع:</h4>
+                        <ul className="space-y-1">
+                          {brokerContent.depositMethods.map((method, index) => (
+                            <li key={index} className="text-gray-700 text-sm">• {method}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {brokerContent.withdrawalMethods?.length > 0 && (
+                      <div className="bg-red-50 rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2">طرق السحب:</h4>
+                        <ul className="space-y-1">
+                          {brokerContent.withdrawalMethods.map((method, index) => (
+                            <li key={index} className="text-gray-700 text-sm">• {method}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {brokerContent.processingTimes && (
+                  <div className="mt-4 bg-gray-50 rounded-lg p-4">
+                    <span className="font-semibold text-gray-900">أوقات المعالجة: </span>
+                    <span className="text-gray-700">{brokerContent.processingTimes}</span>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Security & Additional Features */}
+          {(brokerContent.securityMeasures || brokerContent.islamicAccounts || brokerContent.bonusesPromotions) && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">الأمان والميزات الإضافية</h2>
+              <div className="space-y-4">
+                {brokerContent.securityMeasures && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">إجراءات الأمان</h3>
+                    <p className="text-gray-700 leading-relaxed">{brokerContent.securityMeasures}</p>
+                  </div>
+                )}
+                {brokerContent.islamicAccounts && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">الحسابات الإسلامية</h3>
+                    <p className="text-gray-700 leading-relaxed">{brokerContent.islamicAccounts}</p>
+                  </div>
+                )}
+                {brokerContent.bonusesPromotions && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">العروض والمكافآت</h3>
+                    <p className="text-gray-700 leading-relaxed">{brokerContent.bonusesPromotions}</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Final Assessment */}
+          {brokerContent.conclusion && (
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">الخلاصة والتوصية</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  {brokerContent.conclusion}
+                </p>
+                {brokerContent.recommendation && (
+                  <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Star size={20} className="text-primary fill-current" />
+                      <span className="font-semibold text-primary">توصيتنا</span>
+                    </div>
+                    <p className="text-gray-700">{brokerContent.recommendation}</p>
+                  </div>
+                )}
+                {brokerContent.targetAudience && (
+                  <div className="mt-4 bg-gray-50 rounded-lg p-4">
+                    <span className="font-semibold text-gray-900">الجمهور المستهدف: </span>
+                    <span className="text-gray-700">{brokerContent.targetAudience}</span>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+        </div>
+      );
+    }
+
+    // Fallback to static content for existing brokers
     switch (broker.id) {
       case 'exness':
         return <ExnessContent />;
@@ -136,7 +439,12 @@ export function BrokerReviewPage() {
       case 'etoro':
         return <EToroContent />;
       default:
-        return <div>محتوى غير متاح</div>;
+        return (
+          <div className="text-center py-12">
+            <p className="text-gray-600">محتوى مراجعة الوسيط غير متاح حالياً</p>
+            <p className="text-sm text-gray-500 mt-2">يمكن إضافة المحتوى من لوحة التحكم</p>
+          </div>
+        );
     }
   };
 

@@ -4,6 +4,7 @@ import { AdminHeader } from "./AdminHeader";
 import { DashboardOverview } from "./DashboardOverview";
 import { HomePageManager } from "./HomePageManager";
 import { BrokersManager } from "./BrokersManager";
+import { BrokerContentEditor } from "./BrokerContentEditor";
 import { ArticlesManager } from "./ArticlesManager";
 import { ContactManager } from "./ContactManager";
 import { BrokerContentManager } from "./BrokerContentManager";
@@ -22,7 +23,7 @@ export function AdminDashboard() {
               <Route path="/" element={<DashboardOverview />} />
               <Route path="/homepage" element={<HomePageManager />} />
               <Route path="/brokers" element={<BrokersManager />} />
-              <Route path="/brokers/:brokerId" element={<BrokerContentManager />} />
+              <Route path="/brokers/:brokerId" element={<BrokerContentEditor />} />
               <Route path="/articles" element={<ArticlesManager />} />
               <Route path="/contact" element={<ContactManager />} />
             </Routes>

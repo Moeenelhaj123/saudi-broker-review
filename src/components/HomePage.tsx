@@ -40,17 +40,20 @@ export function HomePage() {
 
         {/* Mobile Sliding Cards */}
         <div className="md:hidden mb-16">
-          <div className="overflow-x-auto scrollbar-hide scroll-smooth">
-            <div className="flex gap-6 px-4 pb-4" style={{ width: `${brokers.length * 320 + 60}px` }}>
+          <div className="overflow-x-auto scrollbar-hide scroll-snap-x">
+            <div className="flex gap-4 pb-4 px-2">
               {brokers.map((broker) => (
-                <div key={broker.id} className="flex-shrink-0" style={{ width: '300px' }}>
+                <div 
+                  key={broker.id} 
+                  className="flex-shrink-0 w-[85vw] max-w-[320px] scroll-snap-center"
+                >
                   <BrokerCard broker={broker} />
                 </div>
               ))}
             </div>
           </div>
-          {/* Scroll indicator */}
-          <div className="flex justify-center mt-4 space-x-2">
+          {/* Scroll indicator dots */}
+          <div className="flex justify-center mt-4 gap-2">
             {brokers.map((_, index) => (
               <div 
                 key={index} 

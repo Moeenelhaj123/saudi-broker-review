@@ -36,6 +36,14 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  
+  .scroll-snap-x {
+    scroll-snap-type: x mandatory;
+  }
+  
+  .scroll-snap-center {
+    scroll-snap-align: center;
+  }
 }
 
 :root {

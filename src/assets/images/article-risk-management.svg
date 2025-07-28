@@ -1,0 +1,13 @@
+<svg width="400" height="200" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="200" fill="#059669"/>
+  <rect x="20" y="20" width="360" height="160" rx="8" fill="#10B981"/>
+  <text x="200" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#FFF">
+    إدارة المخاطر
+  </text>
+  <text x="200" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#E5E7EB">
+    حماية رأس المال في التداول
+  </text>
+  <rect x="60" y="40" width="280" height="40" rx="20" fill="#34D399"/>
+  <circle cx="80" cy="60" r="8" fill="#FFF"/>
+  <rect x="100" y="52" width="200" height="16" rx="8" fill="#FFF" opacity="0.8"/>
+</svg>

@@ -1,0 +1,13 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="40" rx="6" fill="#C41E3A"/>
+  <circle cx="25" cy="20" r="12" fill="#FFF"/>
+  <text x="25" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#C41E3A">
+    X
+  </text>
+  <text x="60" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FFF">
+    XM
+  </text>
+  <text x="60" y="28" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#FFF">
+    TRADING
+  </text>
+</svg>

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Star, CheckCircle, ArrowRight, User, ThumbsUp, Plus } from "@phosphor-icons/react";
 import { brokers, reviews } from "@/lib/data";
+import { brokerLogos } from "@/lib/logos";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { 
@@ -151,29 +152,39 @@ export function BrokerReviewPage() {
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             <div className="flex-1">
               <div className="mb-4">
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">
-                    مراجعة شركة {broker.nameAr}
-                  </h1>
-                  <p className="text-lg text-gray-600 mb-2">{broker.name}</p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            weight={i < Math.floor(broker.rating) ? "fill" : "regular"}
-                            className={`w-5 h-5 ${i < Math.floor(broker.rating) ? "text-yellow-400" : "text-gray-300"}`}
-                          />
-                        ))}
+                <div className="flex items-start gap-4 mb-6">
+                  <img 
+                    src={brokerLogos[broker.id] || broker.logo} 
+                    alt={`${broker.name} logo`}
+                    className="w-20 h-12 object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <div>
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">
+                      مراجعة شركة {broker.nameAr}
+                    </h1>
+                    <p className="text-lg text-gray-600 mb-2">{broker.name}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              weight={i < Math.floor(broker.rating) ? "fill" : "regular"}
+                              className={`w-5 h-5 ${i < Math.floor(broker.rating) ? "text-yellow-400" : "text-gray-300"}`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xl font-bold text-gray-900">{broker.rating}</span>
+                        <span className="text-gray-500">({broker.reviewCount.toLocaleString()} تقييم)</span>
                       </div>
-                      <span className="text-xl font-bold text-gray-900">{broker.rating}</span>
-                      <span className="text-gray-500">({broker.reviewCount.toLocaleString()} تقييم)</span>
+                      <Badge className="bg-green-100 text-green-700 px-2 py-1">
+                        <CheckCircle size={14} className="mr-1" />
+                        مرخص
+                      </Badge>
                     </div>
-                    <Badge className="bg-green-100 text-green-700 px-2 py-1">
-                      <CheckCircle size={14} className="mr-1" />
-                      مرخص
-                    </Badge>
                   </div>
                 </div>
               </div>

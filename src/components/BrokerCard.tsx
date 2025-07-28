@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, CheckCircle, ArrowRight, User, ChatCircle } from "@phosphor-icons/react";
 import { Broker, reviews } from "@/lib/data";
+import { brokerLogos } from "@/lib/logos";
 import { Link } from "react-router-dom";
 
 interface BrokerCardProps {
@@ -16,16 +17,26 @@ export function BrokerCard({ broker }: BrokerCardProps) {
   return (
     <Card className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-100 overflow-hidden">
       <CardContent className="p-6">
-        {/* Header with name */}
+        {/* Header with logo and name */}
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-1">{broker.name}</h3>
-            <div className="flex items-center gap-1">
-              <span className="text-lg font-medium text-gray-600">{broker.rating}</span>
-              <span className="text-gray-400">/</span>
-              <span className="text-lg font-medium text-gray-600">5.0</span>
-              <Star weight="fill" className="text-yellow-500 mr-1" size={20} />
-              <span className="text-sm text-gray-500 mr-2">({broker.reviewCount} تقييم)</span>
+          <div className="flex items-center gap-4">
+            <img 
+              src={brokerLogos[broker.id] || broker.logo} 
+              alt={`${broker.name} logo`}
+              className="w-16 h-10 object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-1">{broker.name}</h3>
+              <div className="flex items-center gap-1">
+                <span className="text-lg font-medium text-gray-600">{broker.rating}</span>
+                <span className="text-gray-400">/</span>
+                <span className="text-lg font-medium text-gray-600">5.0</span>
+                <Star weight="fill" className="text-yellow-500 mr-1" size={20} />
+                <span className="text-sm text-gray-500 mr-2">({broker.reviewCount} تقييم)</span>
+              </div>
             </div>
           </div>
         </div>

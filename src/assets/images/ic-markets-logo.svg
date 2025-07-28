@@ -1,0 +1,11 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="40" rx="6" fill="#003366"/>
+  <text x="20" y="18" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFF">
+    IC
+  </text>
+  <text x="20" y="32" font-family="Arial, sans-serif" font-size="10" fill="#FFF">
+    MARKETS
+  </text>
+  <circle cx="80" cy="20" r="8" stroke="#FFF" stroke-width="2" fill="none"/>
+  <circle cx="80" cy="20" r="4" fill="#FFF"/>
+</svg>

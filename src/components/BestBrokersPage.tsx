@@ -3,9 +3,48 @@ import { Footer } from "@/components/Footer";
 import { BrokerCard } from "@/components/BrokerCard";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "@phosphor-icons/react";
-import { brokers } from "@/lib/data";
+import { useKV } from "@github/spark/hooks";
+import { brokers, Broker } from "@/lib/data";
+
+// Convert admin broker to standard broker format for compatibility
+const convertAdminBrokerToBroker = (adminBroker: any): Broker => ({
+  id: adminBroker.id,
+  name: adminBroker.name,
+  nameAr: adminBroker.nameAr || adminBroker.name,
+  logo: "", // Admin brokers don't have logos managed currently
+  rating: adminBroker.rating,
+  reviewCount: adminBroker.reviews,
+  regulation: adminBroker.license ? adminBroker.license.split(', ') : [],
+  minDeposit: parseInt(adminBroker.minDeposit) || 0,
+  spreads: adminBroker.spreadFrom || "متغيرة",
+  platforms: adminBroker.platforms || ["MetaTrader 4", "MetaTrader 5"],
+  accountTypes: adminBroker.accountTypes || ["حساب قياسي", "حساب إسلامي"],
+  website: adminBroker.website || "",
+  phone: adminBroker.phone || "",
+  email: adminBroker.email || "",
+  description: adminBroker.description || "",
+  descriptionAr: adminBroker.description || "",
+  pros: adminBroker.pros || [],
+  cons: adminBroker.cons || [],
+  fees: {
+    commission: "0%",
+    withdrawal: "مجاني",
+    inactivity: "غير متاح"
+  }
+});
 
 export function BestBrokersPage() {
+  // Get admin-managed brokers
+  const [adminBrokers] = useKV("admin-brokers", []);
+  
+  // Use admin brokers if available, otherwise fallback to static data
+  const rawDisplayBrokers = adminBrokers.length > 0 
+    ? adminBrokers.filter((broker: any) => !broker.isScam) 
+    : brokers;
+  
+  const displayBrokers = rawDisplayBrokers.map((broker: any) => 
+    broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
+  );
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -23,7 +62,7 @@ export function BestBrokersPage() {
 
         {/* Brokers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {brokers.map((broker) => (
+          {displayBrokers.map((broker) => (
             <BrokerCard key={broker.id} broker={broker} />
           ))}
         </div>

@@ -13,9 +13,36 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
-import { brokers } from "@/lib/data";
+import { brokers, Broker } from "@/lib/data";
 import { articles } from "@/lib/articles";
 import { ArrowUp, Question } from "@phosphor-icons/react";
+
+// Convert admin broker to standard broker format for compatibility
+const convertAdminBrokerToBroker = (adminBroker: any): Broker => ({
+  id: adminBroker.id,
+  name: adminBroker.name,
+  nameAr: adminBroker.nameAr || adminBroker.name,
+  logo: "", // Admin brokers don't have logos managed currently
+  rating: adminBroker.rating,
+  reviewCount: adminBroker.reviews,
+  regulation: adminBroker.license ? adminBroker.license.split(', ') : [],
+  minDeposit: parseInt(adminBroker.minDeposit) || 0,
+  spreads: adminBroker.spreadFrom || "متغيرة",
+  platforms: adminBroker.platforms || ["MetaTrader 4", "MetaTrader 5"],
+  accountTypes: adminBroker.accountTypes || ["حساب قياسي", "حساب إسلامي"],
+  website: adminBroker.website || "",
+  phone: adminBroker.phone || "",
+  email: adminBroker.email || "",
+  description: adminBroker.description || "",
+  descriptionAr: adminBroker.description || "",
+  pros: adminBroker.pros || [],
+  cons: adminBroker.cons || [],
+  fees: {
+    commission: "0%",
+    withdrawal: "مجاني",
+    inactivity: "غير متاح"
+  }
+});
 
 export function HomePage() {
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
@@ -28,7 +55,14 @@ export function HomePage() {
   const [adminArticles] = useKV("admin-articles", []);
   
   // Use admin brokers if available, otherwise fallback to static data
-  const displayBrokers = adminBrokers.length > 0 ? adminBrokers.filter((broker: any) => broker.isFeatured) : brokers;
+  const rawDisplayBrokers = adminBrokers.length > 0 ? adminBrokers.filter((broker: any) => broker.isFeatured) : brokers;
+  const displayBrokers = rawDisplayBrokers.map((broker: any) => 
+    broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
+  );
+  
+  // Get scam brokers for warning section
+  const scamBrokers = adminBrokers.length > 0 ? adminBrokers.filter((broker: any) => broker.isScam) : [];
+  
   const displayArticles = adminArticles.length > 0 ? adminArticles.filter((article: any) => article.isPublished).slice(0, 3) : articles.slice(0, 3);
   
   const scrollToTop = () => {
@@ -231,93 +265,147 @@ export function HomePage() {
         </div>
 
         {/* Fraud Companies Warning Section */}
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-16">
-          <h2 className="text-2xl font-bold text-red-700 mb-6 text-center">
-            تحذيرات الشركات النصابة
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Fraud Company 1 */}
-            <div className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="text-base font-bold text-red-700 mb-1">
-                    أتلانتيس Atlantis
-                  </h3>
-                  <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium inline-block mb-2">
-                    25/05/2025
+        {scamBrokers.length > 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-16">
+            <h2 className="text-2xl font-bold text-red-700 mb-6 text-center">
+              تحذيرات الشركات النصابة
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {scamBrokers.slice(0, 3).map((broker: any) => (
+                <div key={broker.id} className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="text-base font-bold text-red-700 mb-1">
+                        {broker.nameAr || broker.name}
+                      </h3>
+                      <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium inline-block mb-2">
+                        تم التحديث مؤخراً
+                      </div>
+                    </div>
+                    <div className="bg-red-100 p-1 rounded-full">
+                      <span className="text-red-700 text-sm">⚠️</span>
+                    </div>
                   </div>
+                  <p className="text-gray-700 text-xs">
+                    {broker.description || "منصة تداول نصابة - تجنب التعامل معها"}
+                  </p>
                 </div>
-                <div className="bg-red-100 p-1 rounded-full">
-                  <span className="text-red-700 text-sm">⚠️</span>
-                </div>
-              </div>
-              <p className="text-gray-700 text-xs">
-                منصة تداول نصابة - تجنب التعامل معها
-              </p>
+              ))}
             </div>
 
-            {/* Fraud Company 2 */}
-            <div className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="text-base font-bold text-red-700 mb-1">
-                    AQRL Trade
-                  </h3>
-                  <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium inline-block mb-2">
-                    18/05/2025
-                  </div>
-                </div>
-                <div className="bg-red-100 p-1 rounded-full">
-                  <span className="text-red-700 text-sm">⚠️</span>
-                </div>
-              </div>
-              <p className="text-gray-700 text-xs">
-                موقع وهمي - لا تستثمر أموالك
-              </p>
-            </div>
-
-            {/* Fraud Company 3 */}
-            <div className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="text-base font-bold text-red-700 mb-1">
-                    مؤسسة الشرقري
-                  </h3>
-                  <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium inline-block mb-2">
-                    06/05/2025
-                  </div>
-                </div>
-                <div className="bg-red-100 p-1 rounded-full">
-                  <span className="text-red-700 text-sm">⚠️</span>
-                </div>
-              </div>
-              <p className="text-gray-700 text-xs">
-                مؤسسة وهمية للاستثمار
-              </p>
+            <div className="mt-6 p-4 bg-red-100 rounded-lg">
+              <h3 className="text-lg font-bold text-red-700 mb-3">
+                نصائح لتجنب الاحتيال:
+              </h3>
+              <ul className="space-y-2 text-red-700 text-sm">
+                <li className="flex items-start">
+                  <span className="mr-2 text-red-600">•</span>
+                  <span>تأكد من الترخيص من هيئة السوق المالية</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-red-600">•</span>
+                  <span>احذر الوعود بأرباح مضمونة</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-red-600">•</span>
+                  <span>تجنب الإيداعات الكبيرة المسبقة</span>
+                </li>
+              </ul>
             </div>
           </div>
+        )}
 
-          <div className="mt-6 p-4 bg-red-100 rounded-lg">
-            <h3 className="text-lg font-bold text-red-700 mb-3">
-              نصائح لتجنب الاحتيال:
-            </h3>
-            <ul className="space-y-2 text-red-700 text-sm">
-              <li className="flex items-start">
-                <span className="mr-2 text-red-600">•</span>
-                <span>تأكد من الترخيص من هيئة السوق المالية</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2 text-red-600">•</span>
-                <span>احذر الوعود بأرباح مضمونة</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2 text-red-600">•</span>
-                <span>تجنب الإيداعات الكبيرة المسبقة</span>
-              </li>
-            </ul>
+        {/* Default fraud companies if no admin scam brokers */}
+        {scamBrokers.length === 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-16">
+            <h2 className="text-2xl font-bold text-red-700 mb-6 text-center">
+              تحذيرات الشركات النصابة
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Fraud Company 1 */}
+              <div className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="text-base font-bold text-red-700 mb-1">
+                      أتلانتيس Atlantis
+                    </h3>
+                    <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium inline-block mb-2">
+                      25/05/2025
+                    </div>
+                  </div>
+                  <div className="bg-red-100 p-1 rounded-full">
+                    <span className="text-red-700 text-sm">⚠️</span>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-xs">
+                  منصة تداول نصابة - تجنب التعامل معها
+                </p>
+              </div>
+
+              {/* Fraud Company 2 */}
+              <div className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="text-base font-bold text-red-700 mb-1">
+                      AQRL Trade
+                    </h3>
+                    <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium inline-block mb-2">
+                      18/05/2025
+                    </div>
+                  </div>
+                  <div className="bg-red-100 p-1 rounded-full">
+                    <span className="text-red-700 text-sm">⚠️</span>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-xs">
+                  موقع وهمي - لا تستثمر أموالك
+                </p>
+              </div>
+
+              {/* Fraud Company 3 */}
+              <div className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="text-base font-bold text-red-700 mb-1">
+                      مؤسسة الشرقري
+                    </h3>
+                    <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium inline-block mb-2">
+                      06/05/2025
+                    </div>
+                  </div>
+                  <div className="bg-red-100 p-1 rounded-full">
+                    <span className="text-red-700 text-sm">⚠️</span>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-xs">
+                  مؤسسة وهمية للاستثمار
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 p-4 bg-red-100 rounded-lg">
+              <h3 className="text-lg font-bold text-red-700 mb-3">
+                نصائح لتجنب الاحتيال:
+              </h3>
+              <ul className="space-y-2 text-red-700 text-sm">
+                <li className="flex items-start">
+                  <span className="mr-2 text-red-600">•</span>
+                  <span>تأكد من الترخيص من هيئة السوق المالية</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-red-600">•</span>
+                  <span>احذر الوعود بأرباح مضمونة</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-red-600">•</span>
+                  <span>تجنب الإيداعات الكبيرة المسبقة</span>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Articles Section */}
         <div className="mb-16">

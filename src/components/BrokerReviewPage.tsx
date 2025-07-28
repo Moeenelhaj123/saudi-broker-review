@@ -4,9 +4,14 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, CheckCircle, ArrowRight, User, ThumbsUp } from "@phosphor-icons/react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Star, CheckCircle, ArrowRight, User, ThumbsUp, Plus } from "@phosphor-icons/react";
 import { brokers, reviews } from "@/lib/data";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { 
   ExnessContent, 
   AvaTradeContent, 
@@ -19,6 +24,15 @@ import {
 export function BrokerReviewPage() {
   const { brokerId } = useParams<{ brokerId: string }>();
   const broker = brokers.find(b => b.id === brokerId);
+  
+  // State for comment form
+  const [commentForm, setCommentForm] = useState({
+    name: '',
+    comment: '',
+    rating: 5
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Get reviews for this broker
   const brokerReviews = reviews.filter(review => review.brokerId === brokerId);
@@ -428,11 +442,111 @@ export function BrokerReviewPage() {
             </Card>
           </div>
 
-          {/* Load More Comments Button */}
-          <div className="text-center mt-8">
+          {/* Add Comment and Show More Section */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
             <Button variant="outline" className="px-6 py-2">
               عرض المزيد من التعليقات
             </Button>
+            
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3">
+                  <Plus size={20} className="ml-2" />
+                  إضافة تعليق
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md mx-auto" dir="rtl">
+                <DialogHeader>
+                  <DialogTitle className="text-right">إضافة تعليق جديد</DialogTitle>
+                </DialogHeader>
+                <form 
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    setIsSubmitting(true);
+                    
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Reset form
+                    setCommentForm({ name: '', comment: '', rating: 5 });
+                    setIsSubmitting(false);
+                    setIsDialogOpen(false);
+                    
+                    // Show success toast
+                    toast.success('تم إضافة تعليقك بنجاح! سيظهر بعد المراجعة.');
+                  }}
+                  className="space-y-6 mt-6"
+                >
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-right block">الاسم</Label>
+                    <Input
+                      id="name"
+                      value={commentForm.name}
+                      onChange={(e) => setCommentForm(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="أدخل اسمك"
+                      required
+                      className="text-right"
+                      dir="rtl"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="rating" className="text-right block">التقييم</Label>
+                    <div className="flex justify-end gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setCommentForm(prev => ({ ...prev, rating: star }))}
+                          className="hover:scale-110 transition-transform"
+                        >
+                          <Star
+                            size={24}
+                            weight={star <= commentForm.rating ? "fill" : "regular"}
+                            className={star <= commentForm.rating ? "text-yellow-400" : "text-gray-300"}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="comment" className="text-right block">التعليق</Label>
+                    <Textarea
+                      id="comment"
+                      value={commentForm.comment}
+                      onChange={(e) => setCommentForm(prev => ({ ...prev, comment: e.target.value }))}
+                      placeholder="شاركنا تجربتك مع هذا الوسيط..."
+                      required
+                      className="min-h-[100px] text-right"
+                      dir="rtl"
+                    />
+                  </div>
+                  
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                    >
+                      {isSubmitting ? 'جاري الإرسال...' : 'إرسال التعليق'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setCommentForm({ name: '', comment: '', rating: 5 });
+                        setIsDialogOpen(false);
+                      }}
+                      disabled={isSubmitting}
+                      className="px-6"
+                    >
+                      إلغاء
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </section>
         

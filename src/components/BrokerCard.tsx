@@ -114,7 +114,7 @@ export function BrokerCard({ broker }: BrokerCardProps) {
               <ArrowRight size={16} />
               زيارة {broker.name}
             </a>
-              ملف الشركة
+          </Button>
           <Button 
             variant="outline"
             className="px-6 rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50"

@@ -24,30 +24,6 @@ export function HeroSection() {
             </Button>
           </div>
         </div>
-
-
-
-        <div className="bg-muted/30 rounded-xl p-8 text-center">
-          <h2 className="text-2xl font-bold mb-4">إحصائيات الموقع</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div>
-              <div className="text-3xl font-bold text-primary mb-1">15+</div>
-              <div className="text-sm text-muted-foreground">وسيط مرخص</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-accent mb-1">500+</div>
-              <div className="text-sm text-muted-foreground">تقييم حقيقي</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary mb-1">10,000+</div>
-              <div className="text-sm text-muted-foreground">مستخدم نشط</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-accent mb-1">98%</div>
-              <div className="text-sm text-muted-foreground">رضا العملاء</div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

@@ -38,7 +38,30 @@ export function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        {/* Mobile Sliding Cards */}
+        <div className="md:hidden mb-16">
+          <div className="overflow-x-auto scrollbar-hide scroll-smooth">
+            <div className="flex gap-6 px-4 pb-4" style={{ width: `${brokers.length * 320 + 60}px` }}>
+              {brokers.map((broker) => (
+                <div key={broker.id} className="flex-shrink-0" style={{ width: '300px' }}>
+                  <BrokerCard broker={broker} />
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Scroll indicator */}
+          <div className="flex justify-center mt-4 space-x-2">
+            {brokers.map((_, index) => (
+              <div 
+                key={index} 
+                className="w-2 h-2 bg-gray-300 rounded-full opacity-50"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Grid */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {brokers.map((broker) => (
             <BrokerCard
               key={broker.id}

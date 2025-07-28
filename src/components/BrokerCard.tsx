@@ -15,7 +15,7 @@ export function BrokerCard({ broker }: BrokerCardProps) {
       case 'exness':
         return (
           <div className="w-16 h-16 rounded-xl bg-yellow-400 flex items-center justify-center shadow-sm">
-            <span className="text-xs font-bold text-gray-800">exness</span>
+            <span className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>ex</span>
           </div>
         );
       case 'avatrade':

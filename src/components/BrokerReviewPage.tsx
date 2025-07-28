@@ -99,8 +99,8 @@ export function BrokerReviewPage() {
   const getLogoDisplay = () => {
     if (broker.name.toLowerCase() === 'exness') {
       return (
-        <div className="w-20 h-20 rounded-xl bg-yellow-400 flex items-center justify-center text-base font-bold text-gray-800 shadow-lg">
-          exness
+        <div className="w-20 h-20 rounded-xl bg-yellow-400 flex items-center justify-center text-3xl font-bold text-gray-800 shadow-lg" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+          ex
         </div>
       );
     }

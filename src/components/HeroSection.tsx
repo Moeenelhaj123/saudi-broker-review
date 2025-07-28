@@ -1,3 +1,5 @@
+import DisplayCards from "./DisplayCards";
+
 export function HeroSection() {
   return (
     <section className="bg-gradient-to-b from-secondary/10 to-white py-12">
@@ -15,12 +17,9 @@ export function HeroSection() {
             </p>
           </div>
           
-          {/* Right Side - Space for future element */}
+          {/* Right Side - Display Cards */}
           <div className="lg:block hidden">
-            {/* Space reserved for future element */}
-            <div className="w-full h-64 bg-muted/30 rounded-lg border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
-              <span className="text-muted-foreground text-sm">مساحة محجوزة للعنصر القادم</span>
-            </div>
+            <DisplayCards />
           </div>
         </div>
       </div>

@@ -3,14 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, CheckCircle, ArrowLeft } from "@phosphor-icons/react";
 import { Broker } from "@/lib/data";
+import { Link } from "react-router-dom";
 
 interface BrokerCardProps {
   broker: Broker;
-  onCompare?: (broker: Broker) => void;
-  isComparing?: boolean;
 }
 
-export function BrokerCard({ broker, onCompare, isComparing }: BrokerCardProps) {
+export function BrokerCard({ broker }: BrokerCardProps) {
   const getLogoDisplay = () => {
     if (broker.name.toLowerCase() === 'exness') {
       return (
@@ -74,16 +73,21 @@ export function BrokerCard({ broker, onCompare, isComparing }: BrokerCardProps) 
         <div className="flex gap-3">
           <Button 
             className="flex-1 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium py-3 flex items-center justify-center gap-2"
+            asChild
           >
-            <ArrowLeft size={16} />
-            زيارة {broker.name}
+            <a href={broker.website} target="_blank" rel="noopener noreferrer">
+              <ArrowLeft size={16} />
+              زيارة {broker.name}
+            </a>
           </Button>
           <Button 
             variant="outline"
             className="px-6 rounded-xl border-gray-200 text-gray-700 hover:bg-gray-50"
-            onClick={() => onCompare && onCompare(broker)}
+            asChild
           >
-            ملف الشركة
+            <Link to={`/broker/${broker.id}`}>
+              ملف الشركة
+            </Link>
           </Button>
         </div>
       </CardContent>

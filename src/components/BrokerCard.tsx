@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, CheckCircle, ArrowRight } from "@phosphor-icons/react";
 import { Broker } from "@/lib/data";
 import { Link } from "react-router-dom";
+import exnessLogo from "@/assets/images/exness-logo-clean.svg";
 
 interface BrokerCardProps {
   broker: Broker;
@@ -14,8 +15,8 @@ export function BrokerCard({ broker }: BrokerCardProps) {
     switch (broker.id) {
       case 'exness':
         return (
-          <div className="w-16 h-16 rounded-xl bg-yellow-400 flex items-center justify-center shadow-sm">
-            <span className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>ex</span>
+          <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm">
+            <img src={exnessLogo} alt="Exness" className="w-full h-full object-cover" />
           </div>
         );
       case 'avatrade':

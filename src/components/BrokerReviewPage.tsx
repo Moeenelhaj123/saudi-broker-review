@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, CheckCircle, ArrowRight } from "@phosphor-icons/react";
 import { brokers } from "@/lib/data";
 import { useEffect } from "react";
+import exnessLogo from "@/assets/images/exness-logo-clean.svg";
 import { 
   ExnessContent, 
   AvaTradeContent, 
@@ -99,8 +100,8 @@ export function BrokerReviewPage() {
   const getLogoDisplay = () => {
     if (broker.name.toLowerCase() === 'exness') {
       return (
-        <div className="w-20 h-20 rounded-xl bg-yellow-400 flex items-center justify-center text-3xl font-bold text-gray-800 shadow-lg" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-          ex
+        <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg">
+          <img src={exnessLogo} alt="Exness" className="w-full h-full object-cover" />
         </div>
       );
     }

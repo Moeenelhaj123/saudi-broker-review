@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useKV } from "@github/spark/hooks";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,7 +35,21 @@ export function BrokerContentManager() {
     conclusion: ""
   });
 
-  const [tempContent, setTempContent] = useState<BrokerContent>(brokerContent);
+  const [tempContent, setTempContent] = useState<BrokerContent>({
+    overview: "",
+    tradingPlatforms: "",
+    accountTypes: "",
+    fees: "",
+    regulation: "",
+    pros: [],
+    cons: [],
+    conclusion: ""
+  });
+
+  // Update tempContent when brokerContent changes
+  useEffect(() => {
+    setTempContent(brokerContent);
+  }, [brokerContent]);
   const [newPro, setNewPro] = useState("");
   const [newCon, setNewCon] = useState("");
 

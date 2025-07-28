@@ -123,6 +123,98 @@ export function HomePage() {
             </ul>
           </div>
         </div>
+
+        {/* Articles Section */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              مقالات ونصائح التداول
+            </h2>
+            <p className="text-gray-600">
+              أحدث المقالات والنصائح لتطوير مهاراتك في التداول
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Article 1 */}
+            <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div className="h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="text-4xl mb-2">📊</div>
+                  <p className="text-sm">تحليل السوق</p>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <span>15 يناير 2025</span>
+                  <span className="mx-2">•</span>
+                  <span>5 دقائق قراءة</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">
+                  كيفية اختيار الوسيط المناسب للتداول
+                </h3>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  دليل شامل لمساعدتك في اختيار أفضل وسيط تداول يناسب احتياجاتك. تعرف على أهم المعايير والعوامل التي يجب مراعاتها عند اتخاذ هذا القرار المهم.
+                </p>
+                <Button variant="outline" size="sm" className="w-full">
+                  اقرأ المزيد
+                </Button>
+              </div>
+            </article>
+
+            {/* Article 2 */}
+            <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div className="h-48 bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="text-4xl mb-2">💰</div>
+                  <p className="text-sm">استراتيجيات التداول</p>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <span>12 يناير 2025</span>
+                  <span className="mx-2">•</span>
+                  <span>8 دقائق قراءة</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">
+                  إدارة المخاطر في التداول للمبتدئين
+                </h3>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  تعلم أساسيات إدارة المخاطر في التداول وكيفية حماية رأس مالك. استراتيجيات مجربة لتقليل الخسائر وزيادة فرص النجاح في الأسواق المالية.
+                </p>
+                <Button variant="outline" size="sm" className="w-full">
+                  اقرأ المزيد
+                </Button>
+              </div>
+            </article>
+
+            {/* Article 3 */}
+            <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div className="h-48 bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="text-4xl mb-2">📈</div>
+                  <p className="text-sm">التحليل الفني</p>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <span>8 يناير 2025</span>
+                  <span className="mx-2">•</span>
+                  <span>6 دقائق قراءة</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">
+                  التداول الحلال وفقاً للشريعة الإسلامية
+                </h3>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  فهم ضوابط التداول الحلال في الأسواق المالية. دليل مفصل حول الحسابات الإسلامية وكيفية التداول وفقاً لأحكام الشريعة الإسلامية.
+                </p>
+                <Button variant="outline" size="sm" className="w-full">
+                  اقرأ المزيد
+                </Button>
+              </div>
+            </article>
+          </div>
+        </div>
       </main>
 
       <Footer />

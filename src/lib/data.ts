@@ -182,34 +182,145 @@ export const brokers: Broker[] = [
 ];
 
 export const reviews: Review[] = [
+  // Exness Reviews
   {
-    id: "review-1",
-    brokerId: "saudi-investment-bank",
-    userName: "أحمد السعودي",
-    rating: 4,
-    title: "خدمة جيدة ولكن الرسوم مرتفعة",
-    content: "البنك السعودي للاستثمار يقدم خدمة جيدة ومنصات مستقرة، لكن الرسوم أعلى من المنافسين. الدعم الفني ممتاز باللغة العربية.",
-    date: "2024-01-15",
-    helpful: 23
-  },
-  {
-    id: "review-2",
-    brokerId: "al-rajhi-capital",
-    userName: "فاطمة المحمد",
+    id: "review-exness-1",
+    brokerId: "exness",
+    userName: "عبدالله الريس",
     rating: 5,
-    title: "الأفضل للتداول الإسلامي",
-    content: "شركة الراجحي المالية هي الخيار الأمثل للتداول المتوافق مع الشريعة. الخدمة ممتازة والموثوقية عالية جداً.",
+    title: "أفضل وسيط للتداول",
+    content: "إكسنيس رائع جداً، السحب الفوري والرافعة المالية العالية تجعل التداول سهل وسريع. أنصح به بشدة للمتداولين المحترفين.",
     date: "2024-01-20",
-    helpful: 45
+    helpful: 42
   },
   {
-    id: "review-3",
-    brokerId: "samba-capital",
-    userName: "محمد الأحمد",
+    id: "review-exness-2",
+    brokerId: "exness",
+    userName: "نورا السعد",
     rating: 4,
-    title: "أسعار تنافسية وخدمة مقبولة",
-    content: "سامبا كابيتال تقدم أسعار جيدة وحد أدنى منخفض للإيداع. المنصة تحتاج لتحديث لكن التنفيذ سريع.",
+    title: "خدمة ممتازة مع فروقات منخفضة",
+    content: "فروقات ممتازة وتنفيذ سريع، الدعم الفني يرد بسرعة. الوحيد السلبي أن المنصة قد تكون معقدة للمبتدئين.",
+    date: "2024-01-15",
+    helpful: 28
+  },
+  {
+    id: "review-exness-3",
+    brokerId: "exness",
+    userName: "خالد العتيبي",
+    rating: 5,
+    title: "سحب فوري حقيقي",
+    content: "السحب الفوري فعلاً فوري! لم أواجه أي مشاكل في السحب أو الإيداع. منصة موثوقة ومضمونة.",
+    date: "2024-01-10",
+    helpful: 35
+  },
+
+  // AvaTrade Reviews
+  {
+    id: "review-avatrade-1",
+    brokerId: "avatrade",
+    userName: "سارة المطيري",
+    rating: 4,
+    title: "ممتاز للتعليم والتدريب",
+    content: "أفاتريد يوفر مواد تعليمية ممتازة ودعم رائع للمبتدئين. الندوات والتحليلات مفيدة جداً لتطوير مهارات التداول.",
+    date: "2024-01-18",
+    helpful: 31
+  },
+  {
+    id: "review-avatrade-2",
+    brokerId: "avatrade",
+    userName: "أحمد البلوي",
+    rating: 4,
+    title: "منصة شاملة مع تنظيم قوي",
+    content: "شركة منظمة ومرخصة بقوة، أدوات التحليل متقدمة والحساب الإسلامي متوفر. رسوم السحب مرتفعة قليلاً لكن الخدمة تستحق.",
+    date: "2024-01-12",
+    helpful: 24
+  },
+
+  // XM Reviews
+  {
+    id: "review-xm-1",
+    brokerId: "xm",
+    userName: "فيصل الشمري",
+    rating: 4,
+    title: "مناسب للمبتدئين",
+    content: "بونص ترحيبي جيد وحد أدنى منخفض جداً. الدعم ممتاز ويجيب بالعربية. مناسب جداً لمن يبدأ في التداول.",
+    date: "2024-01-22",
+    helpful: 26
+  },
+  {
+    id: "review-xm-2",
+    brokerId: "xm",
+    userName: "ريم القحطاني",
+    rating: 4,
+    title: "دعم فني ممتاز",
+    content: "الدعم الفني سريع جداً ومفيد، الندوات التعليمية مجانية ومفيدة. الفروقات أوسع من المنافسين لكن الخدمة تعوض.",
+    date: "2024-01-08",
+    helpful: 19
+  },
+
+  // Pepperstone Reviews
+  {
+    id: "review-pepperstone-1",
+    brokerId: "pepperstone",
+    userName: "محمد الدوسري",
+    rating: 5,
+    title: "سرعة تنفيذ لا مثيل لها",
+    content: "بيبرستون أسرع وسيط في التنفيذ، الفروقات منخفضة جداً والتكنولوجيا متطورة. مناسب للمتداولين السريعين والسكالبرز.",
     date: "2024-01-25",
+    helpful: 38
+  },
+  {
+    id: "review-pepperstone-2",
+    brokerId: "pepperstone",
+    userName: "عايشة النعيمي",
+    rating: 4,
+    title: "منصة متقدمة للمحترفين",
+    content: "منصة cTrader ممتازة وتقنيات متقدمة، لكن قد تكون معقدة للمبتدئين. الأسعار تنافسية والتنفيذ سريع.",
+    date: "2024-01-14",
+    helpful: 22
+  },
+
+  // IC Markets Reviews
+  {
+    id: "review-ic-markets-1",
+    brokerId: "ic-markets",
+    userName: "عبدالرحمن المالكي",
+    rating: 5,
+    title: "ECN حقيقي بشفافية تامة",
+    content: "آي سي ماركتس يوفر ECN حقيقي مع شفافية كاملة في الأسعار. التنفيذ سريع والفروقات منخفضة جداً.",
+    date: "2024-01-19",
+    helpful: 33
+  },
+  {
+    id: "review-ic-markets-2",
+    brokerId: "ic-markets",
+    userName: "لمياء الخالدي",
+    rating: 4,
+    title: "جودة تنفيذ عالية",
+    content: "جودة التنفيذ ممتازة والأسعار تنافسية، لكن الحد الأدنى للإيداع أعلى من المنافسين. مناسب للمحترفين.",
+    date: "2024-01-11",
+    helpful: 27
+  },
+
+  // eToro Reviews
+  {
+    id: "review-etoro-1",
+    brokerId: "etoro",
+    userName: "طلال الغامدي",
+    rating: 4,
+    title: "التداول الاجتماعي مميز",
+    content: "إي تورو رائد في التداول الاجتماعي، نسخ المتداولين الناجحين سهل ومربح. الواجهة بسيطة ومناسبة للمبتدئين.",
+    date: "2024-01-16",
+    helpful: 29
+  },
+  {
+    id: "review-etoro-2",
+    brokerId: "etoro",
+    userName: "هند الزهراني",
+    rating: 3,
+    title: "جيد للمبتدئين لكن الرسوم مرتفعة",
+    content: "منصة سهلة ومناسبة للمبتدئين، لكن رسوم السحب والفروقات أعلى من المتوقع. التداول الاجتماعي مفيد.",
+    date: "2024-01-05",
     helpful: 18
   }
 ];

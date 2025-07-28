@@ -1,8 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, CheckCircle, ArrowRight } from "@phosphor-icons/react";
-import { Broker } from "@/lib/data";
+import { Star, CheckCircle, ArrowRight, User, ChatCircle } from "@phosphor-icons/react";
+import { Broker, reviews } from "@/lib/data";
 import { Link } from "react-router-dom";
 
 interface BrokerCardProps {
@@ -10,6 +10,9 @@ interface BrokerCardProps {
 }
 
 export function BrokerCard({ broker }: BrokerCardProps) {
+  // Get recent reviews for this broker
+  const brokerReviews = reviews.filter(review => review.brokerId === broker.id).slice(0, 2);
+  
   return (
     <Card className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-100 overflow-hidden">
       <CardContent className="p-6">
@@ -20,8 +23,9 @@ export function BrokerCard({ broker }: BrokerCardProps) {
             <div className="flex items-center gap-1">
               <span className="text-lg font-medium text-gray-600">{broker.rating}</span>
               <span className="text-gray-400">/</span>
-              <span className="text-lg font-medium text-gray-600">4.5</span>
-              <Star weight="fill" className="text-blue-500 mr-1" size={20} />
+              <span className="text-lg font-medium text-gray-600">5.0</span>
+              <Star weight="fill" className="text-yellow-500 mr-1" size={20} />
+              <span className="text-sm text-gray-500 mr-2">({broker.reviewCount} تقييم)</span>
             </div>
           </div>
         </div>
@@ -45,6 +49,49 @@ export function BrokerCard({ broker }: BrokerCardProps) {
             <span className="text-gray-600">موجود</span>
           </div>
         </div>
+
+        {/* Reviews/Testimonials Section */}
+        {brokerReviews.length > 0 && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+            <div className="flex items-center gap-2 mb-3">
+              <ChatCircle size={18} className="text-blue-500" />
+              <span className="font-medium text-gray-800">آراء العملاء</span>
+            </div>
+            <div className="space-y-3">
+              {brokerReviews.map((review) => (
+                <div key={review.id} className="bg-white p-3 rounded-lg border border-gray-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <User size={16} className="text-gray-400" />
+                    <span className="text-sm font-medium text-gray-700">{review.userName}</span>
+                    <div className="flex items-center gap-1 mr-auto">
+                      {[...Array(5)].map((_, index) => (
+                        <Star 
+                          key={index}
+                          size={12} 
+                          weight={index < review.rating ? "fill" : "regular"}
+                          className={index < review.rating ? "text-yellow-500" : "text-gray-300"}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600 line-clamp-2">{review.content}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 text-center">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                asChild
+              >
+                <Link to={`/broker/${broker.id}#reviews`}>
+                  عرض جميع التقييمات ({broker.reviewCount})
+                </Link>
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Action buttons */}
         <div className="flex gap-3">

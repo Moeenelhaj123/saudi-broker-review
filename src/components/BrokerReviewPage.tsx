@@ -4,8 +4,8 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, CheckCircle, ArrowRight } from "@phosphor-icons/react";
-import { brokers } from "@/lib/data";
+import { Star, CheckCircle, ArrowRight, User, ThumbsUp } from "@phosphor-icons/react";
+import { brokers, reviews } from "@/lib/data";
 import { useEffect } from "react";
 import { 
   ExnessContent, 
@@ -19,6 +19,9 @@ import {
 export function BrokerReviewPage() {
   const { brokerId } = useParams<{ brokerId: string }>();
   const broker = brokers.find(b => b.id === brokerId);
+
+  // Get reviews for this broker
+  const brokerReviews = reviews.filter(review => review.brokerId === brokerId);
 
   // Update document title for SEO
   useEffect(() => {
@@ -204,6 +207,73 @@ export function BrokerReviewPage() {
         <section>
           {getBrokerContent()}
         </section>
+
+        {/* Reviews Section */}
+        {brokerReviews.length > 0 && (
+          <section id="reviews" className="mt-12 pt-8 border-t">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">آراء وتقييمات العملاء</h2>
+              <p className="text-gray-600">تقييمات حقيقية من متداولين سعوديين</p>
+            </div>
+            
+            <div className="grid gap-6 md:grid-cols-2">
+              {brokerReviews.map((review) => (
+                <Card key={review.id} className="bg-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-blue-100 rounded-full p-2">
+                        <User size={20} className="text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold text-gray-900">{review.userName}</h3>
+                          <div className="flex items-center gap-1">
+                            {[...Array(5)].map((_, index) => (
+                              <Star 
+                                key={index}
+                                size={14} 
+                                weight={index < review.rating ? "fill" : "regular"}
+                                className={index < review.rating ? "text-yellow-500" : "text-gray-300"}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <h4 className="font-medium text-gray-800 mb-2">{review.title}</h4>
+                        <p className="text-gray-600 leading-relaxed mb-3">{review.content}</p>
+                        <div className="flex items-center justify-between text-sm text-gray-500">
+                          <span>{new Date(review.date).toLocaleDateString('ar-SA')}</span>
+                          <div className="flex items-center gap-1">
+                            <ThumbsUp size={14} />
+                            <span>{review.helpful} مفيد</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Overall Rating Summary */}
+            <div className="mt-8 bg-gray-50 rounded-lg p-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900 mb-1">{broker.rating}/5.0</div>
+                <div className="flex justify-center mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      weight={i < Math.floor(broker.rating) ? "fill" : "regular"}
+                      className={`w-6 h-6 ${i < Math.floor(broker.rating) ? "text-yellow-400" : "text-gray-300"}`}
+                    />
+                  ))}
+                </div>
+                <p className="text-gray-600">
+                  بناءً على {broker.reviewCount.toLocaleString()} تقييم من متداولين سعوديين
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
         
         {/* Action Button */}
         <div className="text-center pt-8 mt-8 border-t">

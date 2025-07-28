@@ -44,6 +44,21 @@
   .scroll-snap-center {
     scroll-snap-align: center;
   }
+
+  /* Enhanced mobile slider styles */
+  .mobile-slider {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-slider::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-slider {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
 }
 
 :root {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { BrokerCard } from "@/components/BrokerCard";
@@ -18,9 +18,38 @@ import { ArrowUp, Question } from "@phosphor-icons/react";
 
 export function HomePage() {
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Auto-scroll functionality for mobile slider
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (sliderRef.current) {
+        const nextSlide = (currentSlide + 1) % brokers.length;
+        const cardWidth = sliderRef.current.scrollWidth / brokers.length;
+        sliderRef.current.scrollTo({
+          left: nextSlide * cardWidth,
+          behavior: 'smooth'
+        });
+        setCurrentSlide(nextSlide);
+      }
+    }, 4000); // Auto-scroll every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [currentSlide]);
+
+  // Handle manual scroll to update current slide indicator
+  const handleScroll = () => {
+    if (sliderRef.current) {
+      const cardWidth = sliderRef.current.scrollWidth / brokers.length;
+      const scrollLeft = sliderRef.current.scrollLeft;
+      const slideIndex = Math.round(scrollLeft / cardWidth);
+      setCurrentSlide(slideIndex);
+    }
   };
 
   return (
@@ -40,12 +69,18 @@ export function HomePage() {
 
         {/* Mobile Sliding Cards */}
         <div className="md:hidden mb-16">
-          <div className="overflow-x-auto scrollbar-hide scroll-snap-x">
+          <div 
+            ref={sliderRef}
+            onScroll={handleScroll}
+            className="mobile-slider overflow-x-auto scrollbar-hide"
+            style={{ scrollSnapType: 'x mandatory' }}
+          >
             <div className="flex gap-4 pb-4 px-2">
               {brokers.map((broker) => (
                 <div 
                   key={broker.id} 
-                  className="flex-shrink-0 w-[85vw] max-w-[320px] scroll-snap-center"
+                  className="flex-shrink-0 w-[85vw] max-w-[320px]"
+                  style={{ scrollSnapAlign: 'center' }}
                 >
                   <BrokerCard broker={broker} />
                 </div>
@@ -55,9 +90,23 @@ export function HomePage() {
           {/* Scroll indicator dots */}
           <div className="flex justify-center mt-4 gap-2">
             {brokers.map((_, index) => (
-              <div 
-                key={index} 
-                className="w-2 h-2 bg-gray-300 rounded-full opacity-50"
+              <button
+                key={index}
+                onClick={() => {
+                  if (sliderRef.current) {
+                    const cardWidth = sliderRef.current.scrollWidth / brokers.length;
+                    sliderRef.current.scrollTo({
+                      left: index * cardWidth,
+                      behavior: 'smooth'
+                    });
+                    setCurrentSlide(index);
+                  }
+                }}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  currentSlide === index 
+                    ? 'bg-primary scale-110' 
+                    : 'bg-gray-300 hover:bg-gray-400'
+                }`}
               />
             ))}
           </div>

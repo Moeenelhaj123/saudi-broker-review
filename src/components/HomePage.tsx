@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { BrokerCard } from "@/components/BrokerCard";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { brokers } from "@/lib/data";
 import { articles } from "@/lib/articles";
 import { ArrowUp } from "@phosphor-icons/react";
@@ -137,7 +138,7 @@ export function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {articles.map((article) => (
+            {articles.slice(0, 3).map((article) => (
               <article key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <div className="h-48 overflow-hidden bg-gray-100">
                   <img 
@@ -164,6 +165,15 @@ export function HomePage() {
                 </div>
               </article>
             ))}
+          </div>
+          
+          {/* View All Articles Button */}
+          <div className="text-center mt-8">
+            <Button variant="outline" size="lg" asChild>
+              <Link to="/articles">
+                عرض جميع المقالات
+              </Link>
+            </Button>
           </div>
         </div>
       </main>

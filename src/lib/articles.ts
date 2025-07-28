@@ -41,5 +41,35 @@ export const articles: Article[] = [
     image: articleImages["halal-trading-guide"],
     category: "الشريعة",
     slug: "halal-trading-guide"
+  },
+  {
+    id: "technical-analysis-guide",
+    title: "التحليل الفني للأسهم والعملات - دليل شامل",
+    excerpt: "تعلم أساسيات التحليل الفني وكيفية قراءة الرسوم البيانية والمؤشرات الفنية لاتخاذ قرارات تداول أفضل في الأسواق المالية.",
+    date: "7 يناير 2025",
+    readTime: "7 دقائق قراءة",
+    image: articleImages["technical-analysis-guide"],
+    category: "تحليل فني",
+    slug: "technical-analysis-guide"
+  },
+  {
+    id: "crypto-trading-saudi",
+    title: "تداول العملات الرقمية في السعودية 2025",
+    excerpt: "كل ما تحتاج معرفته حول تداول العملات الرقمية في المملكة العربية السعودية، القوانين الحالية، والوسطاء المرخصين للتداول الآمن.",
+    date: "6 يناير 2025",
+    readTime: "5 دقائق قراءة",
+    image: articleImages["crypto-trading-saudi"],
+    category: "عملات رقمية",
+    slug: "crypto-trading-saudi"
+  },
+  {
+    id: "investment-psychology",
+    title: "علم النفس في الاستثمار والتداول",
+    excerpt: "فهم العوامل النفسية المؤثرة على قرارات التداول. كيفية السيطرة على المشاعر وتجنب الأخطاء الشائعة التي يقع فيها المتداولون المبتدئون.",
+    date: "5 يناير 2025",
+    readTime: "6 دقائق قراءة",
+    image: articleImages["investment-psychology"],
+    category: "علم نفس",
+    slug: "investment-psychology"
   }
 ];

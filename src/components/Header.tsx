@@ -29,9 +29,9 @@ export function Header() {
               أفضل الوسطاء
             </Link>
             
-            <a href="#" className="text-foreground hover:text-primary transition-colors">
-              التقييمات
-            </a>
+            <Link to="/articles" className="text-foreground hover:text-primary transition-colors">
+              مقالات
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">
@@ -69,13 +69,13 @@ export function Header() {
                 أفضل الوسطاء
               </Link>
               
-              <a 
-                href="#" 
+              <Link 
+                to="/articles" 
                 className="block px-4 py-2 text-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                التقييمات
-              </a>
+                مقالات
+              </Link>
               
               <div className="px-4 pt-2">
                 <Button size="sm" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">

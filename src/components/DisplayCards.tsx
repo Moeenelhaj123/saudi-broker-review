@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Sparkles } from "@phosphor-icons/react";
+import { Sparkles, ShieldCheck, Star, ChartLine } from "@phosphor-icons/react";
 
 interface DisplayCardProps {
   className?: string;
@@ -48,18 +48,21 @@ interface DisplayCardsProps {
 export default function DisplayCards({ cards }: DisplayCardsProps) {
   const defaultCards = [
     {
+      icon: <ShieldCheck className="size-4 text-blue-300" />,
       title: "وسطاء موثوقون",
       description: "مرخصون من هيئة السوق المالية",
       date: "محدث يومياً",
       className: "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:right-0 before:top-0",
     },
     {
+      icon: <Star className="size-4 text-yellow-300" />,
       title: "تقييمات حقيقية",
       description: "من متداولين سعوديين",
       date: "موثقة ومراجعة",
       className: "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:right-0 before:top-0",
     },
     {
+      icon: <ChartLine className="size-4 text-green-300" />,
       title: "مقارنات شاملة",
       description: "للرسوم والمنصات والخدمات",
       date: "تحديث مستمر",

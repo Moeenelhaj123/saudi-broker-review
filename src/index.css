@@ -49,6 +49,7 @@
   .mobile-slider {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    direction: ltr; /* Force LTR for consistent scroll behavior */
   }
 
   .mobile-slider::-webkit-scrollbar {
@@ -58,6 +59,15 @@
   .mobile-slider {
     scrollbar-width: none;
     -ms-overflow-style: none;
+  }
+
+  /* RTL support for mobile slider */
+  [dir="rtl"] .mobile-slider {
+    direction: ltr; /* Keep slider LTR for consistent scroll behavior */
+  }
+
+  [dir="rtl"] .mobile-slider > * {
+    direction: rtl; /* But keep content RTL */
   }
 }
 

@@ -61,7 +61,7 @@ export function HomePage() {
   const handleScroll = useCallback(() => {
     if (sliderRef.current && !isAutoScrolling) {
       const container = sliderRef.current;
-      const scrollLeft = container.scrollLeft;
+      const scrollLeft = Math.abs(container.scrollLeft); // Handle RTL
       const cardWidth = container.children[0] ? (container.children[0] as HTMLElement).offsetWidth : 0;
       const gap = 16;
       
@@ -72,7 +72,7 @@ export function HomePage() {
         }
       }
     }
-  }, [isAutoScrolling]);
+  }, [isAutoScrolling, currentSlide, brokers.length]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,18 +99,15 @@ export function HomePage() {
                   setIsAutoScrolling(true);
                   const container = sliderRef.current;
                   const targetIndex = currentSlide - 1;
-                  const targetCard = container.children[targetIndex] as HTMLElement;
                   
+                  // Use scrollIntoView for better RTL support
+                  const targetCard = container.children[targetIndex] as HTMLElement;
                   if (targetCard) {
-                    const cardWidth = targetCard.offsetWidth;
-                    const gap = 16;
-                    const scrollPosition = (cardWidth + gap) * targetIndex;
-                    
-                    container.scrollTo({
-                      left: scrollPosition,
-                      behavior: 'smooth'
+                    targetCard.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'nearest',
+                      inline: 'center'
                     });
-                    
                     setCurrentSlide(targetIndex);
                   }
                   
@@ -136,18 +133,15 @@ export function HomePage() {
                   setIsAutoScrolling(true);
                   const container = sliderRef.current;
                   const targetIndex = currentSlide + 1;
-                  const targetCard = container.children[targetIndex] as HTMLElement;
                   
+                  // Use scrollIntoView for better RTL support
+                  const targetCard = container.children[targetIndex] as HTMLElement;
                   if (targetCard) {
-                    const cardWidth = targetCard.offsetWidth;
-                    const gap = 16;
-                    const scrollPosition = (cardWidth + gap) * targetIndex;
-                    
-                    container.scrollTo({
-                      left: scrollPosition,
-                      behavior: 'smooth'
+                    targetCard.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'nearest',
+                      inline: 'center'
                     });
-                    
                     setCurrentSlide(targetIndex);
                   }
                   
@@ -195,15 +189,12 @@ export function HomePage() {
                     const targetCard = container.children[index] as HTMLElement;
                     
                     if (targetCard) {
-                      const cardWidth = targetCard.offsetWidth;
-                      const gap = 16; // 4 * 4px (gap-4)
-                      const scrollPosition = (cardWidth + gap) * index;
-                      
-                      container.scrollTo({
-                        left: scrollPosition,
-                        behavior: 'smooth'
+                      // Use scrollIntoView for better RTL support
+                      targetCard.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'center'
                       });
-                      
                       setCurrentSlide(index);
                     }
                     

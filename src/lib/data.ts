@@ -2,7 +2,6 @@ export interface Broker {
   id: string;
   name: string;
   nameAr: string;
-  logo: string;
   rating: number;
   reviewCount: number;
   regulation: string[];
@@ -40,7 +39,6 @@ export const brokers: Broker[] = [
     id: "exness",
     name: "Exness",
     nameAr: "إكسنيس",
-    logo: "exness",
     rating: 4.7,
     reviewCount: 2847,
     regulation: ["FCA", "CySEC", "FSA"],
@@ -65,7 +63,6 @@ export const brokers: Broker[] = [
     id: "avatrade",
     name: "AvaTrade",
     nameAr: "أفاتريد",
-    logo: "avatrade",
     rating: 4.4,
     reviewCount: 1923,
     regulation: ["FSA", "ASIC", "FSCA", "ADGM"],
@@ -90,7 +87,6 @@ export const brokers: Broker[] = [
     id: "xm",
     name: "XM",
     nameAr: "إكس إم",
-    logo: "xm",
     rating: 4.3,
     reviewCount: 1564,
     regulation: ["FCA", "CySEC", "ASIC"],
@@ -115,7 +111,6 @@ export const brokers: Broker[] = [
     id: "pepperstone",
     name: "Pepperstone",
     nameAr: "بيبرستون",
-    logo: "pepperstone",
     rating: 4.6,
     reviewCount: 1287,
     regulation: ["FCA", "ASIC", "BaFin", "DFSA"],
@@ -140,7 +135,6 @@ export const brokers: Broker[] = [
     id: "ic-markets",
     name: "IC Markets",
     nameAr: "آي سي ماركتس",
-    logo: "ic-markets",
     rating: 4.5,
     reviewCount: 743,
     regulation: ["ASIC", "FSA"],
@@ -165,7 +159,6 @@ export const brokers: Broker[] = [
     id: "etoro",
     name: "eToro",
     nameAr: "إي تورو",
-    logo: "etoro",
     rating: 4.2,
     reviewCount: 1845,
     regulation: ["FCA", "CySEC", "ASIC"],

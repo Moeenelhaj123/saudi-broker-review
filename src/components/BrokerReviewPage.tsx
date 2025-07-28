@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, CheckCircle, ArrowRight } from "@phosphor-icons/react";
 import { brokers } from "@/lib/data";
 import { useEffect } from "react";
-import exnessLogo from "@/assets/images/exness-logo-clean.svg";
 import { 
   ExnessContent, 
   AvaTradeContent, 
@@ -97,28 +96,6 @@ export function BrokerReviewPage() {
     return <Navigate to="/" replace />;
   }
 
-  const getLogoDisplay = () => {
-    if (broker.name.toLowerCase() === 'exness') {
-      return (
-        <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg">
-          <img src={exnessLogo} alt="Exness" className="w-full h-full object-cover" />
-        </div>
-      );
-    }
-    if (broker.name.toLowerCase() === 'avatrade') {
-      return (
-        <div className="w-20 h-20 rounded-xl bg-green-500 flex items-center justify-center text-base font-bold text-white shadow-lg">
-          AvaTrade
-        </div>
-      );
-    }
-    return (
-      <div className="w-20 h-20 rounded-xl bg-blue-500 flex items-center justify-center text-2xl shadow-lg">
-        {broker.logo}
-      </div>
-    );
-  };
-
   const getBrokerContent = () => {
     switch (broker.id) {
       case 'exness':
@@ -158,8 +135,7 @@ export function BrokerReviewPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             <div className="flex-1">
-              <div className="flex items-center gap-4 mb-4">
-                {getLogoDisplay()}
+              <div className="mb-4">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">
                     مراجعة شركة {broker.nameAr}

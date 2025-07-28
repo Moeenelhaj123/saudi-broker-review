@@ -4,70 +4,16 @@ import { Badge } from "@/components/ui/badge";
 import { Star, CheckCircle, ArrowRight } from "@phosphor-icons/react";
 import { Broker } from "@/lib/data";
 import { Link } from "react-router-dom";
-import exnessLogo from "@/assets/images/exness-logo-clean.svg";
 
 interface BrokerCardProps {
   broker: Broker;
 }
 
 export function BrokerCard({ broker }: BrokerCardProps) {
-  const getLogoDisplay = () => {
-    switch (broker.id) {
-      case 'exness':
-        return (
-          <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm">
-            <img src={exnessLogo} alt="Exness" className="w-full h-full object-cover" />
-          </div>
-        );
-      case 'avatrade':
-        return (
-          <div className="w-16 h-16 rounded-xl bg-green-500 flex items-center justify-center shadow-sm">
-            <span className="text-xs font-bold text-white leading-3 text-center">
-              Ava<br/>Trade
-            </span>
-          </div>
-        );
-      case 'xm':
-        return (
-          <div className="w-16 h-16 rounded-xl bg-red-500 flex items-center justify-center shadow-sm">
-            <span className="text-lg font-bold text-white">XM</span>
-          </div>
-        );
-      case 'pepperstone':
-        return (
-          <div className="w-16 h-16 rounded-xl bg-orange-500 flex items-center justify-center shadow-sm">
-            <span className="text-xs font-bold text-white leading-3 text-center">
-              Pepper<br/>stone
-            </span>
-          </div>
-        );
-      case 'ic-markets':
-        return (
-          <div className="w-16 h-16 rounded-xl bg-blue-600 flex items-center justify-center shadow-sm">
-            <span className="text-xs font-bold text-white leading-3 text-center">
-              IC<br/>Markets
-            </span>
-          </div>
-        );
-      case 'etoro':
-        return (
-          <div className="w-16 h-16 rounded-xl bg-teal-500 flex items-center justify-center shadow-sm">
-            <span className="text-sm font-bold text-white">eToro</span>
-          </div>
-        );
-      default:
-        return (
-          <div className="w-16 h-16 rounded-xl bg-gray-500 flex items-center justify-center shadow-sm">
-            <span className="text-lg font-bold text-white">{broker.name.charAt(0)}</span>
-          </div>
-        );
-    }
-  };
-
   return (
     <Card className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-100 overflow-hidden">
       <CardContent className="p-6">
-        {/* Header with name and logo */}
+        {/* Header with name */}
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-2xl font-bold text-gray-800 mb-1">{broker.name}</h3>
@@ -78,7 +24,6 @@ export function BrokerCard({ broker }: BrokerCardProps) {
               <Star weight="fill" className="text-blue-500 mr-1" size={20} />
             </div>
           </div>
-          {getLogoDisplay()}
         </div>
 
         {/* Trust indicator */}

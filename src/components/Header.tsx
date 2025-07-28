@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 export function Header() {
   return (
     <header className="bg-white border-b border-border sticky top-0 z-50">

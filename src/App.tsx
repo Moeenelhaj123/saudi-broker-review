@@ -1,7 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
-import { SearchFilters, FilterOptions } from "@/components/SearchFilters";
 import { BrokerCard } from "@/components/BrokerCard";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -11,67 +10,7 @@ import { brokers, Broker } from "@/lib/data";
 import { ArrowUp } from "@phosphor-icons/react";
 
 function App() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filters, setFilters] = useState<FilterOptions>({});
   const [comparingBrokers, setComparingBrokers] = useKV<Broker[]>("comparing-brokers", []);
-
-  const filteredBrokers = useMemo(() => {
-    return brokers.filter(broker => {
-      // Search filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        if (!broker.nameAr.toLowerCase().includes(query) && 
-            !broker.name.toLowerCase().includes(query) &&
-            !broker.descriptionAr.toLowerCase().includes(query)) {
-          return false;
-        }
-      }
-
-      // Regulation filter
-      if (filters.regulation) {
-        if (!broker.regulation.includes(filters.regulation)) {
-          return false;
-        }
-      }
-
-      // Min deposit filter
-      if (filters.minDeposit) {
-        const [min, max] = filters.minDeposit.split('-').map(s => parseInt(s.replace('+', '').replace(',', '')));
-        if (max) {
-          if (broker.minDeposit < min || broker.minDeposit > max) {
-            return false;
-          }
-        } else {
-          if (broker.minDeposit < min) {
-            return false;
-          }
-        }
-      }
-
-      // Rating filter
-      if (filters.rating) {
-        const minRating = parseInt(filters.rating.replace('+', ''));
-        if (broker.rating < minRating) {
-          return false;
-        }
-      }
-
-      // Account type filter
-      if (filters.accountType) {
-        const accountTypeMap: Record<string, string> = {
-          'islamic': 'إسلامي',
-          'standard': 'قياسي',
-          'vip': 'VIP'
-        };
-        const arabicAccountType = accountTypeMap[filters.accountType];
-        if (!broker.accountTypes.some(type => type.includes(arabicAccountType))) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [searchQuery, filters]);
 
   const handleCompare = (broker: Broker) => {
     setComparingBrokers((current) => {
@@ -95,47 +34,48 @@ function App() {
       <Header />
       <HeroSection />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            دليل الوسطاء المرخصين في السعودية
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+            أفضل وسطاء التداول
+            <br />
+            <span className="text-primary">في السعودية</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            اختر الوسيط المالي المناسب لك من خلال مقارنة شاملة للخدمات والرسوم والتقييمات
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto mb-12 leading-relaxed">
+            اكتشف وقارن بين أفضل وسطاء التداول العالميين المتاحين للمتداولين السعوديين. 
+            منصات موثقة، رسوم شفافة، وتقييمات حقيقية لمساعدتك في اتخاذ القرار الصحيح.
           </p>
           
-          <div className="flex items-center justify-between mb-6">
-            {comparingBrokers.length > 0 && (
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="px-3 py-1">
-                  مقارنة ({comparingBrokers.length})
-                </Badge>
-                <Button 
-                  className="bg-accent hover:bg-accent/90"
-                  disabled={comparingBrokers.length < 2}
-                >
-                  عرض المقارنة
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <SearchFilters onSearch={setSearchQuery} onFilter={setFilters} />
+          {comparingBrokers.length > 0 && (
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <Badge variant="secondary" className="px-4 py-2 text-lg">
+                مقارنة ({comparingBrokers.length}) وسطاء
+              </Badge>
+              <Button 
+                className="bg-accent hover:bg-accent/90 text-lg px-6"
+                disabled={comparingBrokers.length < 2}
+              >
+                عرض المقارنة التفصيلية
+              </Button>
+            </div>
+          )}
         </div>
 
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-muted-foreground">
-            عرض {filteredBrokers.length} من {brokers.length} وسيط
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <p className="text-lg text-muted-foreground">
+              <span className="font-bold text-primary">{brokers.length}</span> وسيط متاح للمتداولين السعوديين
+            </p>
+          </div>
           {comparingBrokers.length >= 3 && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-full">
               يمكنك مقارنة حتى 3 وسطاء فقط
             </p>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {filteredBrokers.map((broker) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {brokers.map((broker) => (
             <BrokerCard
               key={broker.id}
               broker={broker}
@@ -144,34 +84,15 @@ function App() {
             />
           ))}
         </div>
-
-        {filteredBrokers.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold mb-2">لم نجد أي نتائج</h3>
-            <p className="text-muted-foreground mb-4">
-              جرب تعديل معايير البحث أو الفلاتر للعثور على وسطاء مناسبين
-            </p>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setSearchQuery("");
-                setFilters({});
-              }}
-            >
-              مسح جميع الفلاتر
-            </Button>
-          </div>
-        )}
       </main>
 
       <Footer />
 
       <Button
-        className="fixed bottom-6 left-6 w-12 h-12 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+        className="fixed bottom-6 left-6 w-14 h-14 rounded-full shadow-xl bg-primary hover:bg-primary/90 transition-all duration-200 hover:scale-110"
         onClick={scrollToTop}
       >
-        <ArrowUp size={20} />
+        <ArrowUp size={24} />
       </Button>
     </div>
   );

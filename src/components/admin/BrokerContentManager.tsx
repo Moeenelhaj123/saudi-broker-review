@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Save, ArrowRight, Building2 } from "lucide-react";
+import { Save, ArrowRight, Building2, RefreshCw } from "lucide-react";
+import { brokers as staticBrokers } from "@/lib/data";
 
 interface BrokerContent {
   overview: string;
@@ -19,32 +20,89 @@ interface BrokerContent {
   pros: string[];
   cons: string[];
   conclusion: string;
+  contact: string;
+  summary: string;
 }
 
 export function BrokerContentManager() {
   const { brokerId } = useParams();
   const [brokers] = useKV<any[]>("admin-brokers", []);
-  const [brokerContent, setBrokerContent] = useKV<BrokerContent>(`broker-content-${brokerId}`, {
-    overview: "",
-    tradingPlatforms: "",
-    accountTypes: "",
-    fees: "",
-    regulation: "",
-    pros: [],
-    cons: [],
-    conclusion: ""
-  });
+  
+  // Get initial content from static broker data
+  const getInitialContent = (): BrokerContent => {
+    const staticBroker = staticBrokers.find(b => b.id === brokerId);
+    if (staticBroker) {
+      return {
+        overview: `شركة ${staticBroker.nameAr} (${staticBroker.name}) هي واحدة من الوسطاء الماليين الرائدين في سوق التداول العالمي. ${staticBroker.descriptionAr || staticBroker.description}
 
-  const [tempContent, setTempContent] = useState<BrokerContent>({
-    overview: "",
-    tradingPlatforms: "",
-    accountTypes: "",
-    fees: "",
-    regulation: "",
-    pros: [],
-    cons: [],
-    conclusion: ""
-  });
+يتميز هذا الوسيط بتنظيم قوي من قبل جهات مرموقة مثل ${staticBroker.regulation.join(', ')}، مما يضمن أمان الأموال وحماية حقوق المتداولين. يوفر الوسيط بيئة تداول آمنة ومتطورة تناسب جميع مستويات المتداولين من المبتدئين إلى المحترفين.
+
+الحد الأدنى للإيداع يبدأ من ${staticBroker.minDeposit} دولار أمريكي، مما يجعله متاحاً لشريحة واسعة من المتداولين. كما يوفر الوسيط فروقات تنافسية تبدأ ${staticBroker.spreads}، مما يساهم في تقليل تكاليف التداول.`,
+
+        tradingPlatforms: `يوفر ${staticBroker.nameAr} مجموعة متنوعة من منصات التداول المتطورة لتلبية احتياجات جميع المتداولين:
+
+${staticBroker.platforms.map(platform => `• ${platform}: منصة احترافية مع أدوات تحليل متقدمة وتنفيذ سريع للصفقات`).join('\n')}
+
+جميع المنصات تتميز بواجهة سهلة الاستخدام وتوفر إمكانية التداول من أي مكان في العالم عبر النسخ المحمولة والمكتبية. كما تشمل أدوات تحليل فني شاملة ومؤشرات متقدمة لمساعدة المتداولين في اتخاذ قرارات استثمارية مدروسة.`,
+
+        accountTypes: `يقدم ${staticBroker.nameAr} أنواع حسابات متنوعة تناسب جميع احتياجات المتداولين:
+
+${staticBroker.accountTypes.map(account => `• ${account}: يوفر مزايا خاصة ومناسب لفئة معينة من المتداولين`).join('\n')}
+
+كل نوع حساب مصمم خصيصاً لتلبية احتياجات محددة، بدءاً من المتداولين المبتدئين وصولاً إلى المتداولين المحترفين ذوي الخبرة العالية. كما يتم توفير حسابات تجريبية مجانية لممارسة التداول دون مخاطر.`,
+
+        fees: `هيكل الرسوم في ${staticBroker.nameAr}:
+
+• العمولة: ${staticBroker.fees.commission}
+• رسوم السحب: ${staticBroker.fees.withdrawal}
+• رسوم عدم النشاط: ${staticBroker.fees.inactivity}
+
+يتميز الوسيط بشفافية كاملة في هيكل الرسوم، حيث لا توجد رسوم خفية. جميع التكاليف واضحة ومعلنة مسبقاً، مما يساعد المتداولين على حساب تكاليف التداول بدقة والتخطيط لاستراتيجياتهم الاستثمارية.`,
+
+        regulation: `${staticBroker.nameAr} مرخص ومنظم من قبل أهم الجهات التنظيمية العالمية:
+
+${staticBroker.regulation.map(reg => `• ${reg}: جهة تنظيمية مرموقة تضمن أعلى معايير الأمان والشفافية`).join('\n')}
+
+هذا التنظيم الصارم يضمن أن الوسيط يلتزم بأعلى معايير الصناعة في حماية أموال العملاء وتوفير بيئة تداول عادلة وآمنة. كما يخضع الوسيط لمراجعات دورية من قبل هذه الجهات للتأكد من الامتثال المستمر.`,
+
+        pros: staticBroker.pros || [],
+        cons: staticBroker.cons || [],
+        
+        conclusion: `بناءً على التقييم الشامل، يعتبر ${staticBroker.nameAr} خياراً ممتازاً للمتداولين الذين يبحثون عن وسيط موثوق ومنظم بقوة. التقييم العام للوسيط ${staticBroker.rating}/5 بناءً على ${staticBroker.reviewCount} تقييم من المتداولين الفعليين.
+
+نقاط القوة الرئيسية تشمل التنظيم القوي، والمنصات المتطورة، والدعم الممتاز. بينما نقاط التحسن المطلوبة تتعلق بتطوير بعض الخدمات الإضافية.
+
+التوصية: مناسب للمتداولين من جميع المستويات، خاصة الذين يقدرون الأمان والتنظيم القوي.`,
+
+        contact: `معلومات التواصل مع ${staticBroker.nameAr}:
+
+• الموقع الرسمي: ${staticBroker.website}
+• رقم الهاتف: ${staticBroker.phone}
+• البريد الإلكتروني: ${staticBroker.email}
+
+فريق خدمة العملاء متاح على مدار الساعة طوال أيام الأسبوع لتقديم الدعم والمساعدة. يمكن التواصل باللغة العربية والإنجليزية وعدة لغات أخرى.`,
+
+        summary: `${staticBroker.nameAr} وسيط مالي عالمي مرخص ومنظم، يوفر بيئة تداول آمنة ومتطورة. الحد الأدنى للإيداع ${staticBroker.minDeposit} دولار، فروقات من ${staticBroker.spreads}، ودعم لمنصات التداول الرائدة. التقييم ${staticBroker.rating}/5 من ${staticBroker.reviewCount} مراجعة.`
+      };
+    }
+    
+    return {
+      overview: "",
+      tradingPlatforms: "",
+      accountTypes: "",
+      fees: "",
+      regulation: "",
+      pros: [],
+      cons: [],
+      conclusion: "",
+      contact: "",
+      summary: ""
+    };
+  };
+
+  const [brokerContent, setBrokerContent] = useKV<BrokerContent>(`broker-content-${brokerId}`, getInitialContent());
+
+  const [tempContent, setTempContent] = useState<BrokerContent>(getInitialContent());
 
   // Update tempContent when brokerContent changes
   useEffect(() => {
@@ -57,7 +115,9 @@ export function BrokerContentManager() {
         regulation: brokerContent.regulation || "",
         pros: brokerContent.pros || [],
         cons: brokerContent.cons || [],
-        conclusion: brokerContent.conclusion || ""
+        conclusion: brokerContent.conclusion || "",
+        contact: brokerContent.contact || "",
+        summary: brokerContent.summary || ""
       });
     }
   }, [brokerContent]);
@@ -69,6 +129,13 @@ export function BrokerContentManager() {
   const handleSave = () => {
     setBrokerContent(tempContent);
     toast.success("تم حفظ محتوى الوسيط بنجاح");
+  };
+
+  const handleResetToDefault = () => {
+    const defaultContent = getInitialContent();
+    setTempContent(defaultContent);
+    setBrokerContent(defaultContent);
+    toast.success("تم إعادة تعيين المحتوى إلى القيم الافتراضية");
   };
 
   const addPro = () => {
@@ -122,23 +189,31 @@ export function BrokerContentManager() {
           <ArrowRight className="h-4 w-4" />
         </Button>
         <div>
-          <h2 className="text-2xl font-bold">محتوى الوسيط: {broker.name}</h2>
+          <h2 className="text-2xl font-bold">محتوى الوسيط: {broker.nameAr || broker.name}</h2>
           <p className="text-muted-foreground">إدارة المحتوى التفصيلي لصفحة الوسيط</p>
         </div>
-        <Button onClick={handleSave} className="gap-2 mr-auto">
-          <Save className="h-4 w-4" />
-          حفظ جميع التغييرات
-        </Button>
+        <div className="flex gap-2 mr-auto">
+          <Button onClick={handleResetToDefault} variant="outline" className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            إعادة تعيين
+          </Button>
+          <Button onClick={handleSave} className="gap-2">
+            <Save className="h-4 w-4" />
+            حفظ جميع التغييرات
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
           <TabsTrigger value="platforms">المنصات</TabsTrigger>
-          <TabsTrigger value="accounts">أنواع الحسابات</TabsTrigger>
+          <TabsTrigger value="accounts">الحسابات</TabsTrigger>
           <TabsTrigger value="fees">الرسوم</TabsTrigger>
           <TabsTrigger value="regulation">التنظيم</TabsTrigger>
           <TabsTrigger value="proscons">المزايا والعيوب</TabsTrigger>
+          <TabsTrigger value="contact">التواصل</TabsTrigger>
+          <TabsTrigger value="summary">الملخص</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -347,6 +422,52 @@ export function BrokerContentManager() {
                     conclusion: e.target.value 
                   }))}
                   placeholder="اكتب خلاصة وتوصية نهائية..."
+                  rows={6}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="contact">
+          <Card>
+            <CardHeader>
+              <CardTitle>معلومات التواصل</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="contact">المحتوى</Label>
+                <Textarea
+                  id="contact"
+                  value={tempContent.contact}
+                  onChange={(e) => setTempContent(prev => ({ 
+                    ...prev, 
+                    contact: e.target.value 
+                  }))}
+                  placeholder="اكتب معلومات التواصل مع الوسيط..."
+                  rows={8}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="summary">
+          <Card>
+            <CardHeader>
+              <CardTitle>الملخص التنفيذي</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="summary">المحتوى</Label>
+                <Textarea
+                  id="summary"
+                  value={tempContent.summary}
+                  onChange={(e) => setTempContent(prev => ({ 
+                    ...prev, 
+                    summary: e.target.value 
+                  }))}
+                  placeholder="اكتب ملخص تنفيذي مختصر للوسيط..."
                   rows={6}
                 />
               </div>

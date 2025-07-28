@@ -38,11 +38,11 @@ export function BestBrokersPage() {
   const [adminBrokers] = useKV("admin-brokers", []);
   
   // Use admin brokers if available, otherwise fallback to static data
-  const rawDisplayBrokers = adminBrokers.length > 0 
-    ? adminBrokers.filter((broker: any) => !broker.isScam) 
+  const rawDisplayBrokers = (adminBrokers || []).length > 0 
+    ? (adminBrokers || []).filter((broker: any) => !broker.isScam) 
     : brokers;
   
-  const displayBrokers = rawDisplayBrokers.map((broker: any) => 
+  const displayBrokers = (rawDisplayBrokers || []).map((broker: any) => 
     broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
   );
   return (

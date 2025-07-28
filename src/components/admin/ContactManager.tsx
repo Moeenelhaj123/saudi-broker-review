@@ -101,8 +101,8 @@ export function ContactManager() {
   };
 
   const updateMessageStatus = (messageId: string, newStatus: string) => {
-    setMessages(prev => 
-      prev.map(msg => 
+    setMessages((prev) => 
+      (prev || []).map(msg => 
         msg.id === messageId ? { ...msg, status: newStatus } : msg
       )
     );
@@ -150,7 +150,7 @@ export function ContactManager() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Messages List */}
         <div className="lg:col-span-2 space-y-4">
-          {messages.map((message) => (
+          {(messages || []).map((message) => (
             <Card 
               key={message.id} 
               className={`cursor-pointer transition-all hover:shadow-md ${

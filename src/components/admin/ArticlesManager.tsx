@@ -68,11 +68,11 @@ export function ArticlesManager() {
   
   // Initialize articles if empty
   useEffect(() => {
-    if (articles.length === 0) {
+    if (!articles || articles.length === 0) {
       const convertedArticles = initialArticles.map(convertToAdminFormat);
       setArticles(convertedArticles);
     }
-  }, [articles.length]);
+  }, [articles]);
 
   const [editingArticle, setEditingArticle] = useState<AdminArticle | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -116,7 +116,7 @@ export function ArticlesManager() {
       tags: newArticle.tags || []
     };
 
-    setArticles(prev => [...prev, article]);
+    setArticles((prev) => [...(prev || []), article]);
     setNewArticle({
       title: "",
       excerpt: "",
@@ -138,8 +138,8 @@ export function ArticlesManager() {
   const handleUpdateArticle = () => {
     if (!editingArticle) return;
 
-    setArticles(prev => 
-      prev.map(article => 
+    setArticles((prev) => 
+      (prev || []).map(article => 
         article.id === editingArticle.id ? editingArticle : article
       )
     );
@@ -148,13 +148,13 @@ export function ArticlesManager() {
   };
 
   const handleDeleteArticle = (articleId: string) => {
-    setArticles(prev => prev.filter(article => article.id !== articleId));
+    setArticles((prev) => (prev || []).filter(article => article.id !== articleId));
     toast.success("تم حذف المقال بنجاح");
   };
 
   const togglePublished = (articleId: string) => {
-    setArticles(prev => 
-      prev.map(article => 
+    setArticles((prev) => 
+      (prev || []).map(article => 
         article.id === articleId 
           ? { ...article, isPublished: !article.isPublished }
           : article
@@ -168,7 +168,7 @@ export function ArticlesManager() {
         <div>
           <h2 className="text-2xl font-bold">إدارة المقالات</h2>
           <p className="text-muted-foreground">
-            إضافة وتعديل وحذف مقالات الموقع ({articles.length} مقال)
+            إضافة وتعديل وحذف مقالات الموقع ({(articles || []).length} مقال)
           </p>
         </div>
         <Button onClick={() => setShowAddForm(true)} className="gap-2">
@@ -323,7 +323,7 @@ export function ArticlesManager() {
 
       {/* Articles List */}
       <div className="grid gap-4">
-        {articles.map((article) => (
+        {(articles || []).map((article) => (
           <Card key={article.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               {editingArticle?.id === article.id ? (
@@ -527,7 +527,7 @@ export function ArticlesManager() {
         ))}
       </div>
 
-      {articles.length === 0 && (
+      {(!articles || articles.length === 0) && (
         <Card>
           <CardContent className="text-center py-12">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />

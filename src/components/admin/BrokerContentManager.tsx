@@ -48,12 +48,23 @@ export function BrokerContentManager() {
 
   // Update tempContent when brokerContent changes
   useEffect(() => {
-    setTempContent(brokerContent);
+    if (brokerContent) {
+      setTempContent({
+        overview: brokerContent.overview || "",
+        tradingPlatforms: brokerContent.tradingPlatforms || "",
+        accountTypes: brokerContent.accountTypes || "",
+        fees: brokerContent.fees || "",
+        regulation: brokerContent.regulation || "",
+        pros: brokerContent.pros || [],
+        cons: brokerContent.cons || [],
+        conclusion: brokerContent.conclusion || ""
+      });
+    }
   }, [brokerContent]);
   const [newPro, setNewPro] = useState("");
   const [newCon, setNewCon] = useState("");
 
-  const broker = brokers.find((b: any) => b.id === brokerId);
+  const broker = (brokers || []).find((b: any) => b.id === brokerId);
 
   const handleSave = () => {
     setBrokerContent(tempContent);
@@ -64,7 +75,7 @@ export function BrokerContentManager() {
     if (newPro.trim()) {
       setTempContent(prev => ({
         ...prev,
-        pros: [...prev.pros, newPro.trim()]
+        pros: [...(prev.pros || []), newPro.trim()]
       }));
       setNewPro("");
     }
@@ -74,7 +85,7 @@ export function BrokerContentManager() {
     if (newCon.trim()) {
       setTempContent(prev => ({
         ...prev,
-        cons: [...prev.cons, newCon.trim()]
+        cons: [...(prev.cons || []), newCon.trim()]
       }));
       setNewCon("");
     }
@@ -83,14 +94,14 @@ export function BrokerContentManager() {
   const removePro = (index: number) => {
     setTempContent(prev => ({
       ...prev,
-      pros: prev.pros.filter((_, i) => i !== index)
+      pros: (prev.pros || []).filter((_, i) => i !== index)
     }));
   };
 
   const removeCon = (index: number) => {
     setTempContent(prev => ({
       ...prev,
-      cons: prev.cons.filter((_, i) => i !== index)
+      cons: (prev.cons || []).filter((_, i) => i !== index)
     }));
   };
 
@@ -266,7 +277,7 @@ export function BrokerContentManager() {
                 </div>
                 
                 <div className="space-y-2">
-                  {tempContent.pros.map((pro, index) => (
+                  {(tempContent.pros || []).map((pro, index) => (
                     <div key={index} className="flex items-center justify-between p-2 bg-green-50 rounded-lg">
                       <span className="text-sm">{pro}</span>
                       <Button
@@ -302,7 +313,7 @@ export function BrokerContentManager() {
                 </div>
                 
                 <div className="space-y-2">
-                  {tempContent.cons.map((con, index) => (
+                  {(tempContent.cons || []).map((con, index) => (
                     <div key={index} className="flex items-center justify-between p-2 bg-red-50 rounded-lg">
                       <span className="text-sm">{con}</span>
                       <Button

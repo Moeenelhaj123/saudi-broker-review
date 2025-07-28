@@ -55,15 +55,15 @@ export function HomePage() {
   const [adminArticles] = useKV("admin-articles", []);
   
   // Use admin brokers if available, otherwise fallback to static data
-  const rawDisplayBrokers = adminBrokers.length > 0 ? adminBrokers.filter((broker: any) => broker.isFeatured) : brokers;
-  const displayBrokers = rawDisplayBrokers.map((broker: any) => 
+  const rawDisplayBrokers = (adminBrokers || []).length > 0 ? (adminBrokers || []).filter((broker: any) => broker.isFeatured) : brokers;
+  const displayBrokers = (rawDisplayBrokers || []).map((broker: any) => 
     broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
   );
   
   // Get scam brokers for warning section
-  const scamBrokers = adminBrokers.length > 0 ? adminBrokers.filter((broker: any) => broker.isScam) : [];
+  const scamBrokers = (adminBrokers || []).length > 0 ? (adminBrokers || []).filter((broker: any) => broker.isScam) : [];
   
-  const displayArticles = adminArticles.length > 0 ? adminArticles.filter((article: any) => article.isPublished).slice(0, 3) : articles.slice(0, 3);
+  const displayArticles = (adminArticles || []).length > 0 ? (adminArticles || []).filter((article: any) => article.isPublished).slice(0, 3) : articles.slice(0, 3);
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

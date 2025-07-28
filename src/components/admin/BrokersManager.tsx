@@ -95,27 +95,29 @@ export function BrokersManager() {
   // Sync with static brokers if admin brokers are empty or missing some
   useEffect(() => {
     const syncBrokers = () => {
+      if (!brokers || !Array.isArray(brokers)) return;
+      
       const existingIds = brokers.map((b: AdminBroker) => b.id);
       const missingBrokers = staticBrokers
         .filter(staticBroker => !existingIds.includes(staticBroker.id))
         .map(convertToAdminBroker);
       
       if (missingBrokers.length > 0) {
-        setBrokers((prev: AdminBroker[]) => [...prev, ...missingBrokers]);
+        setBrokers((prev: AdminBroker[]) => [...(prev || []), ...missingBrokers]);
         toast.success(`تم إضافة ${missingBrokers.length} وسيط جديد من البيانات الثابتة`);
       }
     };
 
-    if (brokers.length === 0) {
+    if (!brokers || brokers.length === 0) {
       setBrokers(initialBrokers);
     } else {
       syncBrokers();
     }
-  }, []);
+  }, [brokers]);
 
   const handleSyncWithStaticData = () => {
     const updatedBrokers = staticBrokers.map(staticBroker => {
-      const existingBroker = brokers.find((b: AdminBroker) => b.id === staticBroker.id);
+      const existingBroker = (brokers || []).find((b: AdminBroker) => b.id === staticBroker.id);
       if (existingBroker) {
         // Update existing broker while preserving admin settings
         return {
@@ -207,7 +209,7 @@ export function BrokersManager() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">إدارة الوسطاء</h2>
-          <p className="text-muted-foreground">إضافة وتعديل وحذف الوسطاء الماليين ({brokers.length} وسيط)</p>
+          <p className="text-muted-foreground">إضافة وتعديل وحذف الوسطاء الماليين ({(brokers || []).length} وسيط)</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={handleSyncWithStaticData} variant="outline" className="gap-2">
@@ -369,7 +371,7 @@ export function BrokersManager() {
 
       {/* Brokers List */}
       <div className="grid gap-4">
-        {brokers.map((broker) => (
+        {(brokers || []).map((broker) => (
           <Card key={broker.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               {editingBroker?.id === broker.id ? (
@@ -532,7 +534,7 @@ export function BrokersManager() {
         ))}
       </div>
 
-      {brokers.length === 0 && (
+      {(!brokers || brokers.length === 0) && (
         <Card>
           <CardContent className="text-center py-12">
             <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />

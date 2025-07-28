@@ -149,31 +149,33 @@ export function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {articles.slice(0, 3).map((article) => (
-              <article key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="h-48 overflow-hidden bg-gray-100">
-                  <img 
-                    src={article.image} 
-                    alt={article.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center text-sm text-gray-500 mb-3">
-                    <span>{article.date}</span>
-                    <span className="mx-2">•</span>
-                    <span>{article.readTime}</span>
+              <Link key={article.id} to={`/articles/${article.slug}`} className="group block">
+                <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                  <div className="h-48 overflow-hidden bg-gray-100">
+                    <img 
+                      src={article.image} 
+                      alt={article.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">
-                    {article.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {article.excerpt}
-                  </p>
-                  <Button variant="outline" size="sm" className="w-full">
-                    اقرأ المزيد
-                  </Button>
-                </div>
-              </article>
+                  <div className="p-6">
+                    <div className="flex items-center text-sm text-gray-500 mb-3">
+                      <span>{article.date}</span>
+                      <span className="mx-2">•</span>
+                      <span>{article.readTime}</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
+                      {article.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      {article.excerpt}
+                    </p>
+                    <Button variant="outline" size="sm" className="w-full">
+                      اقرأ المزيد
+                    </Button>
+                  </div>
+                </article>
+              </Link>
             ))}
           </div>
           

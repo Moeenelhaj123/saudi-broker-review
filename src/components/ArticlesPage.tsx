@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { articles } from "@/lib/articles";
 import { ArrowUp, Clock, Calendar } from "@phosphor-icons/react";
+import { Link } from "react-router-dom";
 
 export function ArticlesPage() {
   const scrollToTop = () => {
@@ -32,57 +33,59 @@ export function ArticlesPage() {
         {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {articles.map((article) => (
-            <article key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              {/* Article Image */}
-              <div className="h-48 overflow-hidden bg-gray-100">
-                <img 
-                  src={article.image} 
-                  alt={article.title}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              
-              {/* Article Content */}
-              <div className="p-6">
-                {/* Category Badge */}
-                <div className="mb-3">
-                  <Badge variant="secondary" className="text-xs">
-                    {article.category}
-                  </Badge>
+            <Link key={article.id} to={`/articles/${article.slug}`} className="group block">
+              <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {/* Article Image */}
+                <div className="h-48 overflow-hidden bg-gray-100">
+                  <img 
+                    src={article.image} 
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
                 
-                {/* Meta Information */}
-                <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                  <div className="flex items-center gap-1">
-                    <Calendar size={14} />
-                    <span>{article.date}</span>
+                {/* Article Content */}
+                <div className="p-6">
+                  {/* Category Badge */}
+                  <div className="mb-3">
+                    <Badge variant="secondary" className="text-xs">
+                      {article.category}
+                    </Badge>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Clock size={14} />
-                    <span>{article.readTime}</span>
+                  
+                  {/* Meta Information */}
+                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                    <div className="flex items-center gap-1">
+                      <Calendar size={14} />
+                      <span>{article.date}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} />
+                      <span>{article.readTime}</span>
+                    </div>
                   </div>
+                  
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+                    {article.title}
+                  </h3>
+                  
+                  {/* Excerpt */}
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
+                    {article.excerpt}
+                  </p>
+                  
+                  {/* Read More Button */}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full hover:bg-primary hover:text-primary-foreground transition-colors"
+                  >
+                    اقرأ المقال كاملاً
+                  </Button>
                 </div>
-                
-                {/* Title */}
-                <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 leading-tight">
-                  {article.title}
-                </h3>
-                
-                {/* Excerpt */}
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
-                  {article.excerpt}
-                </p>
-                
-                {/* Read More Button */}
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full hover:bg-primary hover:text-primary-foreground transition-colors"
-                >
-                  اقرأ المقال كاملاً
-                </Button>
-              </div>
-            </article>
+              </article>
+            </Link>
           ))}
         </div>
 

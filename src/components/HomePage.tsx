@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { BrokerCard } from "@/components/BrokerCard";
@@ -20,6 +20,7 @@ export function HomePage() {
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -28,29 +29,63 @@ export function HomePage() {
   // Auto-scroll functionality for mobile slider
   useEffect(() => {
     const interval = setInterval(() => {
-      if (sliderRef.current) {
+      if (sliderRef.current && !isAutoScrolling) {
+        setIsAutoScrolling(true);
         const nextSlide = (currentSlide + 1) % brokers.length;
-        const cardWidth = sliderRef.current.scrollWidth / brokers.length;
-        sliderRef.current.scrollTo({
-          left: nextSlide * cardWidth,
-          behavior: 'smooth'
-        });
-        setCurrentSlide(nextSlide);
+        
+        // Get the actual card element and scroll to it
+        const container = sliderRef.current;
+        const cardsContainer = container.children[0] as HTMLElement;
+        const targetCard = cardsContainer.children[nextSlide] as HTMLElement;
+        
+        if (targetCard) {
+          const containerWidth = container.clientWidth;
+          const cardLeft = targetCard.offsetLeft;
+          const cardWidth = targetCard.offsetWidth;
+          const scrollPosition = cardLeft - (containerWidth - cardWidth) / 2;
+          
+          container.scrollTo({
+            left: Math.max(0, scrollPosition),
+            behavior: 'smooth'
+          });
+          
+          setCurrentSlide(nextSlide);
+        }
+        
+        // Reset auto-scrolling flag after animation
+        setTimeout(() => setIsAutoScrolling(false), 500);
       }
-    }, 4000); // Auto-scroll every 4 seconds
+    }, 4000);
 
     return () => clearInterval(interval);
-  }, [currentSlide]);
+  }, [currentSlide, isAutoScrolling, brokers.length]);
 
-  // Handle manual scroll to update current slide indicator
-  const handleScroll = () => {
-    if (sliderRef.current) {
-      const cardWidth = sliderRef.current.scrollWidth / brokers.length;
-      const scrollLeft = sliderRef.current.scrollLeft;
-      const slideIndex = Math.round(scrollLeft / cardWidth);
-      setCurrentSlide(slideIndex);
+  // Handle manual scroll to update current slide indicator with throttling
+  const handleScroll = useCallback(() => {
+    if (sliderRef.current && !isAutoScrolling) {
+      const container = sliderRef.current;
+      const cardsContainer = container.children[0] as HTMLElement;
+      const containerRect = container.getBoundingClientRect();
+      const containerCenter = containerRect.left + containerRect.width / 2;
+      
+      let closestIndex = 0;
+      let minDistance = Infinity;
+      
+      for (let i = 0; i < cardsContainer.children.length; i++) {
+        const card = cardsContainer.children[i] as HTMLElement;
+        const cardRect = card.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const distance = Math.abs(cardCenter - containerCenter);
+        
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestIndex = i;
+        }
+      }
+      
+      setCurrentSlide(closestIndex);
     }
-  };
+  }, [isAutoScrolling]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -72,15 +107,18 @@ export function HomePage() {
           <div 
             ref={sliderRef}
             onScroll={handleScroll}
-            className="mobile-slider overflow-x-auto scrollbar-hide"
-            style={{ scrollSnapType: 'x mandatory' }}
+            className="overflow-x-auto scrollbar-hide"
+            style={{ 
+              scrollSnapType: 'x mandatory',
+              WebkitOverflowScrolling: 'touch',
+              scrollBehavior: 'smooth'
+            }}
           >
             <div className="flex gap-4 pb-4 px-2">
-              {brokers.map((broker) => (
+              {brokers.map((broker, index) => (
                 <div 
                   key={broker.id} 
-                  className="flex-shrink-0 w-[85vw] max-w-[320px]"
-                  style={{ scrollSnapAlign: 'center' }}
+                  className="flex-shrink-0 w-[85vw] max-w-[320px] scroll-snap-center"
                 >
                   <BrokerCard broker={broker} />
                 </div>
@@ -94,12 +132,27 @@ export function HomePage() {
                 key={index}
                 onClick={() => {
                   if (sliderRef.current) {
-                    const cardWidth = sliderRef.current.scrollWidth / brokers.length;
-                    sliderRef.current.scrollTo({
-                      left: index * cardWidth,
-                      behavior: 'smooth'
-                    });
-                    setCurrentSlide(index);
+                    setIsAutoScrolling(true);
+                    
+                    const container = sliderRef.current;
+                    const cardsContainer = container.children[0] as HTMLElement;
+                    const targetCard = cardsContainer.children[index] as HTMLElement;
+                    
+                    if (targetCard) {
+                      const containerWidth = container.clientWidth;
+                      const cardLeft = targetCard.offsetLeft;
+                      const cardWidth = targetCard.offsetWidth;
+                      const scrollPosition = cardLeft - (containerWidth - cardWidth) / 2;
+                      
+                      container.scrollTo({
+                        left: Math.max(0, scrollPosition),
+                        behavior: 'smooth'
+                      });
+                      
+                      setCurrentSlide(index);
+                    }
+                    
+                    setTimeout(() => setIsAutoScrolling(false), 500);
                   }
                 }}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${

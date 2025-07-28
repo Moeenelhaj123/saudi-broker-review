@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, CheckCircle, ArrowLeft } from "@phosphor-icons/react";
+import { Star, CheckCircle, ArrowRight } from "@phosphor-icons/react";
 import { Broker } from "@/lib/data";
 import { Link } from "react-router-dom";
 
@@ -11,25 +11,56 @@ interface BrokerCardProps {
 
 export function BrokerCard({ broker }: BrokerCardProps) {
   const getLogoDisplay = () => {
-    if (broker.name.toLowerCase() === 'exness') {
-      return (
-        <div className="w-16 h-16 rounded-xl bg-yellow-400 flex items-center justify-center text-xs font-bold text-gray-800 shadow-sm">
-          exness
-        </div>
-      );
+    switch (broker.id) {
+      case 'exness':
+        return (
+          <div className="w-16 h-16 rounded-xl bg-yellow-400 flex items-center justify-center shadow-sm">
+            <span className="text-xs font-bold text-gray-800">exness</span>
+          </div>
+        );
+      case 'avatrade':
+        return (
+          <div className="w-16 h-16 rounded-xl bg-green-500 flex items-center justify-center shadow-sm">
+            <span className="text-xs font-bold text-white leading-3 text-center">
+              Ava<br/>Trade
+            </span>
+          </div>
+        );
+      case 'xm':
+        return (
+          <div className="w-16 h-16 rounded-xl bg-red-500 flex items-center justify-center shadow-sm">
+            <span className="text-lg font-bold text-white">XM</span>
+          </div>
+        );
+      case 'pepperstone':
+        return (
+          <div className="w-16 h-16 rounded-xl bg-orange-500 flex items-center justify-center shadow-sm">
+            <span className="text-xs font-bold text-white leading-3 text-center">
+              Pepper<br/>stone
+            </span>
+          </div>
+        );
+      case 'ic-markets':
+        return (
+          <div className="w-16 h-16 rounded-xl bg-blue-600 flex items-center justify-center shadow-sm">
+            <span className="text-xs font-bold text-white leading-3 text-center">
+              IC<br/>Markets
+            </span>
+          </div>
+        );
+      case 'etoro':
+        return (
+          <div className="w-16 h-16 rounded-xl bg-teal-500 flex items-center justify-center shadow-sm">
+            <span className="text-sm font-bold text-white">eToro</span>
+          </div>
+        );
+      default:
+        return (
+          <div className="w-16 h-16 rounded-xl bg-gray-500 flex items-center justify-center shadow-sm">
+            <span className="text-lg font-bold text-white">{broker.name.charAt(0)}</span>
+          </div>
+        );
     }
-    if (broker.name.toLowerCase() === 'avatrade') {
-      return (
-        <div className="w-16 h-16 rounded-xl bg-green-500 flex items-center justify-center text-xs font-bold text-white shadow-sm">
-          AvaTrade
-        </div>
-      );
-    }
-    return (
-      <div className="w-16 h-16 rounded-xl bg-blue-500 flex items-center justify-center text-2xl shadow-sm">
-        {broker.logo}
-      </div>
-    );
   };
 
   return (
@@ -43,7 +74,7 @@ export function BrokerCard({ broker }: BrokerCardProps) {
               <span className="text-lg font-medium text-gray-600">{broker.rating}</span>
               <span className="text-gray-400">/</span>
               <span className="text-lg font-medium text-gray-600">4.5</span>
-              <Star weight="fill" className="text-blue-500 ml-1" size={20} />
+              <Star weight="fill" className="text-blue-500 mr-1" size={20} />
             </div>
           </div>
           {getLogoDisplay()}
@@ -76,7 +107,7 @@ export function BrokerCard({ broker }: BrokerCardProps) {
             asChild
           >
             <a href={broker.website} target="_blank" rel="noopener noreferrer">
-              <ArrowLeft size={16} />
+              <ArrowRight size={16} />
               زيارة {broker.name}
             </a>
           </Button>

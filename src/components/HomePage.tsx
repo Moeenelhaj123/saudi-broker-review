@@ -109,15 +109,15 @@ export function HomePage() {
             </h3>
             <ul className="space-y-2 text-red-700 text-sm">
               <li className="flex items-start">
-                <span className="ml-2 text-red-600">•</span>
+                <span className="mr-2 text-red-600">•</span>
                 <span>تأكد من الترخيص من هيئة السوق المالية</span>
               </li>
               <li className="flex items-start">
-                <span className="ml-2 text-red-600">•</span>
+                <span className="mr-2 text-red-600">•</span>
                 <span>احذر الوعود بأرباح مضمونة</span>
               </li>
               <li className="flex items-start">
-                <span className="ml-2 text-red-600">•</span>
+                <span className="mr-2 text-red-600">•</span>
                 <span>تجنب الإيداعات الكبيرة المسبقة</span>
               </li>
             </ul>

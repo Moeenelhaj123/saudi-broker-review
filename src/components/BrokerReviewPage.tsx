@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, CheckCircle, ArrowLeft } from "@phosphor-icons/react";
+import { Star, CheckCircle, ArrowRight } from "@phosphor-icons/react";
 import { brokers } from "@/lib/data";
 import { useEffect } from "react";
 import { 
@@ -146,7 +146,7 @@ export function BrokerReviewPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Link to="/" className="hover:text-blue-600 transition-colors">الرئيسية</Link>
-            <ArrowLeft size={16} className="text-gray-400" />
+            <ArrowRight size={16} className="text-gray-400" />
             <span>مراجعة شركة {broker.nameAr}</span>
           </div>
         </div>
@@ -179,7 +179,7 @@ export function BrokerReviewPage() {
                       <span className="text-gray-500">({broker.reviewCount.toLocaleString()} تقييم)</span>
                     </div>
                     <Badge className="bg-green-100 text-green-700 px-2 py-1">
-                      <CheckCircle size={14} className="ml-1" />
+                      <CheckCircle size={14} className="mr-1" />
                       مرخص
                     </Badge>
                   </div>

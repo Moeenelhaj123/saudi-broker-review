@@ -23,8 +23,8 @@ interface BrokerContent {
 
 export function BrokerContentManager() {
   const { brokerId } = useParams();
-  const [brokers] = useKV("admin-brokers", []);
-  const [brokerContent, setBrokerContent] = useKV(`broker-content-${brokerId}`, {
+  const [brokers] = useKV<any[]>("admin-brokers", []);
+  const [brokerContent, setBrokerContent] = useKV<BrokerContent>(`broker-content-${brokerId}`, {
     overview: "",
     tradingPlatforms: "",
     accountTypes: "",
@@ -64,7 +64,7 @@ export function BrokerContentManager() {
   const [newPro, setNewPro] = useState("");
   const [newCon, setNewCon] = useState("");
 
-  const broker = (brokers || []).find((b: any) => b.id === brokerId);
+  const broker = Array.isArray(brokers) ? brokers.find((b: any) => b.id === brokerId) : null;
 
   const handleSave = () => {
     setBrokerContent(tempContent);

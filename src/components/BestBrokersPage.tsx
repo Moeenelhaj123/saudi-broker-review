@@ -38,13 +38,15 @@ export function BestBrokersPage() {
   const [adminBrokers] = useKV("admin-brokers", []);
   
   // Use admin brokers if available, otherwise fallback to static data
-  const rawDisplayBrokers = (adminBrokers || []).length > 0 
-    ? (adminBrokers || []).filter((broker: any) => !broker.isScam) 
+  const rawDisplayBrokers = Array.isArray(adminBrokers) && adminBrokers.length > 0 
+    ? adminBrokers.filter((broker: any) => !broker.isScam) 
     : brokers;
   
-  const displayBrokers = (rawDisplayBrokers || []).map((broker: any) => 
-    broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
-  );
+  const displayBrokers = Array.isArray(rawDisplayBrokers)
+    ? rawDisplayBrokers.map((broker: any) => 
+        broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
+      )
+    : [];
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -62,7 +64,7 @@ export function BestBrokersPage() {
 
         {/* Brokers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {displayBrokers.map((broker) => (
+          {Array.isArray(displayBrokers) && displayBrokers.map((broker) => (
             <BrokerCard key={broker.id} broker={broker} />
           ))}
         </div>

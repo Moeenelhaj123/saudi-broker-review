@@ -71,9 +71,12 @@ export function BrokersManager() {
 
   const initialBrokers = staticBrokers.map(convertToAdminBroker);
 
-  const [brokers, setBrokers] = useKV("admin-brokers", initialBrokers);
+  const [brokers, setBrokers] = useKV<AdminBroker[]>("admin-brokers", initialBrokers);
   const [editingBroker, setEditingBroker] = useState<AdminBroker | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  
+  // Ensure brokers is always an array
+  const safeBrokers = Array.isArray(brokers) ? brokers : initialBrokers;
   const [newBroker, setNewBroker] = useState<Partial<AdminBroker>>({
     name: "",
     nameAr: "",
@@ -95,29 +98,29 @@ export function BrokersManager() {
   // Sync with static brokers if admin brokers are empty or missing some
   useEffect(() => {
     const syncBrokers = () => {
-      if (!brokers || !Array.isArray(brokers)) return;
+      if (!safeBrokers || !Array.isArray(safeBrokers)) return;
       
-      const existingIds = brokers.map((b: AdminBroker) => b.id);
+      const existingIds = safeBrokers.map((b: AdminBroker) => b.id);
       const missingBrokers = staticBrokers
         .filter(staticBroker => !existingIds.includes(staticBroker.id))
         .map(convertToAdminBroker);
       
       if (missingBrokers.length > 0) {
-        setBrokers((prev: AdminBroker[]) => [...(prev || []), ...missingBrokers]);
+        setBrokers((prev: AdminBroker[] | undefined) => [...(prev || []), ...missingBrokers]);
         toast.success(`تم إضافة ${missingBrokers.length} وسيط جديد من البيانات الثابتة`);
       }
     };
 
-    if (!brokers || brokers.length === 0) {
+    if (!safeBrokers || safeBrokers.length === 0) {
       setBrokers(initialBrokers);
     } else {
       syncBrokers();
     }
-  }, [brokers]);
+  }, [safeBrokers]);
 
   const handleSyncWithStaticData = () => {
     const updatedBrokers = staticBrokers.map(staticBroker => {
-      const existingBroker = (brokers || []).find((b: AdminBroker) => b.id === staticBroker.id);
+      const existingBroker = safeBrokers.find((b: AdminBroker) => b.id === staticBroker.id);
       if (existingBroker) {
         // Update existing broker while preserving admin settings
         return {
@@ -145,7 +148,7 @@ export function BrokersManager() {
       nameAr: newBroker.nameAr || newBroker.name || ''
     };
 
-    setBrokers((prev: AdminBroker[]) => [...prev, broker]);
+    setBrokers((prev: AdminBroker[] | undefined) => [...(prev || []), broker]);
     setNewBroker({
       name: "",
       nameAr: "",
@@ -170,8 +173,8 @@ export function BrokersManager() {
   const handleUpdateBroker = () => {
     if (!editingBroker) return;
 
-    setBrokers((prev: AdminBroker[]) => 
-      prev.map(broker => 
+    setBrokers((prev: AdminBroker[] | undefined) => 
+      (prev || []).map(broker => 
         broker.id === editingBroker.id ? editingBroker : broker
       )
     );
@@ -180,13 +183,13 @@ export function BrokersManager() {
   };
 
   const handleDeleteBroker = (brokerId: string) => {
-    setBrokers((prev: AdminBroker[]) => prev.filter(broker => broker.id !== brokerId));
+    setBrokers((prev: AdminBroker[] | undefined) => (prev || []).filter(broker => broker.id !== brokerId));
     toast.success("تم حذف الوسيط بنجاح");
   };
 
   const toggleFeatured = (brokerId: string) => {
-    setBrokers((prev: AdminBroker[]) => 
-      prev.map(broker => 
+    setBrokers((prev: AdminBroker[] | undefined) => 
+      (prev || []).map(broker => 
         broker.id === brokerId 
           ? { ...broker, isFeatured: !broker.isFeatured }
           : broker
@@ -195,8 +198,8 @@ export function BrokersManager() {
   };
 
   const toggleScam = (brokerId: string) => {
-    setBrokers((prev: AdminBroker[]) => 
-      prev.map(broker => 
+    setBrokers((prev: AdminBroker[] | undefined) => 
+      (prev || []).map(broker => 
         broker.id === brokerId 
           ? { ...broker, isScam: !broker.isScam }
           : broker
@@ -209,7 +212,7 @@ export function BrokersManager() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">إدارة الوسطاء</h2>
-          <p className="text-muted-foreground">إضافة وتعديل وحذف الوسطاء الماليين ({(brokers || []).length} وسيط)</p>
+          <p className="text-muted-foreground">إضافة وتعديل وحذف الوسطاء الماليين ({safeBrokers.length} وسيط)</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={handleSyncWithStaticData} variant="outline" className="gap-2">
@@ -371,7 +374,7 @@ export function BrokersManager() {
 
       {/* Brokers List */}
       <div className="grid gap-4">
-        {(brokers || []).map((broker) => (
+        {safeBrokers.map((broker) => (
           <Card key={broker.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               {editingBroker?.id === broker.id ? (
@@ -534,7 +537,7 @@ export function BrokersManager() {
         ))}
       </div>
 
-      {(!brokers || brokers.length === 0) && (
+      {(!safeBrokers || safeBrokers.length === 0) && (
         <Card>
           <CardContent className="text-center py-12">
             <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />

@@ -64,15 +64,18 @@ export function ArticlesManager() {
   };
 
   // Initialize articles from stored data or convert from initial articles
-  const [articles, setArticles] = useKV("admin-articles", [] as AdminArticle[]);
+  const [articles, setArticles] = useKV<AdminArticle[]>("admin-articles", []);
+  
+  // Ensure articles is always an array
+  const safeArticles = Array.isArray(articles) ? articles : [];
   
   // Initialize articles if empty
   useEffect(() => {
-    if (!articles || articles.length === 0) {
+    if (!safeArticles || safeArticles.length === 0) {
       const convertedArticles = initialArticles.map(convertToAdminFormat);
       setArticles(convertedArticles);
     }
-  }, [articles]);
+  }, [safeArticles]);
 
   const [editingArticle, setEditingArticle] = useState<AdminArticle | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -168,7 +171,7 @@ export function ArticlesManager() {
         <div>
           <h2 className="text-2xl font-bold">إدارة المقالات</h2>
           <p className="text-muted-foreground">
-            إضافة وتعديل وحذف مقالات الموقع ({(articles || []).length} مقال)
+            إضافة وتعديل وحذف مقالات الموقع ({safeArticles.length} مقال)
           </p>
         </div>
         <Button onClick={() => setShowAddForm(true)} className="gap-2">
@@ -323,7 +326,7 @@ export function ArticlesManager() {
 
       {/* Articles List */}
       <div className="grid gap-4">
-        {(articles || []).map((article) => (
+        {safeArticles.map((article) => (
           <Card key={article.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               {editingArticle?.id === article.id ? (
@@ -527,7 +530,7 @@ export function ArticlesManager() {
         ))}
       </div>
 
-      {(!articles || articles.length === 0) && (
+      {(!safeArticles || safeArticles.length === 0) && (
         <Card>
           <CardContent className="text-center py-12">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />

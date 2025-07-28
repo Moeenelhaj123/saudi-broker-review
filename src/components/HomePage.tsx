@@ -55,15 +55,23 @@ export function HomePage() {
   const [adminArticles] = useKV("admin-articles", []);
   
   // Use admin brokers if available, otherwise fallback to static data
-  const rawDisplayBrokers = (adminBrokers || []).length > 0 ? (adminBrokers || []).filter((broker: any) => broker.isFeatured) : brokers;
-  const displayBrokers = (rawDisplayBrokers || []).map((broker: any) => 
-    broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
-  );
+  const rawDisplayBrokers = Array.isArray(adminBrokers) && adminBrokers.length > 0 
+    ? adminBrokers.filter((broker: any) => broker.isFeatured) 
+    : brokers;
+  const displayBrokers = Array.isArray(rawDisplayBrokers) 
+    ? rawDisplayBrokers.map((broker: any) => 
+        broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
+      )
+    : [];
   
   // Get scam brokers for warning section
-  const scamBrokers = (adminBrokers || []).length > 0 ? (adminBrokers || []).filter((broker: any) => broker.isScam) : [];
+  const scamBrokers = Array.isArray(adminBrokers) && adminBrokers.length > 0 
+    ? adminBrokers.filter((broker: any) => broker.isScam) 
+    : [];
   
-  const displayArticles = (adminArticles || []).length > 0 ? (adminArticles || []).filter((article: any) => article.isPublished).slice(0, 3) : articles.slice(0, 3);
+  const displayArticles = Array.isArray(adminArticles) && adminArticles.length > 0 
+    ? adminArticles.filter((article: any) => article.isPublished).slice(0, 3) 
+    : articles.slice(0, 3);
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -71,6 +79,8 @@ export function HomePage() {
 
   // Auto-scroll functionality for mobile slider
   useEffect(() => {
+    if (!Array.isArray(displayBrokers) || displayBrokers.length === 0) return;
+    
     const interval = setInterval(() => {
       if (sliderRef.current && !isAutoScrolling) {
         setIsAutoScrolling(true);
@@ -208,7 +218,7 @@ export function HomePage() {
               onScroll={handleScroll}
               className="flex gap-4 pb-4 px-2 overflow-x-auto mobile-slider scroll-snap-x"
             >
-              {displayBrokers.map((broker, index) => (
+              {Array.isArray(displayBrokers) && displayBrokers.map((broker, index) => (
                 <div 
                   key={broker.id} 
                   className="flex-shrink-0 w-[85vw] max-w-[320px] scroll-snap-center"
@@ -221,7 +231,7 @@ export function HomePage() {
 
           {/* Scroll indicator dots */}
           <div className="flex justify-center mt-4 gap-2">
-            {displayBrokers.map((_, index) => (
+            {Array.isArray(displayBrokers) && displayBrokers.map((_, index) => (
               <button
                 key={index}
                 onClick={() => {
@@ -256,7 +266,7 @@ export function HomePage() {
 
         {/* Desktop Grid */}
         <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {displayBrokers.map((broker) => (
+          {Array.isArray(displayBrokers) && displayBrokers.map((broker) => (
             <BrokerCard
               key={broker.id}
               broker={broker}
@@ -419,7 +429,7 @@ export function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {displayArticles.map((article) => (
+            {Array.isArray(displayArticles) && displayArticles.map((article) => (
               <Link key={article.id} to={`/articles/${article.slug}`} className="group block">
                 <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                   <div className="h-48 overflow-hidden bg-gray-100">

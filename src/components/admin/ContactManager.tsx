@@ -31,7 +31,7 @@ interface ContactMessage {
 }
 
 export function ContactManager() {
-  const [messages, setMessages] = useKV("admin-contact-messages", [
+  const [messages, setMessages] = useKV<ContactMessage[]>("admin-contact-messages", [
     {
       id: "1",
       firstName: "أحمد",
@@ -102,9 +102,9 @@ export function ContactManager() {
 
   const updateMessageStatus = (messageId: string, newStatus: string) => {
     setMessages((prev) => 
-      (prev || []).map(msg => 
+      Array.isArray(prev) ? prev.map(msg => 
         msg.id === messageId ? { ...msg, status: newStatus } : msg
-      )
+      ) : []
     );
     toast.success("تم تحديث حالة الرسالة");
   };
@@ -150,7 +150,7 @@ export function ContactManager() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Messages List */}
         <div className="lg:col-span-2 space-y-4">
-          {(messages || []).map((message) => (
+          {Array.isArray(messages) && messages.map((message) => (
             <Card 
               key={message.id} 
               className={`cursor-pointer transition-all hover:shadow-md ${

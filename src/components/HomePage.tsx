@@ -33,19 +33,16 @@ export function HomePage() {
         setIsAutoScrolling(true);
         const nextSlide = (currentSlide + 1) % brokers.length;
         
-        // Get the actual card element and scroll to it
         const container = sliderRef.current;
-        const cardsContainer = container.children[0] as HTMLElement;
-        const targetCard = cardsContainer.children[nextSlide] as HTMLElement;
+        const targetCard = container.children[nextSlide] as HTMLElement;
         
         if (targetCard) {
-          const containerWidth = container.clientWidth;
-          const cardLeft = targetCard.offsetLeft;
           const cardWidth = targetCard.offsetWidth;
-          const scrollPosition = cardLeft - (containerWidth - cardWidth) / 2;
+          const gap = 16; // 4 * 4px (gap-4)
+          const scrollPosition = (cardWidth + gap) * nextSlide;
           
           container.scrollTo({
-            left: Math.max(0, scrollPosition),
+            left: scrollPosition,
             behavior: 'smooth'
           });
           
@@ -64,26 +61,16 @@ export function HomePage() {
   const handleScroll = useCallback(() => {
     if (sliderRef.current && !isAutoScrolling) {
       const container = sliderRef.current;
-      const cardsContainer = container.children[0] as HTMLElement;
-      const containerRect = container.getBoundingClientRect();
-      const containerCenter = containerRect.left + containerRect.width / 2;
+      const scrollLeft = container.scrollLeft;
+      const cardWidth = container.children[0] ? (container.children[0] as HTMLElement).offsetWidth : 0;
+      const gap = 16;
       
-      let closestIndex = 0;
-      let minDistance = Infinity;
-      
-      for (let i = 0; i < cardsContainer.children.length; i++) {
-        const card = cardsContainer.children[i] as HTMLElement;
-        const cardRect = card.getBoundingClientRect();
-        const cardCenter = cardRect.left + cardRect.width / 2;
-        const distance = Math.abs(cardCenter - containerCenter);
-        
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestIndex = i;
+      if (cardWidth > 0) {
+        const newSlide = Math.round(scrollLeft / (cardWidth + gap));
+        if (newSlide !== currentSlide && newSlide >= 0 && newSlide < brokers.length) {
+          setCurrentSlide(newSlide);
         }
       }
-      
-      setCurrentSlide(closestIndex);
     }
   }, [isAutoScrolling]);
 
@@ -107,23 +94,16 @@ export function HomePage() {
           <div 
             ref={sliderRef}
             onScroll={handleScroll}
-            className="overflow-x-auto scrollbar-hide"
-            style={{ 
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch',
-              scrollBehavior: 'smooth'
-            }}
+            className="flex gap-4 pb-4 px-2 overflow-x-auto mobile-slider scroll-snap-x"
           >
-            <div className="flex gap-4 pb-4 px-2">
-              {brokers.map((broker, index) => (
-                <div 
-                  key={broker.id} 
-                  className="flex-shrink-0 w-[85vw] max-w-[320px] scroll-snap-center"
-                >
-                  <BrokerCard broker={broker} />
-                </div>
-              ))}
-            </div>
+            {brokers.map((broker, index) => (
+              <div 
+                key={broker.id} 
+                className="flex-shrink-0 w-[85vw] max-w-[320px] scroll-snap-center"
+              >
+                <BrokerCard broker={broker} />
+              </div>
+            ))}
           </div>
           {/* Scroll indicator dots */}
           <div className="flex justify-center mt-4 gap-2">
@@ -135,17 +115,15 @@ export function HomePage() {
                     setIsAutoScrolling(true);
                     
                     const container = sliderRef.current;
-                    const cardsContainer = container.children[0] as HTMLElement;
-                    const targetCard = cardsContainer.children[index] as HTMLElement;
+                    const targetCard = container.children[index] as HTMLElement;
                     
                     if (targetCard) {
-                      const containerWidth = container.clientWidth;
-                      const cardLeft = targetCard.offsetLeft;
                       const cardWidth = targetCard.offsetWidth;
-                      const scrollPosition = cardLeft - (containerWidth - cardWidth) / 2;
+                      const gap = 16; // 4 * 4px (gap-4)
+                      const scrollPosition = (cardWidth + gap) * index;
                       
                       container.scrollTo({
-                        left: Math.max(0, scrollPosition),
+                        left: scrollPosition,
                         behavior: 'smooth'
                       });
                       

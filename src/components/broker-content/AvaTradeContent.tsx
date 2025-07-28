@@ -1,7 +1,6 @@
 export function AvaTradeContent() {
   return (
     <div className="space-y-8 text-gray-800" dir="rtl">
-      
       <section>
         <h2 className="text-3xl font-bold text-blue-900 mb-6">مراجعة شاملة لشركة أفاتريد AvaTrade</h2>
         
@@ -13,7 +12,6 @@ export function AvaTradeContent() {
           حاصلة على تراخيص من أهم الجهات التنظيمية العالمية، تقدم أفاتريد للمتداولين السعوديين بيئة تداول آمنة وموثوقة مع مجموعة واسعة من الأدوات المالية وأدوات التحليل المتقدمة.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">نبذة عن شركة أفاتريد</h2>
         
@@ -21,15 +19,12 @@ export function AvaTradeContent() {
           تعتبر شركة أفاتريد من الرواد في مجال التداول عبر الإنترنت، حيث تجمع بين الخبرة الطويلة والتكنولوجيا المتطورة لتقديم خدمات تداول استثنائية. الشركة مقرها الرئيسي في دبلن، أيرلندا، مع مكاتب إقليمية في أكثر من 15 دولة حول العالم.
         </p>
         
-        <p className="leading-relaxed mb-4">
-          تتخصص أفاتريد في تقديم خدمات تداول العملات الأجنبية، العقود مقابل الفروقات، والسلع. كما تقدم برامج تعليمية شاملة تجعلها الخيار المفضل للمتداولين المبتدئين والمحترفين على حد سواء.
-        </p>
+        <p className="leading-relaxed mb-4">تتخصص أفاتريد في تقديم خدمات تداول العملات الأجنبية، العقود مقابل الفروقات، والسلع. كما تقدم برامج تعليمية شاملة تجعلها الخيار المفضل للمتداولين المبتدئين والمحترفين على حد سواء.</p>
         
         <p className="leading-relaxed mb-4">
           حازت الشركة على أكثر من 40 جائزة دولية في مجال الوساطة المالية، مما يؤكد على جودة خدماتها والتزامها بتقديم أفضل تجربة تداول للعملاء.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">التراخيص والتنظيم</h2>
         
@@ -57,7 +52,6 @@ export function AvaTradeContent() {
           ترخيص حديث من سلطة دبي المالية العالمية يعزز من حضور الشركة في منطقة الشرق الأوسط ويوفر خدمات محلية أفضل للعملاء العرب.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">أنواع الحسابات المتاحة</h2>
         
@@ -85,7 +79,6 @@ export function AvaTradeContent() {
           حساب مجاني بقيمة 100,000 دولار افتراضي لممارسة التداول دون مخاطر. متاح لمدة 21 يوم مع إمكانية التجديد وجميع ميزات الحساب الحقيقي.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">منصات التداول المتاحة</h2>
         
@@ -118,7 +111,6 @@ export function AvaTradeContent() {
           منصة متخصصة في تداول خيارات الفانيلا، توفر أدوات تداول متقدمة وإمكانيات تحليل شاملة للمتداولين المحترفين.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">أدوات التداول المتاحة</h2>
         
@@ -156,7 +148,6 @@ export function AvaTradeContent() {
           إمكانية تداول السندات الحكومية والصناديق المتداولة (ETFs) لتنويع المحفظة الاستثمارية.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">الرافعة المالية والهامش</h2>
         
@@ -184,7 +175,6 @@ export function AvaTradeContent() {
           توفر الشركة حماية من الرصيد السالب لجميع عملائها، مما يعني أن المتداولين لن يخسروا أكثر من رصيدهم المودع.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">طرق الإيداع والسحب</h2>
         
@@ -212,7 +202,6 @@ export function AvaTradeContent() {
           إمكانية الإيداع باستخدام Bitcoin وعملات مشفرة أخرى، مما يوفر خصوصية إضافية وسرعة في المعاملات.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">الرسوم والعمولات</h2>
         
@@ -240,7 +229,6 @@ export function AvaTradeContent() {
           رسوم ربع سنوية بقيمة 50 دولار للحسابات غير النشطة لأكثر من 3 أشهر. يمكن تجنبها بإجراء صفقة واحدة على الأقل كل ثلاثة أشهر.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">البرامج التعليمية والتحليلات</h2>
         
@@ -268,7 +256,6 @@ export function AvaTradeContent() {
           أدوات تحليل متطورة تشمل Trading Central، Autochartist، وAvaProtect لحماية الصفقات من المخاطر.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">دعم العملاء</h2>
         
@@ -291,7 +278,6 @@ export function AvaTradeContent() {
           للعملاء الـ VIP وأصحاب الحسابات الكبيرة، توفر الشركة مدراء حسابات شخصيين لتقديم دعم مخصص ومشورة تداول.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">الأمان وحماية الأموال</h2>
         
@@ -319,7 +305,6 @@ export function AvaTradeContent() {
           تدقيق منتظم من قبل شركات تدقيق دولية معتمدة لضمان الامتثال للمعايير التنظيمية وحماية مصالح العملاء.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">مزايا شركة أفاتريد</h2>
         
@@ -336,7 +321,6 @@ export function AvaTradeContent() {
           <p className="leading-relaxed">• سجل حافل وسمعة ممتازة في الصناعة</p>
         </div>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">عيوب شركة أفاتريد</h2>
         
@@ -348,7 +332,6 @@ export function AvaTradeContent() {
           <p className="leading-relaxed">• خيارات محدودة للمتداولين عالي التردد</p>
         </div>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">كيفية فتح حساب مع أفاتريد</h2>
         
@@ -381,7 +364,6 @@ export function AvaTradeContent() {
           تحميل منصة التداول المفضلة والبدء في التداول فوراً مع الاستفادة من المواد التعليمية.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">نصائح للتداول مع أفاتريد</h2>
         
@@ -415,7 +397,6 @@ export function AvaTradeContent() {
           </div>
         </div>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">التقييم النهائي لشركة أفاتريد</h2>
         
@@ -435,7 +416,6 @@ export function AvaTradeContent() {
           نوصي بشركة أفاتريد للمتداولين الذين يبحثون عن وسيط موثوق مع تركيز قوي على التعليم والدعم، خاصة المبتدئين الذين يرغبون في تطوير مهاراتهم التداولية بشكل صحيح ومتدرج.
         </p>
       </section>
-
       <section>
         <h2 className="text-2xl font-bold text-blue-800 mb-4">معلومات الاتصال</h2>
         
@@ -464,7 +444,6 @@ export function AvaTradeContent() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

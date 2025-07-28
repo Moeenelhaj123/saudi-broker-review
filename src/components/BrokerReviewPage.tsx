@@ -121,7 +121,6 @@ export function BrokerReviewPage() {
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <Header />
-      
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -132,7 +131,6 @@ export function BrokerReviewPage() {
           </div>
         </div>
       </div>
-
       {/* Hero Section */}
       <div className="bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -200,7 +198,6 @@ export function BrokerReviewPage() {
           </div>
         </div>
       </div>
-
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* SEO-Optimized Comprehensive Content */}
@@ -212,8 +209,10 @@ export function BrokerReviewPage() {
         {brokerReviews.length > 0 && (
           <section id="reviews" className="mt-12 pt-8 border-t">
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">آراء وتقييمات العملاء</h2>
-              <p className="text-gray-600">تقييمات حقيقية من متداولين سعوديين</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+</h2>
+              <p className="text-gray-600">
+</p>
             </div>
             
             <div className="grid gap-6 md:grid-cols-2">
@@ -450,7 +449,6 @@ export function BrokerReviewPage() {
           </Button>
         </div>
       </div>
-
       <Footer />
     </div>
   );

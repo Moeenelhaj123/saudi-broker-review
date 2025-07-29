@@ -123,9 +123,10 @@ export function HomePageManager() {
   const handleCancel = () => {
     setEditingSection(null);
     setTempContent({});
+  // Helper function to safely update temp content
+  const updateTempContent = (updater: (prev: any) => any) => {
+    setTempContent(prev => updater(prev || {}));
   };
-
-  const startEditing = (section: string, currentContent: any) => {
     setEditingSection(section);
     
     // Ensure proper default structure for each section
@@ -295,7 +296,7 @@ export function HomePageManager() {
                   id="headline"
                   value={tempContent?.headline || ''}
                   onChange={(e) => setTempContent(prev => ({ 
-                    ...prev, 
+                    ...(prev || {}), 
                     headline: e.target.value 
                   }))}
                   placeholder="أدخل العنوان الرئيسي"
@@ -308,7 +309,7 @@ export function HomePageManager() {
                   id="subheadline"
                   value={tempContent?.subheadline || ''}
                   onChange={(e) => setTempContent(prev => ({ 
-                    ...prev, 
+                    ...(prev || {}), 
                     subheadline: e.target.value 
                   }))}
                   placeholder="أدخل العنوان الفرعي"
@@ -366,7 +367,7 @@ export function HomePageManager() {
                   id="brokers-title"
                   value={tempContent?.title || ''}
                   onChange={(e) => setTempContent(prev => ({ 
-                    ...prev, 
+                    ...(prev || {}), 
                     title: e.target.value 
                   }))}
                   placeholder="أدخل عنوان القسم"
@@ -379,7 +380,7 @@ export function HomePageManager() {
                   id="brokers-subtitle"
                   value={tempContent?.subtitle || ''}
                   onChange={(e) => setTempContent(prev => ({ 
-                    ...prev, 
+                    ...(prev || {}), 
                     subtitle: e.target.value 
                   }))}
                   placeholder="أدخل النص التوضيحي"

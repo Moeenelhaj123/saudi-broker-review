@@ -12,7 +12,8 @@ import {
   Settings,
   Users,
   TrendingUp,
-  Mail
+  Mail,
+  TestTube
 } from "lucide-react";
 
 const menuItems = [
@@ -45,6 +46,16 @@ const menuItems = [
     title: "النشرة الإخبارية",
     href: "/cadmin/newsletter",
     icon: Mail,
+  },
+  {
+    title: "اختبار النماذج",
+    href: "/cadmin/test-forms",
+    icon: TestTube,
+  },
+  {
+    title: "اختبار التواصل",
+    href: "/cadmin/test-contact-forms",
+    icon: MessageSquare,
   },
 ];
 

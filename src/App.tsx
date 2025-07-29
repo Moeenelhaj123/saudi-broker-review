@@ -13,6 +13,8 @@ import { BrokerContentManager } from "@/components/admin/BrokerContentManager";
 import { ArticlesManager } from "@/components/admin/ArticlesManager";
 import { ContactManager } from "@/components/admin/ContactManager";
 import { NewsletterManager } from "@/components/admin/NewsletterManager";
+import { ContactFormTester } from "@/components/ContactFormTester";
+import { ContactFormsTestPage } from "@/components/ContactFormsTestPage";
 import { Toaster } from "@/components/ui/sonner";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -85,6 +87,14 @@ const router = createBrowserRouter([
           {
             path: "newsletter",
             element: <NewsletterManager />
+          },
+          {
+            path: "test-forms",
+            element: <ContactFormTester />
+          },
+          {
+            path: "test-contact-forms",
+            element: <ContactFormsTestPage />
           }
         ]
       }

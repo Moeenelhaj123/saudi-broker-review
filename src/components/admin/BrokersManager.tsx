@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { brokers as staticBrokers } from "@/lib/data";
+import { LogoSelector } from "@/components/admin/LogoSelector";
 import { 
   Plus, 
   Edit3, 
@@ -21,6 +22,25 @@ import {
   RefreshCw,
   Heart
 } from "lucide-react";
+
+// Import broker logos for default assignments
+import avaTradeLogo from "@/assets/images/avatrade-logo.svg";
+import eToroLogo from "@/assets/images/etoro-logo.svg";
+import exnessLogoClean from "@/assets/images/exness-logo-clean.svg";
+import exnessLogo from "@/assets/images/exness-logo.svg";
+import icMarketsLogo from "@/assets/images/ic-markets-logo.svg";
+import pepperstoneLogo from "@/assets/images/pepperstone-logo.svg";
+import xmLogo from "@/assets/images/xm-logo.svg";
+
+// Default logo mapping for existing brokers
+const defaultLogos: Record<string, string> = {
+  exness: exnessLogo,
+  avatrade: avaTradeLogo,
+  etoro: eToroLogo,
+  'ic-markets': icMarketsLogo,
+  pepperstone: pepperstoneLogo,
+  xm: xmLogo
+};
 
 interface AdminBroker {
   id: string;
@@ -43,6 +63,7 @@ interface AdminBroker {
   accountTypes?: string[];
   pros?: string[];
   cons?: string[];
+  logoUrl?: string;
 }
 
 export function BrokersManager() {
@@ -67,7 +88,8 @@ export function BrokersManager() {
     platforms: broker.platforms,
     accountTypes: broker.accountTypes,
     pros: broker.pros,
-    cons: broker.cons
+    cons: broker.cons,
+    logoUrl: broker.logoUrl || defaultLogos[broker.id] || ''
   });
 
   const initialBrokers = staticBrokers.map(convertToAdminBroker);
@@ -99,7 +121,8 @@ export function BrokersManager() {
     instruments: "",
     website: "",
     phone: "",
-    email: ""
+    email: "",
+    logoUrl: ""
   });
 
   // Sync with static brokers if admin brokers are empty or missing some
@@ -292,6 +315,15 @@ export function BrokersManager() {
               </div>
             </div>
 
+            <div>
+              <Label>شعار الوسيط</Label>
+              <LogoSelector
+                selectedLogo={newBroker.logoUrl}
+                onLogoSelect={(logoUrl) => setNewBroker(prev => ({ ...prev, logoUrl }))}
+                onLogoRemove={() => setNewBroker(prev => ({ ...prev, logoUrl: "" }))}
+              />
+            </div>
+
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <Label htmlFor="new-license">الترخيص</Label>
@@ -431,6 +463,15 @@ export function BrokersManager() {
                     </div>
                   </div>
 
+                  <div>
+                    <Label>شعار الوسيط</Label>
+                    <LogoSelector
+                      selectedLogo={editingBroker.logoUrl}
+                      onLogoSelect={(logoUrl) => setEditingBroker(prev => ({ ...prev!, logoUrl }))}
+                      onLogoRemove={() => setEditingBroker(prev => ({ ...prev!, logoUrl: "" }))}
+                    />
+                  </div>
+
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
                       <Label>الترخيص</Label>
@@ -481,9 +522,16 @@ export function BrokersManager() {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
+                      {broker.logoUrl && (
+                        <img 
+                          src={broker.logoUrl} 
+                          alt={`شعار ${broker.nameAr || broker.name}`}
+                          className="h-8 w-auto object-contain"
+                        />
+                      )}
                       <h3 className="text-lg font-semibold">{broker.nameAr || broker.name}</h3>
                       <span className="text-sm text-muted-foreground">({broker.name})</span>
                       <div className="flex items-center gap-1">

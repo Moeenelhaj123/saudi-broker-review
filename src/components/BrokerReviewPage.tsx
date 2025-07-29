@@ -732,7 +732,7 @@ export function BrokerReviewPage() {
               <div className="mb-4">
                 <div className="flex items-start gap-4 mb-6">
                   <img 
-                    src={brokerLogos[safeBroker.id] || safeBroker.logo} 
+                    src={safeBroker.logoUrl || safeBroker.logo || brokerLogos[safeBroker.id]} 
                     alt={`${safeBroker.name} logo`}
                     className="w-20 h-12 object-contain"
                     onError={(e) => {

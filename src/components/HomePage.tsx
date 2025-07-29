@@ -22,7 +22,7 @@ const convertAdminBrokerToBroker = (adminBroker: any): Broker => ({
   id: adminBroker.id,
   name: adminBroker.name,
   nameAr: adminBroker.nameAr || adminBroker.name,
-  logo: "", // Admin brokers don't have logos managed currently
+  logo: adminBroker.logoUrl || "", // Use admin logoUrl
   rating: adminBroker.rating,
   reviewCount: adminBroker.reviews,
   regulation: adminBroker.license ? adminBroker.license.split(', ') : [],

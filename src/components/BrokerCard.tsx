@@ -18,7 +18,7 @@ export function BrokerCard({ broker }: BrokerCardProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
             <img 
-              src={brokerLogos[broker.id] || broker.logo} 
+              src={broker.logo || brokerLogos[broker.id]} 
               alt={`${broker.name} logo`}
               className="w-16 h-10 object-contain"
               onError={(e) => {

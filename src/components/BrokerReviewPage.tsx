@@ -87,7 +87,7 @@ export function BrokerReviewPage() {
       setBestBrokers((current: any[]) => 
         current.filter(b => b.id !== brokerId)
       );
-      toast.success(`تم إزالة ${broker.nameAr} من قائمة الوسطاء الموصى بهم`);
+      toast.success(`تم إزالة ${broker.nameAr || broker.name} من قائمة الوسطاء الموصى بهم`);
     } else {
       // Add to recommended
       const newRecommendedBroker = {
@@ -96,7 +96,7 @@ export function BrokerReviewPage() {
         enabled: true
       };
       setBestBrokers((current: any[]) => [...current, newRecommendedBroker]);
-      toast.success(`تم إضافة ${broker.nameAr} إلى قائمة الوسطاء الموصى بهم`);
+      toast.success(`تم إضافة ${broker.nameAr || broker.name} إلى قائمة الوسطاء الموصى بهم`);
     }
   };
 
@@ -107,8 +107,8 @@ export function BrokerReviewPage() {
   useEffect(() => {
     if (broker) {
       // Use admin-managed SEO content if available
-      const title = brokerContent?.metaTitle || `مراجعة شركة ${broker.nameAr} ${broker.name} - تقييم شامل وآراء المتداولين`;
-      const description = brokerContent?.metaDescription || `مراجعة شاملة لشركة ${broker.nameAr} ${broker.name} - تقييم ${broker.rating}/5 من ${broker.reviewCount} متداول سعودي.`;
+      const title = brokerContent?.metaTitle || `مراجعة شركة ${broker.nameAr || broker.name} ${broker.name} - تقييم شامل وآراء المتداولين`;
+      const description = brokerContent?.metaDescription || `مراجعة شاملة لشركة ${broker.nameAr || broker.name} ${broker.name} - تقييم ${broker.rating || 0}/5 من ${broker.reviewCount || 0} متداول سعودي.`;
       
       document.title = title;
       
@@ -134,7 +134,7 @@ export function BrokerReviewPage() {
         "@type": "Review",
         "itemReviewed": {
           "@type": "FinancialService",
-          "name": `${broker.name} - ${broker.nameAr}`,
+          "name": `${broker.name} - ${broker.nameAr || broker.name}`,
           "description": brokerContent?.companyOverview || broker.descriptionAr,
           "url": broker.website,
           "telephone": broker.phone,
@@ -142,7 +142,7 @@ export function BrokerReviewPage() {
         },
         "reviewRating": {
           "@type": "Rating",
-          "ratingValue": broker.rating,
+          "ratingValue": broker.rating || 0,
           "bestRating": 5,
           "worstRating": 1
         },
@@ -152,14 +152,14 @@ export function BrokerReviewPage() {
         },
         "aggregateRating": {
           "@type": "AggregateRating",
-          "ratingValue": broker.rating,
-          "reviewCount": broker.reviewCount,
+          "ratingValue": broker.rating || 0,
+          "reviewCount": broker.reviewCount || 0,
           "bestRating": 5,
           "worstRating": 1
         },
         "datePublished": new Date().toISOString().split('T')[0],
         "headline": title,
-        "reviewBody": brokerContent?.companyOverview || `مراجعة شاملة لشركة ${broker.nameAr} تشمل التراخيص والتنظيم من ${broker.regulation && Array.isArray(broker.regulation) ? broker.regulation.join(', ') : 'مؤسسات مالية مرخصة'}، الحد الأدنى للإيداع ${broker.minDeposit} دولار، وفروقات تبدأ من ${broker.spreads}.`
+        "reviewBody": brokerContent?.companyOverview || `مراجعة شاملة لشركة ${broker.nameAr || broker.name} تشمل التراخيص والتنظيم من ${broker.regulation && Array.isArray(broker.regulation) ? broker.regulation.join(', ') : 'مؤسسات مالية مرخصة'}، الحد الأدنى للإيداع ${broker.minDeposit || 0} دولار، وفروقات تبدأ من ${broker.spreads || 'تنافسية'}.`
       };
 
       const script = document.createElement('script');
@@ -550,15 +550,15 @@ export function BrokerReviewPage() {
                 </p>
                 <div className="bg-gray-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center">
-                    <div className="text-xl font-bold text-primary">${broker.minDeposit}</div>
+                    <div className="text-xl font-bold text-primary">${broker.minDeposit || 0}</div>
                     <div className="text-sm text-gray-600">الحد الأدنى للإيداع</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xl font-bold text-primary">{broker.spreads}</div>
+                    <div className="text-xl font-bold text-primary">{broker.spreads || 'غير محدد'}</div>
                     <div className="text-sm text-gray-600">الفروقات</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xl font-bold text-primary">{broker.rating}/5</div>
+                    <div className="text-xl font-bold text-primary">{broker.rating || 0}/5</div>
                     <div className="text-sm text-gray-600">التقييم</div>
                   </div>
                 </div>
@@ -569,7 +569,7 @@ export function BrokerReviewPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">التنظيم والتراخيص</h2>
               <div className="prose max-w-none">
                 <p className="text-gray-700 leading-relaxed text-lg mb-4">
-                  شركة {broker.nameAr} مرخصة ومنظمة من قبل جهات تنظيمية موثوقة لضمان بيئة تداول آمنة ومحمية.
+                  شركة {broker.nameAr || broker.name} مرخصة ومنظمة من قبل جهات تنظيمية موثوقة لضمان بيئة تداول آمنة ومحمية.
                 </p>
                 {broker.regulation && broker.regulation.length > 0 && (
                   <div className="mb-4">
@@ -590,7 +590,7 @@ export function BrokerReviewPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">منصات التداول</h2>
               <div className="prose max-w-none">
                 <p className="text-gray-700 leading-relaxed text-lg mb-4">
-                  يوفر وسيط {broker.nameAr} مجموعة متنوعة من منصات التداول المتقدمة لتلبية احتياجات جميع أنواع المتداولين.
+                  يوفر وسيط {broker.nameAr || broker.name} مجموعة متنوعة من منصات التداول المتقدمة لتلبية احتياجات جميع أنواع المتداولين.
                 </p>
                 {broker.platforms && broker.platforms.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -608,7 +608,7 @@ export function BrokerReviewPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">أنواع الحسابات</h2>
               <div className="prose max-w-none">
                 <p className="text-gray-700 leading-relaxed text-lg mb-4">
-                  تقدم شركة {broker.nameAr} أنواع حسابات متعددة تناسب مختلف مستويات الخبرة وأهداف التداول.
+                  تقدم شركة {broker.nameAr || broker.name} أنواع حسابات متعددة تناسب مختلف مستويات الخبرة وأهداف التداول.
                 </p>
                 {broker.accountTypes && broker.accountTypes.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -626,7 +626,7 @@ export function BrokerReviewPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">الرسوم والعمولات</h2>
               <div className="prose max-w-none">
                 <p className="text-gray-700 leading-relaxed text-lg mb-4">
-                  يتميز وسيط {broker.nameAr} بهيكل رسوم شفاف وتنافسي يناسب المتداولين من جميع المستويات.
+                  يتميز وسيط {broker.nameAr || broker.name} بهيكل رسوم شفاف وتنافسي يناسب المتداولين من جميع المستويات.
                 </p>
                 <div className="bg-yellow-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
@@ -690,15 +690,15 @@ export function BrokerReviewPage() {
               <div className="prose max-w-none">
                 <div className="bg-blue-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-lg font-bold text-gray-900">{broker.website}</div>
+                    <div className="text-lg font-bold text-gray-900">{broker.website || 'غير متوفر'}</div>
                     <div className="text-sm text-gray-600">الموقع الإلكتروني</div>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-gray-900">{broker.phone}</div>
+                    <div className="text-lg font-bold text-gray-900">{broker.phone || 'غير متوفر'}</div>
                     <div className="text-sm text-gray-600">رقم الهاتف</div>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-gray-900">{broker.email}</div>
+                    <div className="text-lg font-bold text-gray-900">{broker.email || 'غير متوفر'}</div>
                     <div className="text-sm text-gray-600">البريد الإلكتروني</div>
                   </div>
                 </div>
@@ -709,8 +709,8 @@ export function BrokerReviewPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">الخلاصة والتوصية</h2>
               <div className="prose max-w-none">
                 <p className="text-gray-700 leading-relaxed text-lg mb-4">
-                  يعتبر وسيط {broker.nameAr} خياراً جيداً للمتداولين الذين يبحثون عن وسيط مرخص وموثوق. 
-                  مع تقييم {broker.rating}/5 من {broker.reviewCount.toLocaleString()} متداول، تظهر الشركة 
+                  يعتبر وسيط {broker.nameAr || broker.name} خياراً جيداً للمتداولين الذين يبحثون عن وسيط مرخص وموثوق. 
+                  مع تقييم {broker.rating || 0}/5 من {broker.reviewCount ? broker.reviewCount.toLocaleString() : '0'} متداول، تظهر الشركة 
                   التزامها بتقديم خدمات عالية الجودة.
                 </p>
                 <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
@@ -746,7 +746,7 @@ export function BrokerReviewPage() {
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Link to="/" className="hover:text-blue-600 transition-colors">الرئيسية</Link>
             <ArrowRight size={16} className="text-gray-400" />
-            <span>مراجعة شركة {broker.nameAr}</span>
+            <span>مراجعة شركة {broker.nameAr || broker.name}</span>
           </div>
         </div>
       </div>
@@ -806,7 +806,7 @@ export function BrokerReviewPage() {
                   />
                   <div>
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">
-                      مراجعة شركة {broker.nameAr}
+                      مراجعة شركة {broker.nameAr || broker.name}
                     </h1>
                     <p className="text-lg text-gray-600 mb-2">{broker.name}</p>
                     <div className="flex items-center gap-3">
@@ -815,13 +815,13 @@ export function BrokerReviewPage() {
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              weight={i < Math.floor(broker.rating) ? "fill" : "regular"}
-                              className={`w-5 h-5 ${i < Math.floor(broker.rating) ? "text-yellow-400" : "text-gray-300"}`}
+                              weight={i < Math.floor(broker.rating || 0) ? "fill" : "regular"}
+                              className={`w-5 h-5 ${i < Math.floor(broker.rating || 0) ? "text-yellow-400" : "text-gray-300"}`}
                             />
                           ))}
                         </div>
-                        <span className="text-xl font-bold text-gray-900">{broker.rating}</span>
-                        <span className="text-gray-500">({broker.reviewCount.toLocaleString()} تقييم)</span>
+                        <span className="text-xl font-bold text-gray-900">{broker.rating || '0'}</span>
+                        <span className="text-gray-500">({broker.reviewCount ? broker.reviewCount.toLocaleString() : '0'} تقييم)</span>
                       </div>
                       <Badge className="bg-green-100 text-green-700 px-2 py-1">
                         <CheckCircle size={14} className="mr-1" />
@@ -834,7 +834,7 @@ export function BrokerReviewPage() {
               
               <div className="bg-blue-50 rounded-lg p-4 mb-6">
                 <p className="text-blue-800 leading-relaxed">
-                  {broker.descriptionAr}
+                  {broker.descriptionAr || broker.description || 'وسيط مالي مرخص يقدم خدمات التداول في الأسواق المالية العالمية.'}
                 </p>
               </div>
             </div>
@@ -846,15 +846,15 @@ export function BrokerReviewPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-center space-y-1">
-                    <p className="text-xl font-bold text-green-600">حد أدنى: ${broker.minDeposit}</p>
-                    <p className="text-sm text-gray-600">الفروقات من {broker.spreads}</p>
+                    <p className="text-xl font-bold text-green-600">حد أدنى: ${broker.minDeposit || 0}</p>
+                    <p className="text-sm text-gray-600">الفروقات من {broker.spreads || 'غير محدد'}</p>
                   </div>
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
                     asChild
                   >
-                    <a href={broker.website} target="_blank" rel="noopener noreferrer">
-                      افتح حساب مع {broker.name}
+                    <a href={broker.website || '#'} target="_blank" rel="noopener noreferrer">
+                      افتح حساب مع {broker.name || 'الوسيط'}
                     </a>
                   </Button>
                   <div className="text-xs text-gray-500 text-center">
@@ -896,7 +896,7 @@ export function BrokerReviewPage() {
                       <span className="text-sm text-gray-500">منذ ساعتين</span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      أتداول مع {broker.nameAr} منذ 8 أشهر وأنا راضي جداً عن الخدمة. المنصة سريعة وموثوقة، وفريق الدعم يرد بسرعة على الأسئلة. الفروقات السعرية تنافسية جداً خاصة في الفوركس. أنصح المبتدئين بالبدء معهم.
+                      أتداول مع {broker.nameAr || broker.name} منذ 8 أشهر وأنا راضي جداً عن الخدمة. المنصة سريعة وموثوقة، وفريق الدعم يرد بسرعة على الأسئلة. الفروقات السعرية تنافسية جداً خاصة في الفوركس. أنصح المبتدئين بالبدء معهم.
                     </p>
                     <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
@@ -925,7 +925,7 @@ export function BrokerReviewPage() {
                       <span className="text-sm text-gray-500">منذ 4 ساعات</span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      تجربتي مع {broker.nameAr} إيجابية جداً. سحبت أرباحي عدة مرات بدون أي مشاكل، عادة يوصل المبلغ خلال يومين كحد أقصى. التحليلات والأدوات المتاحة ممتازة للتداول اليومي. التطبيق سهل الاستخدام ومناسب للمبتدئين.
+                      تجربتي مع {broker.nameAr || broker.name} إيجابية جداً. سحبت أرباحي عدة مرات بدون أي مشاكل، عادة يوصل المبلغ خلال يومين كحد أقصى. التحليلات والأدوات المتاحة ممتازة للتداول اليومي. التطبيق سهل الاستخدام ومناسب للمبتدئين.
                     </p>
                     <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
@@ -954,7 +954,7 @@ export function BrokerReviewPage() {
                       <span className="text-sm text-gray-500">منذ 6 ساعات</span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      بصراحة كان عندي تحفظات في البداية، لكن بعد 3 أشهر من التداول مع {broker.nameAr} تغير رأيي تماماً. الشركة منظمة ومرخصة، والأهم أن السحوبات تتم بسرعة. جربت منصات أخرى لكن هذه الأفضل حتى الآن من ناحية الشفافية.
+                      بصراحة كان عندي تحفظات في البداية، لكن بعد 3 أشهر من التداول مع {broker.nameAr || broker.name} تغير رأيي تماماً. الشركة منظمة ومرخصة، والأهم أن السحوبات تتم بسرعة. جربت منصات أخرى لكن هذه الأفضل حتى الآن من ناحية الشفافية.
                     </p>
                     <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
@@ -983,7 +983,7 @@ export function BrokerReviewPage() {
                       <span className="text-sm text-gray-500">منذ 8 ساعات</span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      أول مرة أتداول والحمدلله اخترت {broker.nameAr}. الموقع واضح وفيه شروحات مفيدة للمبتدئين. فريق الدعم ساعدني كثير في البداية ووضحوا لي كل الخطوات. الحساب التجريبي ممتاز لتعلم التداول قبل المخاطرة بأموال حقيقية.
+                      أول مرة أتداول والحمدلله اخترت {broker.nameAr || broker.name}. الموقع واضح وفيه شروحات مفيدة للمبتدئين. فريق الدعم ساعدني كثير في البداية ووضحوا لي كل الخطوات. الحساب التجريبي ممتاز لتعلم التداول قبل المخاطرة بأموال حقيقية.
                     </p>
                     <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
@@ -1012,7 +1012,7 @@ export function BrokerReviewPage() {
                       <span className="text-sm text-gray-500">منذ 12 ساعة</span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      متداول محترف منذ 5 سنوات وجربت شركات كثيرة. {broker.nameAr} من أفضل الشركات اللي تعاملت معها من ناحية السرعة في التنفيذ والشفافية في الأسعار. المنصة مستقرة حتى وقت الأخبار المهمة. أنصح بها بقوة للمتداولين الجادين.
+                      متداول محترف منذ 5 سنوات وجربت شركات كثيرة. {broker.nameAr || broker.name} من أفضل الشركات اللي تعاملت معها من ناحية السرعة في التنفيذ والشفافية في الأسعار. المنصة مستقرة حتى وقت الأخبار المهمة. أنصح بها بقوة للمتداولين الجادين.
                     </p>
                     <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
@@ -1169,8 +1169,8 @@ export function BrokerReviewPage() {
             className="bg-blue-600 hover:bg-blue-700 text-white px-8"
             asChild
           >
-            <a href={broker.website} target="_blank" rel="noopener noreferrer">
-              زيارة موقع {broker.name}
+            <a href={broker.website || '#'} target="_blank" rel="noopener noreferrer">
+              زيارة موقع {broker.name || 'الوسيط'}
             </a>
           </Button>
         </div>

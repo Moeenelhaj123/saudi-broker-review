@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useKV } from "@github/spark/hooks";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,7 +19,20 @@ interface ContactDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface ContactMessage {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  message: string;
+  type: "general" | "broker-inquiry" | "review" | "complaint";
+  status: "new" | "replied" | "resolved" | "archived";
+  date: string;
+}
+
 export function ContactDialog({ open, onOpenChange }: ContactDialogProps) {
+  const [contactMessages, setContactMessages] = useKV<ContactMessage[]>("admin-contact-messages", []);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -46,6 +60,22 @@ export function ContactDialog({ open, onOpenChange }: ContactDialogProps) {
       setIsSubmitting(false);
       return;
     }
+
+    // Create new contact message
+    const newMessage: ContactMessage = {
+      id: Date.now().toString(),
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone || "",
+      message: formData.question,
+      type: "general",
+      status: "new",
+      date: new Date().toISOString()
+    };
+
+    // Save to contact messages
+    setContactMessages((prev) => Array.isArray(prev) ? [newMessage, ...prev] : [newMessage]);
 
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000));

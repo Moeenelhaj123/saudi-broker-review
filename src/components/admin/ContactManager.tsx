@@ -118,7 +118,6 @@ export function ContactManager() {
     // Here you would typically send the reply via email
     updateMessageStatus(selectedMessage.id, "replied");
     setReplyText("");
-    setSelectedMessage(null);
     toast.success("تم إرسال الرد بنجاح");
   };
 
@@ -147,197 +146,128 @@ export function ContactManager() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Messages List */}
-        <div className="lg:col-span-2 space-y-4">
-          {Array.isArray(messages) && messages.map((message) => (
-            <Card 
-              key={message.id} 
-              className={`cursor-pointer transition-all hover:shadow-md ${
-                selectedMessage?.id === message.id ? 'ring-2 ring-primary' : ''
-              }`}
-              onClick={() => setSelectedMessage(message)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between mb-3">
+      {/* Messages List - Full Width Cards */}
+      <div className="space-y-4">
+        {Array.isArray(messages) && messages.map((message) => (
+          <Card 
+            key={message.id} 
+            className="w-full transition-all hover:shadow-md"
+          >
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Client Information */}
+                <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <User className="h-5 w-5 text-primary" />
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <User className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-medium">
+                      <h3 className="font-semibold text-lg">
                         {message.firstName} {message.lastName}
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Mail className="h-3 w-3" />
+                        <Mail className="h-4 w-4" />
                         {message.email}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Phone className="h-4 w-4" />
+                        {message.phone}
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
+                  
+                  <div className="flex gap-2">
                     {getStatusBadge(message.status)}
                     {getTypeBadge(message.type)}
                   </div>
-                </div>
-
-                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                  {message.message}
-                </p>
-
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
+                  
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
                     {formatDate(message.date)}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Phone className="h-3 w-3" />
-                    {message.phone}
-                  </span>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
 
-          {messages.length === 0 && (
-            <Card>
-              <CardContent className="text-center py-12">
-                <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">لا توجد رسائل</h3>
-                <p className="text-muted-foreground">ستظهر رسائل العملاء هنا</p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        {/* Message Details & Reply */}
-        <div className="space-y-4">
-          {selectedMessage ? (
-            <>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
-                    تفاصيل الرسالة
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                {/* Message Content */}
+                <div className="lg:col-span-2 space-y-4">
                   <div>
-                    <Label className="text-sm font-medium">الاسم الكامل</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedMessage.firstName} {selectedMessage.lastName}
-                    </p>
+                    <Label className="text-sm font-medium mb-2 block">الرسالة</Label>
+                    <div className="p-4 bg-muted rounded-lg">
+                      <p className="text-sm leading-relaxed">{message.message}</p>
+                    </div>
                   </div>
 
-                  <div>
-                    <Label className="text-sm font-medium">البريد الإلكتروني</Label>
-                    <p className="text-sm text-muted-foreground">{selectedMessage.email}</p>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">رقم الهاتف</Label>
-                    <p className="text-sm text-muted-foreground">{selectedMessage.phone}</p>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">نوع الرسالة</Label>
-                    <div className="mt-1">{getTypeBadge(selectedMessage.type)}</div>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">الحالة</Label>
-                    <div className="mt-1">{getStatusBadge(selectedMessage.status)}</div>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">التاريخ</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {formatDate(selectedMessage.date)}
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">الرسالة</Label>
-                    <p className="text-sm leading-relaxed p-3 bg-muted rounded-lg">
-                      {selectedMessage.message}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>الرد على الرسالة</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="reply">نص الرد</Label>
+                  {/* Reply Section */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">الرد على العميل</Label>
                     <Textarea
-                      id="reply"
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
                       placeholder="اكتب ردك هنا..."
-                      rows={6}
+                      rows={3}
+                      value={selectedMessage?.id === message.id ? replyText : ""}
+                      onChange={(e) => {
+                        setSelectedMessage(message);
+                        setReplyText(e.target.value);
+                      }}
                     />
+                    
+                    <div className="flex gap-2 flex-wrap">
+                      <Button 
+                        size="sm" 
+                        onClick={() => {
+                          setSelectedMessage(message);
+                          sendReply();
+                        }}
+                        className="gap-2"
+                      >
+                        <Mail className="h-4 w-4" />
+                        إرسال الرد
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => updateMessageStatus(message.id, "replied")}
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                        تم الرد
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => updateMessageStatus(message.id, "resolved")}
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                        محلول
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => updateMessageStatus(message.id, "archived")}
+                      >
+                        <Archive className="h-4 w-4" />
+                        أرشفة
+                      </Button>
+                    </div>
                   </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
 
-                  <div className="flex gap-2">
-                    <Button onClick={sendReply} className="gap-2 flex-1">
-                      <Mail className="h-4 w-4" />
-                      إرسال الرد
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>تحديث الحالة</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full gap-2"
-                    onClick={() => updateMessageStatus(selectedMessage.id, "replied")}
-                  >
-                    <CheckCircle className="h-4 w-4" />
-                    تم الرد
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full gap-2"
-                    onClick={() => updateMessageStatus(selectedMessage.id, "resolved")}
-                  >
-                    <CheckCircle className="h-4 w-4" />
-                    محلول
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full gap-2"
-                    onClick={() => updateMessageStatus(selectedMessage.id, "archived")}
-                  >
-                    <Archive className="h-4 w-4" />
-                    أرشفة
-                  </Button>
-                </CardContent>
-              </Card>
-            </>
-          ) : (
-            <Card>
-              <CardContent className="text-center py-12">
-                <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">اختر رسالة</h3>
-                <p className="text-muted-foreground">
-                  اختر رسالة من القائمة لعرض التفاصيل والرد عليها
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        {messages.length === 0 && (
+          <Card>
+            <CardContent className="text-center py-12">
+              <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">لا توجد رسائل</h3>
+              <p className="text-muted-foreground">ستظهر رسائل العملاء هنا</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

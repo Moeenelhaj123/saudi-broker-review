@@ -150,6 +150,7 @@ export function HomePageManager() {
           tips: { title: "", items: [] }
         });
         break;
+        break;
       case 'faq':
         setTempContent(currentContent || { 
           title: "", 
@@ -381,7 +382,7 @@ export function HomePageManager() {
                 <Label htmlFor="brokers-title">عنوان القسم</Label>
                 <Input
                   id="brokers-title"
-                  value={tempContent?.title || ''}
+                  value={tempContent?.title || brokersSection?.title || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...(prev || {}), 
                     title: e.target.value 
@@ -678,7 +679,7 @@ export function HomePageManager() {
                 <Label htmlFor="fraud-title">عنوان القسم</Label>
                 <Input
                   id="fraud-title"
-                  value={tempContent?.title || ''}
+                  value={tempContent?.title || fraudSection?.title || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     title: e.target.value 
@@ -827,7 +828,7 @@ export function HomePageManager() {
                 <Label htmlFor="articles-title">عنوان القسم</Label>
                 <Input
                   id="articles-title"
-                  value={tempContent?.title || ''}
+                  value={tempContent?.title || articlesSection?.title || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     title: e.target.value 
@@ -914,7 +915,7 @@ export function HomePageManager() {
                 <Label htmlFor="faq-title">عنوان القسم</Label>
                 <Input
                   id="faq-title"
-                  value={tempContent?.title || ''}
+                  value={tempContent?.title || faqSection?.title || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     title: e.target.value 

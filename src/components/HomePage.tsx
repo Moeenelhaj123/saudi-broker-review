@@ -122,7 +122,7 @@ export function HomePage() {
           : brokers.find(broker => broker.id === adminBroker.id);
         return fullBrokerData || { 
           id: adminBroker.id, 
-          name: adminBroker.name, 
+          name: adminBroker.name || "", 
           nameAr: adminBroker.name,
           rating: 4.5,
           reviewCount: 100,

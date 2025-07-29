@@ -51,14 +51,23 @@ export function BrokerReviewPage() {
   // Ensure broker has all required properties with defaults
   const safeBroker = broker ? {
     ...broker,
-    rating: broker.rating || 0,
-    reviewCount: broker.reviewCount || 0,
+    rating: Number(broker.rating) || 0,
+    reviewCount: Number(broker.reviewCount) || 0,
     regulation: broker.regulation || [],
     platforms: broker.platforms || [],
     accountTypes: broker.accountTypes || [],
     pros: broker.pros || [],
     cons: broker.cons || [],
-    fees: broker.fees || {}
+    fees: broker.fees || {},
+    name: broker.name || "",
+    nameAr: broker.nameAr || broker.name || "",
+    description: broker.description || "",
+    descriptionAr: broker.descriptionAr || broker.description || "",
+    website: broker.website || "",
+    phone: broker.phone || "",
+    email: broker.email || "",
+    minDeposit: Number(broker.minDeposit) || 0,
+    spreads: broker.spreads || "متغيرة"
   } : null;
   
   // State for comment form
@@ -81,7 +90,7 @@ export function BrokerReviewPage() {
     if (safeBroker) {
       // Use admin-managed SEO content if available
       const title = brokerContent?.metaTitle || `مراجعة شركة ${safeBroker.nameAr || safeBroker.name} ${safeBroker.name} - تقييم شامل وآراء المتداولين`;
-      const description = brokerContent?.metaDescription || `مراجعة شاملة لشركة ${safeBroker.nameAr || safeBroker.name} ${safeBroker.name} - تقييم ${safeBroker.rating}/5 من ${safeBroker.reviewCount.toLocaleString()} متداول سعودي.`;
+      const description = brokerContent?.metaDescription || `مراجعة شاملة لشركة ${safeBroker.nameAr || safeBroker.name} ${safeBroker.name} - تقييم ${safeBroker.rating}/5 من ${(safeBroker.reviewCount || 0).toLocaleString()} متداول سعودي.`;
       
       document.title = title;
       
@@ -683,7 +692,7 @@ export function BrokerReviewPage() {
               <div className="prose max-w-none">
                 <p className="text-gray-700 leading-relaxed text-lg mb-4">
                   يعتبر وسيط {safeBroker.nameAr || safeBroker.name} خياراً جيداً للمتداولين الذين يبحثون عن وسيط مرخص وموثوق. 
-                  مع تقييم {safeBroker.rating}/5 من {safeBroker.reviewCount.toLocaleString()} متداول، تظهر الشركة 
+                  مع تقييم {safeBroker.rating}/5 من {(safeBroker.reviewCount || 0).toLocaleString()} متداول، تظهر الشركة 
                   التزامها بتقديم خدمات عالية الجودة.
                 </p>
                 <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
@@ -756,7 +765,7 @@ export function BrokerReviewPage() {
                           ))}
                         </div>
                         <span className="text-xl font-bold text-gray-900">{safeBroker.rating}</span>
-                        <span className="text-gray-500">({safeBroker.reviewCount.toLocaleString()} تقييم)</span>
+                        <span className="text-gray-500">({(safeBroker.reviewCount || 0).toLocaleString()} تقييم)</span>
                       </div>
                       <Badge className="bg-green-100 text-green-700 px-2 py-1">
                         <CheckCircle size={14} className="mr-1" />

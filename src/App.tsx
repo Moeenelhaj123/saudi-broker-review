@@ -1,5 +1,5 @@
 import React from "react";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { HomePage } from "@/components/HomePage";
 import { BrokerReviewPage } from "@/components/BrokerReviewPage";
 import { BestBrokersPage } from "@/components/BestBrokersPage";
@@ -29,87 +29,33 @@ function Layout() {
   );
 }
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout />,
-    children: [
-      {
-        index: true,
-        element: <HomePage />
-      },
-      {
-        path: "best-brokers",
-        element: <BestBrokersPage />
-      },
-      {
-        path: "articles",
-        element: <ArticlesPage />
-      },
-      {
-        path: "articles/:slug",
-        element: <ArticlePage />
-      },
-      {
-        path: "contact",
-        element: <ContactPage />
-      },
-      {
-        path: "broker/:brokerId",
-        element: <BrokerReviewPage />
-      },
-      {
-        path: "cadmin",
-        element: <AdminDashboard />,
-        children: [
-          {
-            index: true,
-            element: <DashboardOverview />
-          },
-          {
-            path: "homepage",
-            element: <HomePageManager />
-          },
-          {
-            path: "brokers",
-            element: <BrokersManager />
-          },
-          {
-            path: "brokers/:brokerId",
-            element: <BrokerContentManager />
-          },
-          {
-            path: "articles",
-            element: <ArticlesManager />
-          },
-          {
-            path: "contact",
-            element: <ContactManager />
-          },
-          {
-            path: "newsletter",
-            element: <NewsletterManager />
-          },
-          {
-            path: "test-forms",
-            element: <ContactFormTester />
-          },
-          {
-            path: "test-contact-forms",
-            element: <ContactFormsTestPage />
-          },
-          {
-            path: "test-images",
-            element: <ImageManagerTest />
-          }
-        ]
-      }
-    ]
-  }
-]);
-
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="best-brokers" element={<BestBrokersPage />} />
+          <Route path="articles" element={<ArticlesPage />} />
+          <Route path="articles/:slug" element={<ArticlePage />} />
+          <Route path="contact" element={<ContactPage />} />
+          <Route path="broker/:brokerId" element={<BrokerReviewPage />} />
+          <Route path="cadmin" element={<AdminDashboard />}>
+            <Route index element={<DashboardOverview />} />
+            <Route path="homepage" element={<HomePageManager />} />
+            <Route path="brokers" element={<BrokersManager />} />
+            <Route path="brokers/:brokerId" element={<BrokerContentManager />} />
+            <Route path="articles" element={<ArticlesManager />} />
+            <Route path="contact" element={<ContactManager />} />
+            <Route path="newsletter" element={<NewsletterManager />} />
+            <Route path="test-forms" element={<ContactFormTester />} />
+            <Route path="test-contact-forms" element={<ContactFormsTestPage />} />
+            <Route path="test-images" element={<ImageManagerTest />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;

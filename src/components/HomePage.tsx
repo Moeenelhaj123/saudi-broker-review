@@ -111,12 +111,14 @@ export function HomePage() {
   });
   
   // Use admin best brokers if available, otherwise fallback to static data
-  const enabledBestBrokers = (bestBrokers || []).filter(broker => broker.enabled);
+  const enabledBestBrokers = Array.isArray(bestBrokers) ? bestBrokers.filter(broker => broker.enabled) : [];
   const rawDisplayBrokers = enabledBestBrokers.length > 0 
     ? enabledBestBrokers.map(adminBroker => {
         // Find the broker data from admin-brokers or fallback to static brokers
-        const fullBrokerData = adminBrokers.find((broker: any) => broker.id === adminBroker.id) || 
-                              brokers.find(broker => broker.id === adminBroker.id);
+        const fullBrokerData = Array.isArray(adminBrokers) 
+          ? adminBrokers.find((broker: any) => broker.id === adminBroker.id) || 
+            brokers.find(broker => broker.id === adminBroker.id)
+          : brokers.find(broker => broker.id === adminBroker.id);
         return fullBrokerData || { 
           id: adminBroker.id, 
           name: adminBroker.name, 
@@ -145,7 +147,7 @@ export function HomePage() {
     : [];
   
   // Get enabled scam brokers for warning section
-  const scamBrokers = (scamBrokersData || []).filter(broker => broker.enabled);
+  const scamBrokers = Array.isArray(scamBrokersData) ? scamBrokersData.filter(broker => broker.enabled) : [];
   
   const displayArticles = Array.isArray(adminArticles) && adminArticles.length > 0 
     ? adminArticles.filter((article: any) => article.isPublished).slice(0, 3) 
@@ -340,16 +342,34 @@ export function HomePage() {
               />
             ))}
           </div>
+
+          {/* View All Brokers Button for Mobile */}
+          <div className="text-center mt-6">
+            <Button variant="outline" size="lg" asChild>
+              <Link to="/best-brokers">
+                {brokersSection.buttonText || "عرض جميع الوسطاء"}
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Desktop Grid */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
           {Array.isArray(displayBrokers) && displayBrokers.map((broker) => (
             <BrokerCard
               key={broker.id}
               broker={broker}
             />
           ))}
+        </div>
+
+        {/* View All Brokers Button */}
+        <div className="text-center mb-16">
+          <Button variant="outline" size="lg" asChild>
+            <Link to="/best-brokers">
+              {brokersSection.buttonText || "عرض جميع الوسطاء"}
+            </Link>
+          </Button>
         </div>
 
         {/* Fraud Companies Warning Section */}

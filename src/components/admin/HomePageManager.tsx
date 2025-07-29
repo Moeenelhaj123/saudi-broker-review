@@ -26,7 +26,8 @@ export function HomePageManager() {
   // Recommended Brokers Section State
   const [brokersSection, setBrokersSection] = useKV("admin-brokers-section", {
     title: "الوسطاء الموصى بهم",
-    subtitle: "وسيط مرخص"
+    subtitle: "وسيط مرخص",
+    buttonText: "عرض جميع الوسطاء"
   });
 
   // FAQ Section State
@@ -358,6 +359,19 @@ export function HomePageManager() {
                 />
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="brokers-button">نص زر عرض المزيد</Label>
+                <Input
+                  id="brokers-button"
+                  value={tempContent?.buttonText || ''}
+                  onChange={(e) => setTempContent(prev => ({ 
+                    ...prev, 
+                    buttonText: e.target.value 
+                  }))}
+                  placeholder="أدخل نص الزر"
+                />
+              </div>
+
               <div className="flex gap-2">
                 <Button onClick={() => handleSave('brokers')} className="gap-2">
                   <Save className="h-4 w-4" />
@@ -378,6 +392,11 @@ export function HomePageManager() {
               <div>
                 <h3 className="font-medium mb-2">النص التوضيحي:</h3>
                 <p className="p-4 bg-muted rounded-lg">{brokersSection?.subtitle || "وسيط مرخص"}</p>
+              </div>
+              
+              <div>
+                <h3 className="font-medium mb-2">نص زر عرض المزيد:</h3>
+                <p className="p-4 bg-muted rounded-lg">{brokersSection?.buttonText || "عرض جميع الوسطاء"}</p>
               </div>
             </div>
           )}

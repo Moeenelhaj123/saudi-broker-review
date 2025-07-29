@@ -53,6 +53,15 @@ export function HomePage() {
   // Get admin-managed content
   const [adminBrokers] = useKV("admin-brokers", []);
   const [adminArticles] = useKV("admin-articles", []);
+  const [bestBrokers] = useKV("admin-best-brokers", [
+    { id: "exness", name: "Exness", enabled: true },
+    { id: "avatrade", name: "AvaTrade", enabled: true },
+    { id: "etoro", name: "eToro", enabled: true }
+  ]);
+  const [scamBrokersData] = useKV("admin-scam-brokers", [
+    { id: "scam1", name: "شركة وهمية 1", enabled: true },
+    { id: "scam2", name: "شركة وهمية 2", enabled: true }
+  ]);
   
   // Get section content from admin
   const [brokersSection] = useKV("admin-brokers-section", {
@@ -101,20 +110,42 @@ export function HomePage() {
     buttonText: "عرض جميع المقالات"
   });
   
-  // Use admin brokers if available, otherwise fallback to static data
-  const rawDisplayBrokers = Array.isArray(adminBrokers) && adminBrokers.length > 0 
-    ? adminBrokers.filter((broker: any) => broker.isFeatured) 
-    : brokers;
+  // Use admin best brokers if available, otherwise fallback to static data
+  const enabledBestBrokers = (bestBrokers || []).filter(broker => broker.enabled);
+  const rawDisplayBrokers = enabledBestBrokers.length > 0 
+    ? enabledBestBrokers.map(adminBroker => {
+        // Find the broker data from admin-brokers or fallback to static brokers
+        const fullBrokerData = adminBrokers.find((broker: any) => broker.id === adminBroker.id) || 
+                              brokers.find(broker => broker.id === adminBroker.id);
+        return fullBrokerData || { 
+          id: adminBroker.id, 
+          name: adminBroker.name, 
+          nameAr: adminBroker.name,
+          rating: 4.5,
+          reviewCount: 100,
+          regulation: ["مرخص"],
+          minDeposit: 100,
+          spreads: "متغيرة",
+          platforms: ["MetaTrader"],
+          accountTypes: ["حساب قياسي"],
+          website: "",
+          phone: "",
+          email: "",
+          description: "",
+          descriptionAr: "",
+          pros: [],
+          cons: [],
+          fees: { commission: "0%", withdrawal: "مجاني", inactivity: "غير متاح" }
+        };
+      })
+    : brokers.slice(0, 3);
+  
   const displayBrokers = Array.isArray(rawDisplayBrokers) 
-    ? rawDisplayBrokers.map((broker: any) => 
-        broker && broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
-      ).filter(Boolean)
+    ? rawDisplayBrokers.filter(Boolean)
     : [];
   
-  // Get scam brokers for warning section
-  const scamBrokers = Array.isArray(adminBrokers) && adminBrokers.length > 0 
-    ? adminBrokers.filter((broker: any) => broker.isScam) 
-    : [];
+  // Get enabled scam brokers for warning section
+  const scamBrokers = (scamBrokersData || []).filter(broker => broker.enabled);
   
   const displayArticles = Array.isArray(adminArticles) && adminArticles.length > 0 
     ? adminArticles.filter((article: any) => article.isPublished).slice(0, 3) 

@@ -34,18 +34,46 @@ const convertAdminBrokerToBroker = (adminBroker: any): Broker => ({
 });
 
 export function BestBrokersPage() {
-  // Get admin-managed brokers
+  // Get admin-managed brokers and best brokers list
   const [adminBrokers] = useKV("admin-brokers", []);
+  const [bestBrokers] = useKV("admin-best-brokers", [
+    { id: "exness", name: "Exness", enabled: true },
+    { id: "avatrade", name: "AvaTrade", enabled: true },
+    { id: "etoro", name: "eToro", enabled: true }
+  ]);
   
-  // Use admin brokers if available, otherwise fallback to static data
-  const rawDisplayBrokers = Array.isArray(adminBrokers) && adminBrokers.length > 0 
-    ? adminBrokers.filter((broker: any) => !broker.isScam) 
+  // Use admin best brokers if available, otherwise fallback to static data
+  const enabledBestBrokers = (bestBrokers || []).filter(broker => broker.enabled);
+  const rawDisplayBrokers = enabledBestBrokers.length > 0 
+    ? enabledBestBrokers.map(adminBroker => {
+        // Find the broker data from admin-brokers or fallback to static brokers
+        const fullBrokerData = adminBrokers.find((broker: any) => broker.id === adminBroker.id) || 
+                              brokers.find(broker => broker.id === adminBroker.id);
+        return fullBrokerData || { 
+          id: adminBroker.id, 
+          name: adminBroker.name, 
+          nameAr: adminBroker.name,
+          rating: 4.5,
+          reviewCount: 100,
+          regulation: ["مرخص"],
+          minDeposit: 100,
+          spreads: "متغيرة",
+          platforms: ["MetaTrader"],
+          accountTypes: ["حساب قياسي"],
+          website: "",
+          phone: "",
+          email: "",
+          description: "",
+          descriptionAr: "",
+          pros: [],
+          cons: [],
+          fees: { commission: "0%", withdrawal: "مجاني", inactivity: "غير متاح" }
+        };
+      })
     : brokers;
   
   const displayBrokers = Array.isArray(rawDisplayBrokers)
-    ? rawDisplayBrokers.map((broker: any) => 
-        broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
-      )
+    ? rawDisplayBrokers.filter(Boolean)
     : [];
   return (
     <div className="min-h-screen bg-background">

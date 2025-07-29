@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Save, Edit3, Eye, Plus, Trash2, AlertTriangle, HelpCircle, Users, Star } from "@phosphor-icons/react";
+import { Save, Edit3, Eye, Plus, Trash2, AlertTriangle, HelpCircle, Users, Star, TrendUp, ShieldWarning } from "@phosphor-icons/react";
 
 export function HomePageManager() {
   // Hero Section State
@@ -54,6 +54,19 @@ export function HomePageManager() {
     }
   ]);
 
+  // Best Brokers Management State
+  const [bestBrokers, setBestBrokers] = useKV("admin-best-brokers", [
+    { id: "exness", name: "Exness", enabled: true },
+    { id: "avatrade", name: "AvaTrade", enabled: true },
+    { id: "etoro", name: "eToro", enabled: true }
+  ]);
+
+  // Scam Brokers Management State  
+  const [scamBrokers, setScamBrokers] = useKV("admin-scam-brokers", [
+    { id: "scam1", name: "شركة وهمية 1", enabled: true },
+    { id: "scam2", name: "شركة وهمية 2", enabled: true }
+  ]);
+
   // Fraud Warning Section State
   const [fraudSection, setFraudSection] = useKV("admin-fraud-section", {
     title: "تحذيرات الشركات النصابة",
@@ -79,6 +92,8 @@ export function HomePageManager() {
   const [tempContent, setTempContent] = useState<any>({});
   const [newFaqItem, setNewFaqItem] = useState({ question: "", answer: "" });
   const [newFraudTip, setNewFraudTip] = useState("");
+  const [newBestBroker, setNewBestBroker] = useState({ id: "", name: "" });
+  const [newScamBroker, setNewScamBroker] = useState({ id: "", name: "" });
 
   const handleSave = (section: string) => {
     const safeContent = tempContent || {};
@@ -121,14 +136,14 @@ export function HomePageManager() {
         question: newFaqItem.question.trim(),
         answer: newFaqItem.answer.trim()
       };
-      setFaqItems(current => [...current, newItem]);
+      setFaqItems(current => [...(current || []), newItem]);
       setNewFaqItem({ question: "", answer: "" });
       toast.success("تم إضافة السؤال بنجاح");
     }
   };
 
-  const deleteFaqItem = (id) => {
-    setFaqItems(current => current.filter(item => item.id !== id));
+  const deleteFaqItem = (id: string) => {
+    setFaqItems(current => (current || []).filter(item => item.id !== id));
     toast.success("تم حذف السؤال بنجاح");
   };
 
@@ -146,15 +161,71 @@ export function HomePageManager() {
     }
   };
 
-  const deleteFraudTip = (index) => {
+  const deleteFraudTip = (index: number) => {
     setFraudSection(current => ({
       ...current,
       tips: {
         ...current.tips,
-        items: (current.tips?.items || []).filter((_, i) => i !== index)
+        items: ((current || {}).tips?.items || []).filter((_, i) => i !== index)
       }
     }));
     toast.success("تم حذف النصيحة بنجاح");
+  };
+
+  // Best Brokers Management Functions
+  const addBestBroker = () => {
+    if (newBestBroker.id.trim() && newBestBroker.name.trim()) {
+      const newBroker = {
+        id: newBestBroker.id.trim(),
+        name: newBestBroker.name.trim(),
+        enabled: true
+      };
+      setBestBrokers(current => [...(current || []), newBroker]);
+      setNewBestBroker({ id: "", name: "" });
+      toast.success("تم إضافة الوسيط بنجاح");
+    }
+  };
+
+  const deleteBestBroker = (brokerId: string) => {
+    setBestBrokers(current => (current || []).filter(broker => broker.id !== brokerId));
+    toast.success("تم حذف الوسيط بنجاح");
+  };
+
+  const toggleBestBroker = (brokerId: string) => {
+    setBestBrokers(current => 
+      (current || []).map(broker => 
+        broker.id === brokerId ? { ...broker, enabled: !broker.enabled } : broker
+      )
+    );
+    toast.success("تم تحديث حالة الوسيط");
+  };
+
+  // Scam Brokers Management Functions
+  const addScamBroker = () => {
+    if (newScamBroker.id.trim() && newScamBroker.name.trim()) {
+      const newBroker = {
+        id: newScamBroker.id.trim(),
+        name: newScamBroker.name.trim(),
+        enabled: true
+      };
+      setScamBrokers(current => [...(current || []), newBroker]);
+      setNewScamBroker({ id: "", name: "" });
+      toast.success("تم إضافة الشركة المحذرة بنجاح");
+    }
+  };
+
+  const deleteScamBroker = (brokerId: string) => {
+    setScamBrokers(current => (current || []).filter(broker => broker.id !== brokerId));
+    toast.success("تم حذف الشركة المحذرة بنجاح");
+  };
+
+  const toggleScamBroker = (brokerId: string) => {
+    setScamBrokers(current => 
+      (current || []).map(broker => 
+        broker.id === brokerId ? { ...broker, enabled: !broker.enabled } : broker
+      )
+    );
+    toast.success("تم تحديث حالة الشركة المحذرة");
   };
 
   return (
@@ -313,6 +384,212 @@ export function HomePageManager() {
         </CardContent>
       </Card>
 
+      {/* Best Brokers Management */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <TrendUp className="h-5 w-5" />
+            إدارة الوسطاء الموصى بهم
+          </CardTitle>
+          <div className="flex gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  إضافة وسيط جديد
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>إضافة وسيط موصى به</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-broker-id">معرف الوسيط (ID)</Label>
+                    <Input
+                      id="new-broker-id"
+                      value={newBestBroker.id}
+                      onChange={(e) => setNewBestBroker(prev => ({ 
+                        ...prev, 
+                        id: e.target.value 
+                      }))}
+                      placeholder="مثل: exness, avatrade"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="new-broker-name">اسم الوسيط</Label>
+                    <Input
+                      id="new-broker-name"
+                      value={newBestBroker.name}
+                      onChange={(e) => setNewBestBroker(prev => ({ 
+                        ...prev, 
+                        name: e.target.value 
+                      }))}
+                      placeholder="أدخل اسم الوسيط"
+                    />
+                  </div>
+
+                  <Button onClick={addBestBroker} className="w-full">
+                    إضافة الوسيط
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            إدارة قائمة الوسطاء التي تظهر في قسم "الوسطاء الموصى بهم" في الصفحة الرئيسية
+          </p>
+          
+          <div className="space-y-3">
+            {(bestBrokers || []).map((broker) => (
+              <div key={broker.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Badge variant={broker.enabled ? "default" : "secondary"}>
+                    {broker.enabled ? "مفعل" : "معطل"}
+                  </Badge>
+                  <div>
+                    <h4 className="font-medium">{broker.name}</h4>
+                    <p className="text-sm text-muted-foreground">ID: {broker.id}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => toggleBestBroker(broker.id)}
+                  >
+                    {broker.enabled ? "إلغاء التفعيل" : "تفعيل"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => deleteBestBroker(broker.id)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+            
+            {(bestBrokers || []).length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <TrendUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>لا توجد وسطاء موصى بهم حالياً</p>
+                <p className="text-sm">انقر على "إضافة وسيط جديد" لبدء إنشاء القائمة</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Scam Brokers Management */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <ShieldWarning className="h-5 w-5" />
+            إدارة الشركات المحذرة (النصابة)
+          </CardTitle>
+          <div className="flex gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="destructive" className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  إضافة شركة محذرة
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>إضافة شركة محذرة</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-scam-id">معرف الشركة (ID)</Label>
+                    <Input
+                      id="new-scam-id"
+                      value={newScamBroker.id}
+                      onChange={(e) => setNewScamBroker(prev => ({ 
+                        ...prev, 
+                        id: e.target.value 
+                      }))}
+                      placeholder="مثل: scam-company-1"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="new-scam-name">اسم الشركة المحذرة</Label>
+                    <Input
+                      id="new-scam-name"
+                      value={newScamBroker.name}
+                      onChange={(e) => setNewScamBroker(prev => ({ 
+                        ...prev, 
+                        name: e.target.value 
+                      }))}
+                      placeholder="أدخل اسم الشركة المحذرة"
+                    />
+                  </div>
+
+                  <Button onClick={addScamBroker} variant="destructive" className="w-full">
+                    إضافة الشركة المحذرة
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            إدارة قائمة الشركات النصابة التي تظهر في قسم التحذيرات في الصفحة الرئيسية
+          </p>
+          
+          <div className="space-y-3">
+            {(scamBrokers || []).map((broker) => (
+              <div key={broker.id} className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg bg-destructive/5">
+                <div className="flex items-center gap-3">
+                  <Badge variant={broker.enabled ? "destructive" : "secondary"}>
+                    {broker.enabled ? "مفعل" : "معطل"}
+                  </Badge>
+                  <div>
+                    <h4 className="font-medium">{broker.name}</h4>
+                    <p className="text-sm text-muted-foreground">ID: {broker.id}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => toggleScamBroker(broker.id)}
+                  >
+                    {broker.enabled ? "إلغاء التفعيل" : "تفعيل"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => deleteScamBroker(broker.id)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+            
+            {(scamBrokers || []).length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <ShieldWarning className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>لا توجد شركات محذرة حالياً</p>
+                <p className="text-sm">انقر على "إضافة شركة محذرة" لبدء إنشاء القائمة</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Fraud Warning Section */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -433,7 +710,7 @@ export function HomePageManager() {
               <div>
                 <h3 className="font-medium mb-2">النصائح:</h3>
                 <div className="space-y-2">
-                  {(fraudSection.tips?.items || []).map((tip, index) => (
+                  {((fraudSection || {}).tips?.items || []).map((tip, index) => (
                     <div key={index} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                       <span className="flex-1">• {tip}</span>
                       <Button
@@ -740,7 +1017,7 @@ export function HomePageManager() {
                 </div>
               ))}
               
-              {faqItems.length === 0 && (
+              {(faqItems || []).length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
                   <HelpCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>لا توجد أسئلة شائعة حالياً</p>

@@ -111,12 +111,13 @@ export function HomePage() {
   });
   
   // Use admin best brokers if available, otherwise fallback to static data
-  const enabledBestBrokers = Array.isArray(bestBrokers) ? bestBrokers.filter(broker => broker.enabled) : [];
+  const enabledBestBrokers = Array.isArray(bestBrokers) ? bestBrokers.filter(broker => broker?.enabled) : [];
   const rawDisplayBrokers = enabledBestBrokers.length > 0 
     ? enabledBestBrokers.map(adminBroker => {
+        if (!adminBroker) return null;
         // Find the broker data from admin-brokers or fallback to static brokers
         const fullBrokerData = Array.isArray(adminBrokers) 
-          ? adminBrokers.find((broker: any) => broker.id === adminBroker.id) || 
+          ? adminBrokers.find((broker: any) => broker?.id === adminBroker.id) || 
             brokers.find(broker => broker.id === adminBroker.id)
           : brokers.find(broker => broker.id === adminBroker.id);
         return fullBrokerData || { 
@@ -139,7 +140,7 @@ export function HomePage() {
           cons: [],
           fees: { commission: "0%", withdrawal: "مجاني", inactivity: "غير متاح" }
         };
-      })
+      }).filter(Boolean)
     : brokers.slice(0, 3);
   
   const displayBrokers = Array.isArray(rawDisplayBrokers) 

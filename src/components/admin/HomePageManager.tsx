@@ -221,9 +221,10 @@ export function HomePageManager() {
   };
 
   const toggleBestBroker = (brokerId: string) => {
+    if (!brokerId) return;
     setBestBrokers(current => 
-      (current || []).map(broker => 
-        broker.id === brokerId ? { ...broker, enabled: !broker.enabled } : broker
+      (current || []).filter(Boolean).map(broker => 
+        broker?.id === brokerId ? { ...broker, enabled: !broker.enabled } : broker
       )
     );
     toast.success("تم تحديث حالة الوسيط");
@@ -244,14 +245,16 @@ export function HomePageManager() {
   };
 
   const deleteScamBroker = (brokerId: string) => {
-    setScamBrokers(current => (current || []).filter(broker => broker.id !== brokerId));
+    if (!brokerId) return;
+    setScamBrokers(current => (current || []).filter(broker => broker?.id !== brokerId));
     toast.success("تم حذف الشركة المحذرة بنجاح");
   };
 
   const toggleScamBroker = (brokerId: string) => {
+    if (!brokerId) return;
     setScamBrokers(current => 
-      (current || []).map(broker => 
-        broker.id === brokerId ? { ...broker, enabled: !broker.enabled } : broker
+      (current || []).filter(Boolean).map(broker => 
+        broker?.id === brokerId ? { ...broker, enabled: !broker.enabled } : broker
       )
     );
     toast.success("تم تحديث حالة الشركة المحذرة");
@@ -497,14 +500,14 @@ export function HomePageManager() {
           
           <div className="space-y-3">
             {(bestBrokers || []).map((broker) => (
-              <div key={broker.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={broker?.id || Math.random()} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-3">
-                  <Badge variant={broker.enabled ? "default" : "secondary"}>
-                    {broker.enabled ? "مفعل" : "معطل"}
+                  <Badge variant={broker?.enabled ? "default" : "secondary"}>
+                    {broker?.enabled ? "مفعل" : "معطل"}
                   </Badge>
                   <div>
-                    <h4 className="font-medium">{broker.name}</h4>
-                    <p className="text-sm text-muted-foreground">ID: {broker.id}</p>
+                    <h4 className="font-medium">{broker?.name || ''}</h4>
+                    <p className="text-sm text-muted-foreground">ID: {broker?.id || ''}</p>
                   </div>
                 </div>
                 
@@ -512,7 +515,7 @@ export function HomePageManager() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => toggleBestBroker(broker.id)}
+                    onClick={() => toggleBestBroker(broker?.id)}
                   >
                     {broker.enabled ? "إلغاء التفعيل" : "تفعيل"}
                   </Button>
@@ -600,14 +603,14 @@ export function HomePageManager() {
           
           <div className="space-y-3">
             {(scamBrokers || []).map((broker) => (
-              <div key={broker.id} className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg bg-destructive/5">
+              <div key={broker?.id || Math.random()} className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg bg-destructive/5">
                 <div className="flex items-center gap-3">
-                  <Badge variant={broker.enabled ? "destructive" : "secondary"}>
-                    {broker.enabled ? "مفعل" : "معطل"}
+                  <Badge variant={broker?.enabled ? "destructive" : "secondary"}>
+                    {broker?.enabled ? "مفعل" : "معطل"}
                   </Badge>
                   <div>
-                    <h4 className="font-medium">{broker.name}</h4>
-                    <p className="text-sm text-muted-foreground">ID: {broker.id}</p>
+                    <h4 className="font-medium">{broker?.name || ''}</h4>
+                    <p className="text-sm text-muted-foreground">ID: {broker?.id || ''}</p>
                   </div>
                 </div>
                 
@@ -615,14 +618,14 @@ export function HomePageManager() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => toggleScamBroker(broker.id)}
+                    onClick={() => toggleScamBroker(broker?.id)}
                   >
-                    {broker.enabled ? "إلغاء التفعيل" : "تفعيل"}
+                    {broker?.enabled ? "إلغاء التفعيل" : "تفعيل"}
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => deleteScamBroker(broker.id)}
+                    onClick={() => deleteScamBroker(broker?.id)}
                     className="text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -687,9 +690,9 @@ export function HomePageManager() {
               <div className="space-y-2">
                 <Label>النصائح الحالية:</Label>
                 <div className="space-y-2">
-                  {tempContent.tips?.items?.map((tip, index) => (
+                  {(tempContent.tips?.items || []).map((tip, index) => (
                     <div key={index} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                      <span className="flex-1">{tip}</span>
+                      <span className="flex-1">{tip || ''}</span>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -764,7 +767,7 @@ export function HomePageManager() {
                 <div className="space-y-2">
                   {((fraudSection || {}).tips?.items || []).map((tip, index) => (
                     <div key={index} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                      <span className="flex-1">• {tip}</span>
+                      <span className="flex-1">• {tip || ''}</span>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -1051,11 +1054,11 @@ export function HomePageManager() {
 
             <div className="space-y-3">
               {(faqItems || []).map((item) => (
-                <div key={item.id} className="border rounded-lg p-4">
+                <div key={item?.id || Math.random()} className="border rounded-lg p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <h4 className="font-medium mb-2">{item.question}</h4>
-                      <p className="text-sm text-muted-foreground">{item.answer}</p>
+                      <h4 className="font-medium mb-2">{item?.question || ''}</h4>
+                      <p className="text-sm text-muted-foreground">{item?.answer || ''}</p>
                     </div>
                     <Button
                       size="sm"

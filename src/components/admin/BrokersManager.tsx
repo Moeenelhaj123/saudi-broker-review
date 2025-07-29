@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { brokers as staticBrokers } from "@/lib/data";
-import { LogoSelector } from "@/components/admin/LogoSelector";
+import { LogoUploader } from "@/components/admin/LogoUploader";
 import { 
   Plus, 
   Edit3, 
@@ -317,7 +317,7 @@ export function BrokersManager() {
 
             <div>
               <Label>شعار الوسيط</Label>
-              <LogoSelector
+              <LogoUploader
                 selectedLogo={newBroker.logoUrl}
                 onLogoSelect={(logoUrl) => setNewBroker(prev => ({ ...prev, logoUrl }))}
                 onLogoRemove={() => setNewBroker(prev => ({ ...prev, logoUrl: "" }))}
@@ -465,7 +465,7 @@ export function BrokersManager() {
 
                   <div>
                     <Label>شعار الوسيط</Label>
-                    <LogoSelector
+                    <LogoUploader
                       selectedLogo={editingBroker.logoUrl}
                       onLogoSelect={(logoUrl) => setEditingBroker(prev => ({ ...prev!, logoUrl }))}
                       onLogoRemove={() => setEditingBroker(prev => ({ ...prev!, logoUrl: "" }))}

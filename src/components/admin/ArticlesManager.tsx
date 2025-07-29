@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { articles as initialArticles, Article as ArticleInterface } from "@/lib/articles";
+import { ArticleImageUploader } from "@/components/admin/ArticleImageUploader";
 import { 
   Plus, 
   Edit3, 
@@ -31,88 +32,12 @@ import {
   Check
 } from "lucide-react";
 
-// Import existing article images
-import articleCryptoTrading from "@/assets/images/article-crypto-trading.svg";
-import articleHalalTrading from "@/assets/images/article-halal-trading.svg";
-import articlePsychology from "@/assets/images/article-psychology.svg";
-import articleRiskManagement from "@/assets/images/article-risk-management.svg";
-import articleTechnicalAnalysis from "@/assets/images/article-technical-analysis.svg";
-import articleTradingBasics from "@/assets/images/article-trading-basics.svg";
-
 interface ContentSection {
   id: string;
   type: 'heading' | 'subheading' | 'paragraph';
   content: string;
   order: number;
 }
-
-// Available images with metadata
-interface ImageOption {
-  id: string;
-  name: string;
-  src: string;
-  size: 'small' | 'medium' | 'large';
-  aspectRatio: string;
-  description: string;
-  category: string;
-}
-
-const availableImages: ImageOption[] = [
-  {
-    id: 'crypto-trading',
-    name: 'تداول العملات الرقمية',
-    src: articleCryptoTrading,
-    size: 'large',
-    aspectRatio: '16:9',
-    description: 'صورة مخصصة لمقالات تداول العملات الرقمية والكريبتو',
-    category: 'تداول'
-  },
-  {
-    id: 'halal-trading',
-    name: 'التداول الحلال',
-    src: articleHalalTrading,
-    size: 'large',
-    aspectRatio: '16:9',
-    description: 'صورة مخصصة لمقالات التداول الإسلامي والحساب الإسلامي',
-    category: 'إسلامي'
-  },
-  {
-    id: 'psychology',
-    name: 'علم النفس التداولي',
-    src: articlePsychology,
-    size: 'large',
-    aspectRatio: '16:9',
-    description: 'صورة مخصصة لمقالات علم النفس في التداول والسيطرة على المشاعر',
-    category: 'تعليم'
-  },
-  {
-    id: 'risk-management',
-    name: 'إدارة المخاطر',
-    src: articleRiskManagement,
-    size: 'large',
-    aspectRatio: '16:9',
-    description: 'صورة مخصصة لمقالات إدارة المخاطر والحماية في التداول',
-    category: 'تعليم'
-  },
-  {
-    id: 'technical-analysis',
-    name: 'التحليل الفني',
-    src: articleTechnicalAnalysis,
-    size: 'large',
-    aspectRatio: '16:9',
-    description: 'صورة مخصصة لمقالات التحليل الفني والمؤشرات',
-    category: 'تحليل'
-  },
-  {
-    id: 'trading-basics',
-    name: 'أساسيات التداول',
-    src: articleTradingBasics,
-    size: 'large',
-    aspectRatio: '16:9',
-    description: 'صورة مخصصة لمقالات تعليم أساسيات التداول للمبتدئين',
-    category: 'تعليم'
-  }
-];
 
 interface AdminArticle {
   id: string;
@@ -175,7 +100,7 @@ export function ArticlesManager() {
   const [editingArticle, setEditingArticle] = useState<AdminArticle | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [useStructuredEditor, setUseStructuredEditor] = useState(false);
-  const [showImageSelector, setShowImageSelector] = useState(false);
+  const [showImageUploader, setShowImageUploader] = useState(false);
   const [selectedImageField, setSelectedImageField] = useState<'new' | 'edit'>('new');
   const [newArticle, setNewArticle] = useState<Partial<AdminArticle>>({
     title: "",
@@ -348,134 +273,22 @@ export function ArticlesManager() {
   };
 
   // Handle image selection
-  const handleImageSelect = (imageOption: ImageOption) => {
+  const handleImageSelect = (imageUrl: string) => {
     if (selectedImageField === 'new') {
-      setNewArticle(prev => ({ ...prev, image: imageOption.src }));
+      setNewArticle(prev => ({ ...prev, image: imageUrl }));
     } else if (editingArticle) {
-      setEditingArticle(prev => ({ ...prev!, image: imageOption.src }));
+      setEditingArticle(prev => ({ ...prev!, image: imageUrl }));
     }
-    setShowImageSelector(false);
-    toast.success(`تم اختيار الصورة: ${imageOption.name}`);
   };
 
-  // Image Selector Component
-  const ImageSelectorDialog = () => (
-    <Dialog open={showImageSelector} onOpenChange={setShowImageSelector}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>اختيار صورة للمقال</DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-6">
-          {/* Filter by category */}
-          <div className="flex flex-wrap gap-2">
-            {Array.from(new Set(availableImages.map(img => img.category))).map(category => (
-              <Badge key={category} variant="outline" className="cursor-pointer">
-                {category}
-              </Badge>
-            ))}
-          </div>
-
-          {/* Images grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {availableImages.map((imageOption) => (
-              <Card 
-                key={imageOption.id} 
-                className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-primary/50"
-                onClick={() => handleImageSelect(imageOption)}
-              >
-                <CardContent className="p-4">
-                  <div className="aspect-video mb-3 rounded-lg overflow-hidden bg-muted">
-                    <img 
-                      src={imageOption.src} 
-                      alt={imageOption.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium text-sm">{imageOption.name}</h4>
-                      <Badge variant="secondary" className="text-xs">
-                        {imageOption.size}
-                      </Badge>
-                    </div>
-                    
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {imageOption.description}
-                    </p>
-                    
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>نسبة العرض: {imageOption.aspectRatio}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {imageOption.category}
-                      </Badge>
-                    </div>
-                    
-                    <Button 
-                      className="w-full gap-2" 
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleImageSelect(imageOption);
-                      }}
-                    >
-                      <Check className="h-3 w-3" />
-                      اختيار هذه الصورة
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Custom URL option */}
-          <Separator />
-          <div className="space-y-4">
-            <h4 className="font-medium">أو استخدم رابط صورة مخصص</h4>
-            <div className="flex gap-2">
-              <Input 
-                placeholder="https://example.com/image.jpg"
-                className="flex-1"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const url = e.currentTarget.value.trim();
-                    if (url) {
-                      if (selectedImageField === 'new') {
-                        setNewArticle(prev => ({ ...prev, image: url }));
-                      } else if (editingArticle) {
-                        setEditingArticle(prev => ({ ...prev!, image: url }));
-                      }
-                      setShowImageSelector(false);
-                      toast.success("تم حفظ رابط الصورة المخصص");
-                    }
-                  }
-                }}
-              />
-              <Button 
-                variant="outline"
-                onClick={() => {
-                  const input = document.querySelector('input[placeholder*="example.com"]') as HTMLInputElement;
-                  const url = input?.value.trim();
-                  if (url) {
-                    if (selectedImageField === 'new') {
-                      setNewArticle(prev => ({ ...prev, image: url }));
-                    } else if (editingArticle) {
-                      setEditingArticle(prev => ({ ...prev!, image: url }));
-                    }
-                    setShowImageSelector(false);
-                    toast.success("تم حفظ رابط الصورة المخصص");
-                  }
-                }}
-              >
-                حفظ
-              </Button>
-            </div>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
+  // Handle image removal
+  const handleImageRemove = () => {
+    if (selectedImageField === 'new') {
+      setNewArticle(prev => ({ ...prev, image: "" }));
+    } else if (editingArticle) {
+      setEditingArticle(prev => ({ ...prev!, image: "" }));
+    }
+  };
 
   const handleAddArticle = () => {
     if (!newArticle.title || !newArticle.excerpt) {
@@ -702,7 +515,13 @@ export function ArticlesManager() {
 
   return (
     <div className="space-y-6">
-      <ImageSelectorDialog />
+      <ArticleImageUploader
+        selectedImage={selectedImageField === 'new' ? newArticle.image : editingArticle?.image}
+        onImageSelect={handleImageSelect}
+        onImageRemove={handleImageRemove}
+        isOpen={showImageUploader}
+        onOpenChange={setShowImageUploader}
+      />
       
       <div className="flex items-center justify-between">
         <div>
@@ -828,7 +647,7 @@ export function ArticlesManager() {
                       variant="outline"
                       onClick={() => {
                         setSelectedImageField('new');
-                        setShowImageSelector(true);
+                        setShowImageUploader(true);
                       }}
                       className="gap-2 flex-1"
                     >
@@ -1038,7 +857,7 @@ export function ArticlesManager() {
                             variant="outline"
                             onClick={() => {
                               setSelectedImageField('edit');
-                              setShowImageSelector(true);
+                              setShowImageUploader(true);
                             }}
                             className="gap-2 flex-1"
                           >

@@ -57,12 +57,6 @@ export function HomePageManager() {
 
   // Safe access for arrays
   const safeFaqItems = Array.isArray(faqItems) ? faqItems : [];
-    {
-      id: "q2", 
-      question: "ما هي الرسوم المتوقعة عند التداول؟",
-      answer: "تختلف الرسوم بين الوسطاء، ولكن عادة تشمل: رسوم العمولة على كل صفقة (تتراوح من 0.05% إلى 0.25%)، رسوم حفظ الأوراق المالية، رسوم التحويل والسحب، ورسوم عدم النشاط في بعض الحالات."
-    }
-  ]);
 
   // Best Brokers Management State
   const [bestBrokers, setBestBrokers] = useKV("admin-best-brokers", [

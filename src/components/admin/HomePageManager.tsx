@@ -127,7 +127,34 @@ export function HomePageManager() {
 
   const startEditing = (section: string, currentContent: any) => {
     setEditingSection(section);
-    setTempContent(currentContent || {});
+    
+    // Ensure proper default structure for each section
+    switch(section) {
+      case 'hero':
+        setTempContent(currentContent || { headline: "", subheadline: "" });
+        break;
+      case 'brokers':
+        setTempContent(currentContent || { title: "", subtitle: "", buttonText: "" });
+        break;
+      case 'fraud':
+        setTempContent(currentContent || { 
+          title: "", 
+          tips: { title: "", items: [] } 
+        });
+        break;
+      case 'articles':
+        setTempContent(currentContent || { title: "", subtitle: "", buttonText: "" });
+        break;
+      case 'faq':
+        setTempContent(currentContent || { 
+          title: "", 
+          subtitle: "", 
+          contactCta: { title: "", subtitle: "", buttonText: "" } 
+        });
+        break;
+      default:
+        setTempContent(currentContent || {});
+    }
   };
 
   const addFaqItem = () => {
@@ -634,7 +661,7 @@ export function HomePageManager() {
                 <Label htmlFor="fraud-title">عنوان القسم</Label>
                 <Input
                   id="fraud-title"
-                  value={tempContent.title || ''}
+                  value={tempContent?.title || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     title: e.target.value 
@@ -783,7 +810,7 @@ export function HomePageManager() {
                 <Label htmlFor="articles-title">عنوان القسم</Label>
                 <Input
                   id="articles-title"
-                  value={tempContent.title || ''}
+                  value={tempContent?.title || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     title: e.target.value 
@@ -796,7 +823,7 @@ export function HomePageManager() {
                 <Label htmlFor="articles-subtitle">النص التوضيحي</Label>
                 <Textarea
                   id="articles-subtitle"
-                  value={tempContent.subtitle || ''}
+                  value={tempContent?.subtitle || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     subtitle: e.target.value 
@@ -870,7 +897,7 @@ export function HomePageManager() {
                 <Label htmlFor="faq-title">عنوان القسم</Label>
                 <Input
                   id="faq-title"
-                  value={tempContent.title || ''}
+                  value={tempContent?.title || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     title: e.target.value 
@@ -883,7 +910,7 @@ export function HomePageManager() {
                 <Label htmlFor="faq-subtitle">النص التوضيحي</Label>
                 <Textarea
                   id="faq-subtitle"
-                  value={tempContent.subtitle || ''}
+                  value={tempContent?.subtitle || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     subtitle: e.target.value 

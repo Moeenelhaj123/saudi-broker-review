@@ -73,6 +73,9 @@ export function BrokerReviewPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  // Contact messages for admin
+  const [contactMessages, setContactMessages] = useKV("admin-contact-messages", []);
 
   // Check if broker is already in recommended list
   const isInRecommended = bestBrokers.some((b: any) => b.id === brokerId);
@@ -839,6 +842,28 @@ export function BrokerReviewPage() {
                     e.preventDefault();
                     setIsSubmitting(true);
                     
+                    if (!commentForm.name || !commentForm.comment) {
+                      toast.error("يرجى ملء جميع الحقول المطلوبة");
+                      setIsSubmitting(false);
+                      return;
+                    }
+                    
+                    // Create contact message for the review/comment
+                    const newMessage = {
+                      id: Date.now().toString(),
+                      firstName: commentForm.name.split(' ')[0] || commentForm.name,
+                      lastName: commentForm.name.split(' ').slice(1).join(' ') || "",
+                      email: "", // Email not collected in comment form
+                      phone: "", // Phone not collected in comment form
+                      message: `تقييم وتعليق على وسيط ${broker.nameAr || broker.name}: ${commentForm.comment} (التقييم: ${commentForm.rating}/5)`,
+                      type: "review" as const,
+                      status: "new" as const,
+                      date: new Date().toISOString()
+                    };
+                    
+                    // Save to contact messages
+                    setContactMessages((prev: any[]) => Array.isArray(prev) ? [newMessage, ...prev] : [newMessage]);
+                    
                     // Simulate API call
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     
@@ -860,6 +885,7 @@ export function BrokerReviewPage() {
                       onChange={(e) => setCommentForm(prev => ({ ...prev, name: e.target.value }))}
                       placeholder="أدخل اسمك"
                       required
+                      disabled={isSubmitting}
                       className="text-right"
                       dir="rtl"
                     />
@@ -872,8 +898,9 @@ export function BrokerReviewPage() {
                         <button
                           key={star}
                           type="button"
+                          disabled={isSubmitting}
                           onClick={() => setCommentForm(prev => ({ ...prev, rating: star }))}
-                          className="hover:scale-110 transition-transform"
+                          className="hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Star
                             size={24}
@@ -893,6 +920,7 @@ export function BrokerReviewPage() {
                       onChange={(e) => setCommentForm(prev => ({ ...prev, comment: e.target.value }))}
                       placeholder="شاركنا تجربتك مع هذا الوسيط..."
                       required
+                      disabled={isSubmitting}
                       className="min-h-[100px] text-right"
                       dir="rtl"
                     />

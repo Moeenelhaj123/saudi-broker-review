@@ -16,7 +16,8 @@ interface ContactMessage {
   email: string;
   phone: string;
   message: string;
-  type: "general" | "broker-inquiry" | "review" | "complaint";
+  type: "general" | "broker-inquiry" | "review" | "complaint" | "newsletter";
+  status?: "new" | "replied" | "resolved" | "archived";
   date: string;
 }
 
@@ -64,6 +65,8 @@ export function ContactManager() {
         return <Badge className="bg-orange-100 text-orange-800">تقييم</Badge>;
       case "complaint":
         return <Badge variant="destructive">شكوى</Badge>;
+      case "newsletter":
+        return <Badge className="bg-green-100 text-green-800">نشرة إخبارية</Badge>;
       default:
         return <Badge variant="outline">{type}</Badge>;
     }

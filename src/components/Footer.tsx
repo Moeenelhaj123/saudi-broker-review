@@ -13,9 +13,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { useKV } from '@github/spark/hooks';
 import { toast } from "sonner";
 
+interface ContactMessage {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  message: string;
+  type: "general" | "broker-inquiry" | "review" | "complaint" | "newsletter";
+  status: "new" | "replied" | "resolved" | "archived";
+  date: string;
+}
+
 export function Footer() {
   const [isNewsletterDialogOpen, setIsNewsletterDialogOpen] = useState(false);
-  const [subscriptions, setSubscriptions] = useKV("newsletter-subscriptions", []);
+  const [contactMessages, setContactMessages] = useKV<ContactMessage[]>("admin-contact-messages", []);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -23,22 +35,36 @@ export function Footer() {
     phone: "",
     jobDescription: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     if (!formData.firstName || !formData.lastName || !formData.email) {
       toast.error("يرجى ملء جميع الحقول المطلوبة");
+      setIsSubmitting(false);
       return;
     }
 
-    const newSubscription = {
+    // Create new contact message for newsletter subscription
+    const newMessage: ContactMessage = {
       id: Date.now().toString(),
-      ...formData,
-      createdAt: new Date().toISOString()
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone || "",
+      message: `اشتراك في النشرة الإخبارية${formData.jobDescription ? ` - الوصف الوظيفي: ${formData.jobDescription}` : ""}`,
+      type: "newsletter",
+      status: "new",
+      date: new Date().toISOString()
     };
 
-    setSubscriptions((current) => [...current, newSubscription]);
+    // Save to contact messages (same as contact dialog)
+    setContactMessages((prev) => Array.isArray(prev) ? [newMessage, ...prev] : [newMessage]);
+    
+    // Simulate form submission
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     setFormData({
       firstName: "",
@@ -49,6 +75,7 @@ export function Footer() {
     });
     
     setIsNewsletterDialogOpen(false);
+    setIsSubmitting(false);
     toast.success("تم الاشتراك في النشرة الإخبارية بنجاح!");
   };
 
@@ -92,6 +119,7 @@ export function Footer() {
                         value={formData.firstName}
                         onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                         required
+                        disabled={isSubmitting}
                       />
                     </div>
                     <div>
@@ -103,6 +131,7 @@ export function Footer() {
                         value={formData.lastName}
                         onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                         required
+                        disabled={isSubmitting}
                       />
                     </div>
                   </div>
@@ -117,6 +146,7 @@ export function Footer() {
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                       required
+                      disabled={isSubmitting}
                     />
                   </div>
                   
@@ -128,6 +158,7 @@ export function Footer() {
                       id="phone"
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      disabled={isSubmitting}
                     />
                   </div>
                   
@@ -140,11 +171,12 @@ export function Footer() {
                       value={formData.jobDescription}
                       onChange={(e) => setFormData({...formData, jobDescription: e.target.value})}
                       rows={3}
+                      disabled={isSubmitting}
                     />
                   </div>
                   
-                  <Button type="submit" className="w-full">
-                    اشترك الآن
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "جاري الإرسال..." : "اشترك الآن"}
                   </Button>
                 </form>
               </DialogContent>

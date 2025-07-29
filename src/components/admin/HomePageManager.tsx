@@ -75,27 +75,28 @@ export function HomePageManager() {
   });
 
   // Editing states
-  const [editingSection, setEditingSection] = useState(null);
-  const [tempContent, setTempContent] = useState({});
+  const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [tempContent, setTempContent] = useState<any>({});
   const [newFaqItem, setNewFaqItem] = useState({ question: "", answer: "" });
   const [newFraudTip, setNewFraudTip] = useState("");
 
-  const handleSave = (section) => {
+  const handleSave = (section: string) => {
+    const safeContent = tempContent || {};
     switch(section) {
       case 'hero':
-        setHeroContent(tempContent);
+        setHeroContent(safeContent);
         break;
       case 'brokers':
-        setBrokersSection(tempContent);
+        setBrokersSection(safeContent);
         break;
       case 'faq':
-        setFaqSection(tempContent);
+        setFaqSection(safeContent);
         break;
       case 'fraud':
-        setFraudSection(tempContent);
+        setFraudSection(safeContent);
         break;
       case 'articles':
-        setArticlesSection(tempContent);
+        setArticlesSection(safeContent);
         break;
     }
     setEditingSection(null);
@@ -108,9 +109,9 @@ export function HomePageManager() {
     setTempContent({});
   };
 
-  const startEditing = (section, currentContent) => {
+  const startEditing = (section: string, currentContent: any) => {
     setEditingSection(section);
-    setTempContent(currentContent);
+    setTempContent(currentContent || {});
   };
 
   const addFaqItem = () => {
@@ -193,7 +194,7 @@ export function HomePageManager() {
                 <Label htmlFor="headline">العنوان الرئيسي</Label>
                 <Input
                   id="headline"
-                  value={tempContent.headline || ''}
+                  value={tempContent?.headline || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     headline: e.target.value 
@@ -206,7 +207,7 @@ export function HomePageManager() {
                 <Label htmlFor="subheadline">العنوان الفرعي</Label>
                 <Textarea
                   id="subheadline"
-                  value={tempContent.subheadline || ''}
+                  value={tempContent?.subheadline || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     subheadline: e.target.value 
@@ -229,14 +230,14 @@ export function HomePageManager() {
           ) : (
             <div className="space-y-4">
               <div>
-                <h3 className="font-medium mb-2">العنوان الرئيسي:</h3>
-                <p className="p-4 bg-muted rounded-lg">{heroContent.headline}</p>
+                <h3 className="font-medium mb-2">عنوان القسم:</h3>
+                <p className="p-4 bg-muted rounded-lg">{heroContent?.headline || "العنوان الرئيسي"}</p>
               </div>
               
               <div>
                 <h3 className="font-medium mb-2">العنوان الفرعي:</h3>
                 <p className="p-4 bg-muted rounded-lg leading-relaxed">
-                  {heroContent.subheadline}
+                  {heroContent?.subheadline || "العنوان الفرعي"}
                 </p>
               </div>
             </div>
@@ -264,7 +265,7 @@ export function HomePageManager() {
                 <Label htmlFor="brokers-title">عنوان القسم</Label>
                 <Input
                   id="brokers-title"
-                  value={tempContent.title || ''}
+                  value={tempContent?.title || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     title: e.target.value 
@@ -277,7 +278,7 @@ export function HomePageManager() {
                 <Label htmlFor="brokers-subtitle">النص التوضيحي</Label>
                 <Input
                   id="brokers-subtitle"
-                  value={tempContent.subtitle || ''}
+                  value={tempContent?.subtitle || ''}
                   onChange={(e) => setTempContent(prev => ({ 
                     ...prev, 
                     subtitle: e.target.value 
@@ -300,12 +301,12 @@ export function HomePageManager() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-medium mb-2">عنوان القسم:</h3>
-                <p className="p-4 bg-muted rounded-lg">{brokersSection.title}</p>
+                <p className="p-4 bg-muted rounded-lg">{brokersSection?.title || "الوسطاء الموصى بهم"}</p>
               </div>
               
               <div>
                 <h3 className="font-medium mb-2">النص التوضيحي:</h3>
-                <p className="p-4 bg-muted rounded-lg">{brokersSection.subtitle}</p>
+                <p className="p-4 bg-muted rounded-lg">{brokersSection?.subtitle || "وسيط مرخص"}</p>
               </div>
             </div>
           )}
@@ -421,12 +422,12 @@ export function HomePageManager() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-medium mb-2">عنوان القسم:</h3>
-                <p className="p-4 bg-muted rounded-lg">{fraudSection.title}</p>
+                <p className="p-4 bg-muted rounded-lg">{fraudSection?.title || "تحذيرات الشركات النصابة"}</p>
               </div>
               
               <div>
                 <h3 className="font-medium mb-2">عنوان النصائح:</h3>
-                <p className="p-4 bg-muted rounded-lg">{fraudSection.tips?.title || "نصائح لتجنب الاحتيال:"}</p>
+                <p className="p-4 bg-muted rounded-lg">{fraudSection?.tips?.title || "نصائح لتجنب الاحتيال:"}</p>
               </div>
 
               <div>
@@ -531,17 +532,17 @@ export function HomePageManager() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-medium mb-2">عنوان القسم:</h3>
-                <p className="p-4 bg-muted rounded-lg">{articlesSection.title}</p>
+                <p className="p-4 bg-muted rounded-lg">{articlesSection?.title || "مقالات ونصائح التداول"}</p>
               </div>
               
               <div>
                 <h3 className="font-medium mb-2">النص التوضيحي:</h3>
-                <p className="p-4 bg-muted rounded-lg">{articlesSection.subtitle}</p>
+                <p className="p-4 bg-muted rounded-lg">{articlesSection?.subtitle || "أحدث المقالات والنصائح"}</p>
               </div>
 
               <div>
                 <h3 className="font-medium mb-2">نص الزر:</h3>
-                <p className="p-4 bg-muted rounded-lg">{articlesSection.buttonText}</p>
+                <p className="p-4 bg-muted rounded-lg">{articlesSection?.buttonText || "عرض جميع المقالات"}</p>
               </div>
             </div>
           )}
@@ -649,20 +650,20 @@ export function HomePageManager() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-medium mb-2">عنوان القسم:</h3>
-                <p className="p-4 bg-muted rounded-lg">{faqSection.title}</p>
+                <p className="p-4 bg-muted rounded-lg">{faqSection?.title || "الأسئلة الشائعة"}</p>
               </div>
               
               <div>
                 <h3 className="font-medium mb-2">النص التوضيحي:</h3>
-                <p className="p-4 bg-muted rounded-lg">{faqSection.subtitle}</p>
+                <p className="p-4 bg-muted rounded-lg">{faqSection?.subtitle || "إجابات على أهم الأسئلة"}</p>
               </div>
 
               <div>
                 <h3 className="font-medium mb-2">نموذج التواصل:</h3>
                 <div className="p-4 bg-muted rounded-lg space-y-2">
-                  <p><strong>العنوان:</strong> {faqSection.contactCta?.title || "لديك سؤال آخر؟"}</p>
-                  <p><strong>النص:</strong> {faqSection.contactCta?.subtitle || "لا تتردد في التواصل معنا"}</p>
-                  <p><strong>الزر:</strong> {faqSection.contactCta?.buttonText || "اطرح سؤالك الآن"}</p>
+                  <p><strong>العنوان:</strong> {faqSection?.contactCta?.title || "لديك سؤال آخر؟"}</p>
+                  <p><strong>النص:</strong> {faqSection?.contactCta?.subtitle || "لا تتردد في التواصل معنا"}</p>
+                  <p><strong>الزر:</strong> {faqSection?.contactCta?.buttonText || "اطرح سؤالك الآن"}</p>
                 </div>
               </div>
             </div>

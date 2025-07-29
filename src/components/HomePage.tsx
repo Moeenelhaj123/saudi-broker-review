@@ -118,7 +118,7 @@ export function HomePage() {
   
   const displayArticles = Array.isArray(adminArticles) && adminArticles.length > 0 
     ? adminArticles.filter((article: any) => article.isPublished).slice(0, 3) 
-    : articles.slice(0, 3);
+    : (articles || []).slice(0, 3);
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

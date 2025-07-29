@@ -172,7 +172,7 @@ export function HomePage() {
         }
       }
     }
-  }, [isAutoScrolling, currentSlide, brokers.length]);
+  }, [isAutoScrolling, currentSlide, displayBrokers.length]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -229,7 +229,7 @@ export function HomePage() {
             {/* Right Arrow */}
             <button
               onClick={() => {
-                if (sliderRef.current && currentSlide < brokers.length - 1) {
+                if (sliderRef.current && currentSlide < displayBrokers.length - 1) {
                   setIsAutoScrolling(true);
                   const container = sliderRef.current;
                   const targetIndex = currentSlide + 1;

@@ -1,4 +1,4 @@
-import { useParams, Link, Navigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useKV } from "@github/spark/hooks";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -178,7 +178,28 @@ export function BrokerReviewPage() {
   }, [broker, brokerContent]);
 
   if (!broker) {
-    return <Navigate to="/" replace />;
+    return (
+      <div className="min-h-screen bg-gray-50" dir="rtl">
+        <Header />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">الوسيط غير موجود</h1>
+            <p className="text-gray-600 mb-4">عذراً، لم نتمكن من العثور على الوسيط المطلوب.</p>
+            <p className="text-sm text-gray-500 mb-6">معرف الوسيط: {brokerId}</p>
+            <p className="text-sm text-gray-500 mb-6">
+              الوسطاء المتاحة: {brokers.map(b => b.id).join(", ")}
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              وسطاء الإدارة: {adminBrokers.map((b: any) => b.id).join(", ")}
+            </p>
+            <Link to="/" className="inline-block">
+              <Button>العودة إلى الرئيسية</Button>
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
   const getBrokerContent = () => {
@@ -520,9 +541,197 @@ export function BrokerReviewPage() {
         return <EToroContent />;
       default:
         return (
-          <div className="text-center py-12">
-            <p className="text-gray-600">محتوى مراجعة الوسيط غير متاح حالياً</p>
-            <p className="text-sm text-gray-500 mt-2">يمكن إضافة المحتوى من لوحة التحكم</p>
+          <div className="space-y-8">
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">نظرة عامة على الشركة</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  {broker.descriptionAr || broker.description}
+                </p>
+                <div className="bg-gray-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-primary">${broker.minDeposit}</div>
+                    <div className="text-sm text-gray-600">الحد الأدنى للإيداع</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-primary">{broker.spreads}</div>
+                    <div className="text-sm text-gray-600">الفروقات</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-primary">{broker.rating}/5</div>
+                    <div className="text-sm text-gray-600">التقييم</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">التنظيم والتراخيص</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  شركة {broker.nameAr} مرخصة ومنظمة من قبل جهات تنظيمية موثوقة لضمان بيئة تداول آمنة ومحمية.
+                </p>
+                {broker.regulation && broker.regulation.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">التراخيص الحالية:</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {broker.regulation.map((license, index) => (
+                        <span key={index} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                          {license}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">منصات التداول</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  يوفر وسيط {broker.nameAr} مجموعة متنوعة من منصات التداول المتقدمة لتلبية احتياجات جميع أنواع المتداولين.
+                </p>
+                {broker.platforms && broker.platforms.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {broker.platforms.map((platform, index) => (
+                      <div key={index} className="bg-blue-50 text-blue-800 px-3 py-2 rounded-lg text-center font-medium">
+                        {platform}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">أنواع الحسابات</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  تقدم شركة {broker.nameAr} أنواع حسابات متعددة تناسب مختلف مستويات الخبرة وأهداف التداول.
+                </p>
+                {broker.accountTypes && broker.accountTypes.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {broker.accountTypes.map((accountType, index) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="font-semibold text-gray-900">{accountType}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">الرسوم والعمولات</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  يتميز وسيط {broker.nameAr} بهيكل رسوم شفاف وتنافسي يناسب المتداولين من جميع المستويات.
+                </p>
+                <div className="bg-yellow-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{broker.fees?.commission || "حسب نوع الحساب"}</div>
+                    <div className="text-sm text-gray-600">العمولة</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{broker.fees?.withdrawal || "حسب طريقة السحب"}</div>
+                    <div className="text-sm text-gray-600">رسوم السحب</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{broker.fees?.inactivity || "غير محدد"}</div>
+                    <div className="text-sm text-gray-600">رسوم عدم النشاط</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {(broker.pros?.length > 0 || broker.cons?.length > 0) && (
+              <section>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">المزايا والعيوب</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {broker.pros?.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-green-700 mb-3 flex items-center gap-2">
+                        <CheckCircle size={20} />
+                        المزايا
+                      </h3>
+                      <ul className="space-y-2">
+                        {broker.pros.map((pro, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <CheckCircle size={16} className="text-green-600 mt-1 flex-shrink-0" />
+                            <span className="text-gray-700">{pro}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {broker.cons?.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-red-700 mb-3 flex items-center gap-2">
+                        <X size={20} />
+                        العيوب
+                      </h3>
+                      <ul className="space-y-2">
+                        {broker.cons.map((con, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <X size={16} className="text-red-600 mt-1 flex-shrink-0" />
+                            <span className="text-gray-700">{con}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">معلومات الاتصال</h2>
+              <div className="prose max-w-none">
+                <div className="bg-blue-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{broker.website}</div>
+                    <div className="text-sm text-gray-600">الموقع الإلكتروني</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{broker.phone}</div>
+                    <div className="text-sm text-gray-600">رقم الهاتف</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{broker.email}</div>
+                    <div className="text-sm text-gray-600">البريد الإلكتروني</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">الخلاصة والتوصية</h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                  يعتبر وسيط {broker.nameAr} خياراً جيداً للمتداولين الذين يبحثون عن وسيط مرخص وموثوق. 
+                  مع تقييم {broker.rating}/5 من {broker.reviewCount.toLocaleString()} متداول، تظهر الشركة 
+                  التزامها بتقديم خدمات عالية الجودة.
+                </p>
+                <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Star size={20} className="text-primary fill-current" />
+                    <span className="font-semibold text-primary">تقييمنا</span>
+                  </div>
+                  <p className="text-gray-700">
+                    بناءً على التراخيص والخدمات المتاحة، نوصي بالنظر في هذا الوسيط كخيار لتداولاتك. 
+                    ننصح دائماً بالبدء بحساب تجريبي لتجربة المنصة قبل التداول بأموال حقيقية.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+              <p className="text-yellow-800 font-medium">ملاحظة للإدارة</p>
+              <p className="text-yellow-700 text-sm mt-1">
+                يمكن إضافة محتوى مخصص لهذا الوسيط من لوحة التحكم لتحسين تجربة الزوار
+              </p>
+            </div>
           </div>
         );
     }

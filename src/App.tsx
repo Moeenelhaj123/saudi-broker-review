@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { HomePage } from "@/components/HomePage";
 import { BrokerReviewPage } from "@/components/BrokerReviewPage";
 import { BestBrokersPage } from "@/components/BestBrokersPage";
@@ -6,23 +6,88 @@ import { ArticlesPage } from "@/components/ArticlesPage";
 import { ArticlePage } from "@/components/ArticlePage";
 import { ContactPage } from "@/components/ContactPage";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { DashboardOverview } from "@/components/admin/DashboardOverview";
+import { HomePageManager } from "@/components/admin/HomePageManager";
+import { BrokersManager } from "@/components/admin/BrokersManager";
+import { BrokerContentManager } from "@/components/admin/BrokerContentManager";
+import { ArticlesManager } from "@/components/admin/ArticlesManager";
+import { ContactManager } from "@/components/admin/ContactManager";
 import { Toaster } from "@/components/ui/sonner";
 
-function App() {
+function Layout() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/best-brokers" element={<BestBrokersPage />} />
-        <Route path="/articles" element={<ArticlesPage />} />
-        <Route path="/articles/:slug" element={<ArticlePage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/broker/:brokerId" element={<BrokerReviewPage />} />
-        <Route path="/cadmin/*" element={<AdminDashboard />} />
-      </Routes>
+    <>
+      <Outlet />
       <Toaster />
-    </Router>
+    </>
   );
+}
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />
+      },
+      {
+        path: "best-brokers",
+        element: <BestBrokersPage />
+      },
+      {
+        path: "articles",
+        element: <ArticlesPage />
+      },
+      {
+        path: "articles/:slug",
+        element: <ArticlePage />
+      },
+      {
+        path: "contact",
+        element: <ContactPage />
+      },
+      {
+        path: "broker/:brokerId",
+        element: <BrokerReviewPage />
+      },
+      {
+        path: "cadmin",
+        element: <AdminDashboard />,
+        children: [
+          {
+            index: true,
+            element: <DashboardOverview />
+          },
+          {
+            path: "homepage",
+            element: <HomePageManager />
+          },
+          {
+            path: "brokers",
+            element: <BrokersManager />
+          },
+          {
+            path: "brokers/:brokerId",
+            element: <BrokerContentManager />
+          },
+          {
+            path: "articles",
+            element: <ArticlesManager />
+          },
+          {
+            path: "contact",
+            element: <ContactManager />
+          }
+        ]
+      }
+    ]
+  }
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
 }
 
 export default App;

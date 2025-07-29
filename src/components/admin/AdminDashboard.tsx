@@ -1,12 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
-import { DashboardOverview } from "./DashboardOverview";
-import { HomePageManager } from "./HomePageManager";
-import { BrokersManager } from "./BrokersManager";
-import { BrokerContentManager } from "./BrokerContentManager";
-import { ArticlesManager } from "./ArticlesManager";
-import { ContactManager } from "./ContactManager";
 
 export function AdminDashboard() {
   return (
@@ -18,14 +12,7 @@ export function AdminDashboard() {
           <AdminHeader />
           
           <main className="p-6">
-            <Routes>
-              <Route path="/" element={<DashboardOverview />} />
-              <Route path="/homepage" element={<HomePageManager />} />
-              <Route path="/brokers" element={<BrokersManager />} />
-              <Route path="/brokers/:brokerId" element={<BrokerContentManager />} />
-              <Route path="/articles" element={<ArticlesManager />} />
-              <Route path="/contact" element={<ContactManager />} />
-            </Routes>
+            <Outlet />
           </main>
         </div>
       </div>

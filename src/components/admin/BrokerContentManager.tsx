@@ -7,9 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Save, ArrowRight, Building2, RefreshCw } from "lucide-react";
+import { Save, ArrowRight, Building2, RefreshCw, Plus, Trash2 } from "lucide-react";
 import { brokers as staticBrokers } from "@/lib/data";
+
+interface CustomSection {
+  id: string;
+  title: string;
+  content: string;
+  type: 'heading' | 'subheading' | 'content';
+}
 
 interface BrokerContent {
   overview: string;
@@ -22,11 +30,12 @@ interface BrokerContent {
   conclusion: string;
   contact: string;
   summary: string;
+  customSections: CustomSection[];
 }
 
 export function BrokerContentManager() {
   const { brokerId } = useParams();
-  const [brokers] = useKV<any[]>("admin-brokers", []);
+  const [adminBrokers] = useKV<any[]>("admin-brokers", []);
   
   // Get initial content from static broker data
   const getInitialContent = (): BrokerContent => {
@@ -82,7 +91,8 @@ ${staticBroker.regulation.map(reg => `• ${reg}: جهة تنظيمية مرمو
 
 فريق خدمة العملاء متاح على مدار الساعة طوال أيام الأسبوع لتقديم الدعم والمساعدة. يمكن التواصل باللغة العربية والإنجليزية وعدة لغات أخرى.`,
 
-        summary: `${staticBroker.nameAr} وسيط مالي عالمي مرخص ومنظم، يوفر بيئة تداول آمنة ومتطورة. الحد الأدنى للإيداع ${staticBroker.minDeposit} دولار، فروقات من ${staticBroker.spreads}، ودعم لمنصات التداول الرائدة. التقييم ${staticBroker.rating}/5 من ${staticBroker.reviewCount} مراجعة.`
+        summary: `${staticBroker.nameAr} وسيط مالي عالمي مرخص ومنظم، يوفر بيئة تداول آمنة ومتطورة. الحد الأدنى للإيداع ${staticBroker.minDeposit} دولار، فروقات من ${staticBroker.spreads}، ودعم لمنصات التداول الرائدة. التقييم ${staticBroker.rating}/5 من ${staticBroker.reviewCount} مراجعة.`,
+        customSections: []
       };
     }
     
@@ -96,7 +106,8 @@ ${staticBroker.regulation.map(reg => `• ${reg}: جهة تنظيمية مرمو
       cons: [],
       conclusion: "",
       contact: "",
-      summary: ""
+      summary: "",
+      customSections: []
     };
   };
 
@@ -117,14 +128,20 @@ ${staticBroker.regulation.map(reg => `• ${reg}: جهة تنظيمية مرمو
         cons: brokerContent.cons || [],
         conclusion: brokerContent.conclusion || "",
         contact: brokerContent.contact || "",
-        summary: brokerContent.summary || ""
+        summary: brokerContent.summary || "",
+        customSections: brokerContent.customSections || []
       });
     }
   }, [brokerContent]);
   const [newPro, setNewPro] = useState("");
   const [newCon, setNewCon] = useState("");
+  const [newSectionTitle, setNewSectionTitle] = useState("");
+  const [newSectionContent, setNewSectionContent] = useState("");
+  const [newSectionType, setNewSectionType] = useState<'heading' | 'subheading' | 'content'>('content');
 
-  const broker = Array.isArray(brokers) ? brokers.find((b: any) => b.id === brokerId) : null;
+  // Find broker in admin list first, then fallback to static brokers
+  const broker = (Array.isArray(adminBrokers) ? adminBrokers.find((b: any) => b.id === brokerId) : null) || 
+                staticBrokers.find(b => b.id === brokerId);
 
   const handleSave = () => {
     setBrokerContent(tempContent);
@@ -172,6 +189,42 @@ ${staticBroker.regulation.map(reg => `• ${reg}: جهة تنظيمية مرمو
     }));
   };
 
+  const addCustomSection = () => {
+    if (newSectionTitle.trim()) {
+      const newSection: CustomSection = {
+        id: `section-${Date.now()}`,
+        title: newSectionTitle.trim(),
+        content: newSectionContent.trim(),
+        type: newSectionType
+      };
+      
+      setTempContent(prev => ({
+        ...prev,
+        customSections: [...(prev.customSections || []), newSection]
+      }));
+      
+      setNewSectionTitle("");
+      setNewSectionContent("");
+      setNewSectionType('content');
+    }
+  };
+
+  const removeCustomSection = (sectionId: string) => {
+    setTempContent(prev => ({
+      ...prev,
+      customSections: (prev.customSections || []).filter(section => section.id !== sectionId)
+    }));
+  };
+
+  const updateCustomSection = (sectionId: string, field: keyof CustomSection, value: string) => {
+    setTempContent(prev => ({
+      ...prev,
+      customSections: (prev.customSections || []).map(section =>
+        section.id === sectionId ? { ...section, [field]: value } : section
+      )
+    }));
+  };
+
   if (!broker) {
     return (
       <div className="text-center py-12">
@@ -205,7 +258,7 @@ ${staticBroker.regulation.map(reg => `• ${reg}: جهة تنظيمية مرمو
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
           <TabsTrigger value="platforms">المنصات</TabsTrigger>
           <TabsTrigger value="accounts">الحسابات</TabsTrigger>
@@ -214,6 +267,7 @@ ${staticBroker.regulation.map(reg => `• ${reg}: جهة تنظيمية مرمو
           <TabsTrigger value="proscons">المزايا والعيوب</TabsTrigger>
           <TabsTrigger value="contact">التواصل</TabsTrigger>
           <TabsTrigger value="summary">الملخص</TabsTrigger>
+          <TabsTrigger value="custom">أقسام مخصصة</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -473,6 +527,124 @@ ${staticBroker.regulation.map(reg => `• ${reg}: جهة تنظيمية مرمو
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="custom">
+          <div className="space-y-6">
+            {/* Add New Custom Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>إضافة قسم مخصص جديد</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <Label htmlFor="section-title">عنوان القسم</Label>
+                    <Input
+                      id="section-title"
+                      value={newSectionTitle}
+                      onChange={(e) => setNewSectionTitle(e.target.value)}
+                      placeholder="مثال: خدمة العملاء"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="section-type">نوع القسم</Label>
+                    <Select value={newSectionType} onValueChange={(value: 'heading' | 'subheading' | 'content') => setNewSectionType(value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="heading">عنوان رئيسي (H2)</SelectItem>
+                        <SelectItem value="subheading">عنوان فرعي (H3)</SelectItem>
+                        <SelectItem value="content">محتوى عادي</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="section-content">محتوى القسم</Label>
+                  <Textarea
+                    id="section-content"
+                    value={newSectionContent}
+                    onChange={(e) => setNewSectionContent(e.target.value)}
+                    placeholder="اكتب محتوى القسم المخصص..."
+                    rows={4}
+                  />
+                </div>
+
+                <Button onClick={addCustomSection} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  إضافة القسم
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Existing Custom Sections */}
+            {(tempContent.customSections || []).length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">الأقسام المخصصة الحالية</h3>
+                {(tempContent.customSections || []).map((section) => (
+                  <Card key={section.id}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-base">{section.title}</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                            {section.type === 'heading' ? 'عنوان رئيسي' : 
+                             section.type === 'subheading' ? 'عنوان فرعي' : 'محتوى عادي'}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeCustomSection(section.id)}
+                            className="gap-2 text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label>عنوان القسم</Label>
+                        <Input
+                          value={section.title}
+                          onChange={(e) => updateCustomSection(section.id, 'title', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>نوع القسم</Label>
+                        <Select 
+                          value={section.type} 
+                          onValueChange={(value: 'heading' | 'subheading' | 'content') => 
+                            updateCustomSection(section.id, 'type', value)
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="heading">عنوان رئيسي (H2)</SelectItem>
+                            <SelectItem value="subheading">عنوان فرعي (H3)</SelectItem>
+                            <SelectItem value="content">محتوى عادي</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>المحتوى</Label>
+                        <Textarea
+                          value={section.content}
+                          onChange={(e) => updateCustomSection(section.id, 'content', e.target.value)}
+                          rows={4}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>

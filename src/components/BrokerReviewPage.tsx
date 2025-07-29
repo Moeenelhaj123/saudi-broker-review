@@ -28,7 +28,22 @@ export function BrokerReviewPage() {
   
   // Get admin-managed brokers
   const [adminBrokers] = useKV("admin-brokers", []);
-  const [brokerContent] = useKV(`broker-content-${brokerId}`, {});
+  const [rawBrokerContent] = useKV(`broker-content-${brokerId}`, {});
+  
+  // Map admin content to expected format for the review page
+  const brokerContent = rawBrokerContent ? {
+    companyOverview: rawBrokerContent.overview,
+    regulation: rawBrokerContent.regulation,
+    tradingPlatforms: rawBrokerContent.tradingPlatforms,
+    accountTypes: rawBrokerContent.accountTypes,
+    fees: rawBrokerContent.fees,
+    pros: rawBrokerContent.pros,
+    cons: rawBrokerContent.cons,
+    conclusion: rawBrokerContent.conclusion,
+    contact: rawBrokerContent.contact,
+    summary: rawBrokerContent.summary,
+    customSections: rawBrokerContent.customSections
+  } : {};
   
   // Use admin broker if available, otherwise fallback to static data
   const broker = adminBrokers.find((b: any) => b.id === brokerId) || brokers.find(b => b.id === brokerId);
@@ -392,6 +407,28 @@ export function BrokerReviewPage() {
                 )}
               </div>
             </section>
+          )}
+
+          {/* Custom Sections */}
+          {brokerContent.customSections && brokerContent.customSections.length > 0 && (
+            brokerContent.customSections.map((section) => (
+              <section key={section.id}>
+                {section.type === 'heading' && (
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{section.title}</h2>
+                )}
+                {section.type === 'subheading' && (
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">{section.title}</h3>
+                )}
+                {section.type === 'content' && section.title && (
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{section.title}</h3>
+                )}
+                <div className="prose max-w-none">
+                  <p className="text-gray-700 leading-relaxed text-lg mb-4 whitespace-pre-line">
+                    {section.content}
+                  </p>
+                </div>
+              </section>
+            ))
           )}
 
           {/* Final Assessment */}

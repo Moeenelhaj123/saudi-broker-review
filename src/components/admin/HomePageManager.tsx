@@ -426,13 +426,13 @@ export function HomePageManager() {
               
               <div>
                 <h3 className="font-medium mb-2">عنوان النصائح:</h3>
-                <p className="p-4 bg-muted rounded-lg">{fraudSection.tips.title}</p>
+                <p className="p-4 bg-muted rounded-lg">{fraudSection.tips?.title || "نصائح لتجنب الاحتيال:"}</p>
               </div>
 
               <div>
                 <h3 className="font-medium mb-2">النصائح:</h3>
                 <div className="space-y-2">
-                  {fraudSection.tips.items.map((tip, index) => (
+                  {(fraudSection.tips?.items || []).map((tip, index) => (
                     <div key={index} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                       <span className="flex-1">• {tip}</span>
                       <Button
@@ -720,7 +720,7 @@ export function HomePageManager() {
             </div>
 
             <div className="space-y-3">
-              {faqItems.map((item) => (
+              {(faqItems || []).map((item) => (
                 <div key={item.id} className="border rounded-lg p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">

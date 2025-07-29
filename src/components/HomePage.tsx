@@ -329,7 +329,7 @@ export function HomePage() {
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {scamBrokers.slice(0, 3).map((broker: any) => (
+              {(scamBrokers || []).slice(0, 3).map((broker: any) => (
                 <div key={broker.id} className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
@@ -353,10 +353,10 @@ export function HomePage() {
 
             <div className="mt-6 p-4 bg-red-100 rounded-lg">
               <h3 className="text-lg font-bold text-red-700 mb-3">
-                {fraudSection.tips.title}
+                {fraudSection.tips?.title || "نصائح لتجنب الاحتيال:"}
               </h3>
               <ul className="space-y-2 text-red-700 text-sm">
-                {fraudSection.tips.items.map((tip, index) => (
+                {(fraudSection.tips?.items || []).map((tip, index) => (
                   <li key={index} className="flex items-start">
                     <span className="mr-2 text-red-600">•</span>
                     <span>{tip}</span>
@@ -438,10 +438,10 @@ export function HomePage() {
 
             <div className="mt-6 p-4 bg-red-100 rounded-lg">
               <h3 className="text-lg font-bold text-red-700 mb-3">
-                {fraudSection.tips.title}
+                {fraudSection.tips?.title || "نصائح لتجنب الاحتيال:"}
               </h3>
               <ul className="space-y-2 text-red-700 text-sm">
-                {fraudSection.tips.items.map((tip, index) => (
+                {(fraudSection.tips?.items || []).map((tip, index) => (
                   <li key={index} className="flex items-start">
                     <span className="mr-2 text-red-600">•</span>
                     <span>{tip}</span>
@@ -518,7 +518,7 @@ export function HomePage() {
 
           <div className="max-w-4xl mx-auto">
             <Accordion type="single" collapsible className="space-y-4">
-              {faqItems.map((item) => (
+              {(faqItems || []).map((item) => (
                 <AccordionItem key={item.id} value={item.id} className="bg-white rounded-lg border shadow-sm">
                   <AccordionTrigger className="px-6 py-4 text-right hover:no-underline">
                     <span className="text-lg font-medium">{item.question}</span>
@@ -540,17 +540,17 @@ export function HomePage() {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {faqSection.contactCta.title}
+                {faqSection.contactCta?.title || "لديك سؤال آخر؟"}
               </h3>
               <p className="text-gray-600 mb-6">
-                {faqSection.contactCta.subtitle}
+                {faqSection.contactCta?.subtitle || "لا تتردد في التواصل معنا للحصول على إجابات مخصصة لاستفساراتك"}
               </p>
               <Button 
                 onClick={() => setIsContactDialogOpen(true)}
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                {faqSection.contactCta.buttonText}
+                {faqSection.contactCta?.buttonText || "اطرح سؤالك الآن"}
               </Button>
             </div>
           </div>

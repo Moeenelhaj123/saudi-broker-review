@@ -149,9 +149,12 @@ export function HomePage() {
   // Get enabled scam brokers for warning section
   const scamBrokers = Array.isArray(scamBrokersData) ? scamBrokersData.filter(broker => broker.enabled) : [];
   
-  const displayArticles = Array.isArray(adminArticles) && adminArticles.length > 0 
-    ? adminArticles.filter((article: any) => article.isPublished).slice(0, 3) 
-    : (articles || []).slice(0, 3);
+  // Combine admin articles with static articles for display
+  const publishedAdminArticles = Array.isArray(adminArticles) 
+    ? adminArticles.filter((article: any) => article.isPublished) 
+    : [];
+  const combinedArticles = [...publishedAdminArticles, ...(articles || [])];
+  const displayArticles = combinedArticles.slice(0, 3);
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -515,7 +518,7 @@ export function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {Array.isArray(displayArticles) && displayArticles.map((article) => (
+            {displayArticles && displayArticles.length > 0 ? displayArticles.map((article) => (
               <Link key={article.id} to={`/articles/${article.slug}`} className="group block">
                 <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                   <div className="h-48 overflow-hidden bg-gray-100">
@@ -543,17 +546,26 @@ export function HomePage() {
                   </div>
                 </article>
               </Link>
-            ))}
+            )) : (
+              <div className="col-span-full text-center py-8">
+                <p className="text-gray-500 mb-4">لا توجد مقالات متاحة حالياً</p>
+                <Button variant="outline" asChild>
+                  <Link to="/articles">تصفح جميع المقالات</Link>
+                </Button>
+              </div>
+            )}
           </div>
           
           {/* View All Articles Button */}
-          <div className="text-center mt-8">
-            <Button variant="outline" size="lg" asChild>
-              <Link to="/articles">
-                {articlesSection.buttonText}
-              </Link>
-            </Button>
-          </div>
+          {displayArticles && displayArticles.length > 0 && (
+            <div className="text-center mt-8">
+              <Button variant="outline" size="lg" asChild className="hover:bg-primary hover:text-primary-foreground transition-colors">
+                <Link to="/articles">
+                  {articlesSection.buttonText || "عرض جميع المقالات"}
+                </Link>
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* FAQ Section */}

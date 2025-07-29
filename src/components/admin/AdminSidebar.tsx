@@ -11,7 +11,8 @@ import {
   MessageSquare,
   Settings,
   Users,
-  TrendingUp
+  TrendingUp,
+  Mail
 } from "lucide-react";
 
 const menuItems = [
@@ -39,6 +40,11 @@ const menuItems = [
     title: "إدارة التواصل",
     href: "/cadmin/contact",
     icon: MessageSquare,
+  },
+  {
+    title: "النشرة الإخبارية",
+    href: "/cadmin/newsletter",
+    icon: Mail,
   },
 ];
 

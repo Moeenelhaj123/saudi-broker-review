@@ -1,7 +1,158 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useKV } from '@github/spark/hooks';
+import { toast } from "sonner";
+
 export function Footer() {
+  const [isNewsletterDialogOpen, setIsNewsletterDialogOpen] = useState(false);
+  const [subscriptions, setSubscriptions] = useKV("newsletter-subscriptions", []);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    jobDescription: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.firstName || !formData.lastName || !formData.email) {
+      toast.error("يرجى ملء جميع الحقول المطلوبة");
+      return;
+    }
+
+    const newSubscription = {
+      id: Date.now().toString(),
+      ...formData,
+      createdAt: new Date().toISOString()
+    };
+
+    setSubscriptions((current) => [...current, newSubscription]);
+    
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      jobDescription: ""
+    });
+    
+    setIsNewsletterDialogOpen(false);
+    toast.success("تم الاشتراك في النشرة الإخبارية بنجاح!");
+  };
+
   return (
     <footer className="bg-primary text-primary-foreground">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Newsletter Section */}
+        <div className="text-center mb-12">
+          <h3 className="text-2xl font-bold mb-4">اشترك في النشرة الإخبارية</h3>
+          <p className="text-primary-foreground/80 mb-6 max-w-md mx-auto">
+            احصل على أحدث المقالات والنصائح التداولية مباشرة في بريدك الإلكتروني
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <Input 
+              placeholder="أدخل بريدك الإلكتروني"
+              className="bg-white text-gray-900 placeholder:text-gray-500"
+              disabled
+            />
+            <Dialog open={isNewsletterDialogOpen} onOpenChange={setIsNewsletterDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="secondary"
+                  className="bg-white text-primary hover:bg-gray-100 whitespace-nowrap"
+                >
+                  اشترك الآن
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md" dir="rtl">
+                <DialogHeader>
+                  <DialogTitle className="text-right">اشترك في النشرة الإخبارية</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="firstName" className="text-right block mb-2">
+                        الاسم الأول *
+                      </Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName" className="text-right block mb-2">
+                        اسم العائلة *
+                      </Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="email" className="text-right block mb-2">
+                      البريد الإلكتروني *
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="phone" className="text-right block mb-2">
+                      رقم الهاتف
+                    </Label>
+                    <Input
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="jobDescription" className="text-right block mb-2">
+                      الوصف الوظيفي
+                    </Label>
+                    <Textarea
+                      id="jobDescription"
+                      value={formData.jobDescription}
+                      onChange={(e) => setFormData({...formData, jobDescription: e.target.value})}
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <Button type="submit" className="w-full">
+                    اشترك الآن
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+
+        {/* Footer Content */}
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-primary font-bold">

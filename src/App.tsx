@@ -12,6 +12,7 @@ import { BrokersManager } from "@/components/admin/BrokersManager";
 import { BrokerContentManager } from "@/components/admin/BrokerContentManager";
 import { ArticlesManager } from "@/components/admin/ArticlesManager";
 import { ContactManager } from "@/components/admin/ContactManager";
+import { NewsletterManager } from "@/components/admin/NewsletterManager";
 import { Toaster } from "@/components/ui/sonner";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
           {
             path: "contact",
             element: <ContactManager />
+          },
+          {
+            path: "newsletter",
+            element: <NewsletterManager />
           }
         ]
       }

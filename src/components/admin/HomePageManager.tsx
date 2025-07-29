@@ -188,53 +188,6 @@ export function HomePageManager() {
     setFaqItems((prev) => (prev || []).filter(item => item.id !== id));
     toast.success("تم حذف السؤال بنجاح");
   };
-    
-    // Ensure proper default structure for each section
-    switch(section) {
-      case 'hero':
-        setTempContent(currentContent || { headline: "", subheadline: "" });
-        break;
-      case 'brokers':
-        setTempContent(currentContent || { title: "", subtitle: "", buttonText: "" });
-        break;
-      case 'fraud':
-        setTempContent(currentContent || { 
-          title: "", 
-          tips: { title: "", items: [] } 
-        });
-        break;
-      case 'articles':
-        setTempContent(currentContent || { title: "", subtitle: "", buttonText: "" });
-        break;
-      case 'faq':
-        setTempContent(currentContent || { 
-          title: "", 
-          subtitle: "", 
-          contactCta: { title: "", subtitle: "", buttonText: "" } 
-        });
-        break;
-      default:
-        setTempContent(currentContent || {});
-    }
-  };
-
-  const addFaqItem = () => {
-    if (newFaqItem.question.trim() && newFaqItem.answer.trim()) {
-      const newItem = {
-        id: `q${Date.now()}`,
-        question: newFaqItem.question.trim(),
-        answer: newFaqItem.answer.trim()
-      };
-      setFaqItems(current => [...(current || []), newItem]);
-      setNewFaqItem({ question: "", answer: "" });
-      toast.success("تم إضافة السؤال بنجاح");
-    }
-  };
-
-  const deleteFaqItem = (id: string) => {
-    setFaqItems(current => (current || []).filter(item => item.id !== id));
-    toast.success("تم حذف السؤال بنجاح");
-  };
 
   const addFraudTip = () => {
     if (newFraudTip.trim()) {

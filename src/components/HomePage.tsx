@@ -145,7 +145,7 @@ export function HomePage() {
   
   const displayBrokers = Array.isArray(rawDisplayBrokers) 
     ? rawDisplayBrokers.filter(Boolean)
-    : [];
+    : brokers.slice(0, 3); // Safe fallback to static brokers
   
   // Get enabled scam brokers for warning section
   const scamBrokers = Array.isArray(scamBrokersData) ? scamBrokersData.filter(broker => broker.enabled) : [];

@@ -377,14 +377,14 @@ export function HomePage() {
         </div>
 
         {/* Fraud Companies Warning Section */}
-        {scamBrokers.length > 0 && (
+        {scamBrokers && scamBrokers.length > 0 && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-16">
             <h2 className="text-2xl font-bold text-red-700 mb-6 text-center">
               {fraudSection.title}
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {(scamBrokers || []).slice(0, 3).map((broker: any) => (
+              {scamBrokers.slice(0, 3).map((broker: any) => (
                 <div key={broker.id} className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
@@ -423,7 +423,7 @@ export function HomePage() {
         )}
 
         {/* Default fraud companies if no admin scam brokers */}
-        {scamBrokers.length === 0 && (
+        {(!scamBrokers || scamBrokers.length === 0) && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-16">
             <h2 className="text-2xl font-bold text-red-700 mb-6 text-center">
               {fraudSection.title}

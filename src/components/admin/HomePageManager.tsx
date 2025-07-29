@@ -51,6 +51,15 @@ export function HomePageManager() {
     {
       id: "q2", 
       question: "ما هي الرسوم المتوقعة عند التداول؟",
+      answer: "تختلف الرسوم بين الوسطاء، ولكن عادة تشمل: رسوم العمولة على كل صفقة، رسوم حفظ الأوراق المالية، رسوم التحويل والسحب، ورسوم عدم النشاط في بعض الحالات."
+    }
+  ]);
+
+  // Safe access for arrays
+  const safeFaqItems = Array.isArray(faqItems) ? faqItems : [];
+    {
+      id: "q2", 
+      question: "ما هي الرسوم المتوقعة عند التداول؟",
       answer: "تختلف الرسوم بين الوسطاء، ولكن عادة تشمل: رسوم العمولة على كل صفقة (تتراوح من 0.05% إلى 0.25%)، رسوم حفظ الأوراق المالية، رسوم التحويل والسحب، ورسوم عدم النشاط في بعض الحالات."
     }
   ]);
@@ -123,11 +132,68 @@ export function HomePageManager() {
   const handleCancel = () => {
     setEditingSection(null);
     setTempContent({});
+  };
+
   // Helper function to safely update temp content
   const updateTempContent = (updater: (prev: any) => any) => {
     setTempContent(prev => updater(prev || {}));
   };
+
+  const startEditing = (section: string, currentContent: any) => {
     setEditingSection(section);
+    
+    // Ensure proper default structure for each section
+    switch(section) {
+      case 'hero':
+        setTempContent(currentContent || { headline: "", subheadline: "" });
+        break;
+      case 'brokers':
+        setTempContent(currentContent || { title: "", subtitle: "", buttonText: "" });
+        break;
+      case 'fraud':
+        setTempContent(currentContent || { 
+          title: "",
+          tips: { title: "", items: [] }
+        });
+        break;
+      case 'faq':
+        setTempContent(currentContent || { 
+          title: "", 
+          subtitle: "",
+          contactCta: { title: "", subtitle: "", buttonText: "" }
+        });
+        break;
+      case 'articles':
+        setTempContent(currentContent || { title: "", subtitle: "", buttonText: "" });
+        break;
+      default:
+        setTempContent(currentContent || {});
+    }
+  };
+
+  // Add FAQ Item
+  const addFaqItem = () => {
+    if (!newFaqItem.question || !newFaqItem.answer) {
+      toast.error("يرجى ملء جميع الحقول");
+      return;
+    }
+
+    const newItem = {
+      id: `q${Date.now()}`,
+      question: newFaqItem.question,
+      answer: newFaqItem.answer
+    };
+
+    setFaqItems((prev) => [...(prev || []), newItem]);
+    setNewFaqItem({ question: "", answer: "" });
+    toast.success("تم إضافة السؤال بنجاح");
+  };
+
+  // Delete FAQ Item
+  const deleteFaqItem = (id: string) => {
+    setFaqItems((prev) => (prev || []).filter(item => item.id !== id));
+    toast.success("تم حذف السؤال بنجاح");
+  };
     
     // Ensure proper default structure for each section
     switch(section) {
@@ -1053,7 +1119,7 @@ export function HomePageManager() {
             </div>
 
             <div className="space-y-3">
-              {(faqItems || []).map((item) => (
+              {safeFaqItems.map((item) => (
                 <div key={item?.id || Math.random()} className="border rounded-lg p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
@@ -1063,7 +1129,7 @@ export function HomePageManager() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => deleteFaqItem(item.id)}
+                      onClick={() => deleteFaqItem(item?.id)}
                       className="text-destructive hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -1072,7 +1138,7 @@ export function HomePageManager() {
                 </div>
               ))}
               
-              {(faqItems || []).length === 0 && (
+              {safeFaqItems.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
                   <HelpCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>لا توجد أسئلة شائعة حالياً</p>

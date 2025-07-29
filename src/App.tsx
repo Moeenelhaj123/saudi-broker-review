@@ -15,6 +15,7 @@ import { ContactManager } from "@/components/admin/ContactManager";
 import { NewsletterManager } from "@/components/admin/NewsletterManager";
 import { ContactFormTester } from "@/components/ContactFormTester";
 import { ContactFormsTestPage } from "@/components/ContactFormsTestPage";
+import { ImageManagerTest } from "@/components/ImageManagerTest";
 import { Toaster } from "@/components/ui/sonner";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
           {
             path: "test-contact-forms",
             element: <ContactFormsTestPage />
+          },
+          {
+            path: "test-images",
+            element: <ImageManagerTest />
           }
         ]
       }

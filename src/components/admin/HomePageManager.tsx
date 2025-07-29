@@ -442,6 +442,11 @@ export function HomePageManager() {
           <p className="text-sm text-muted-foreground">
             إدارة قائمة الوسطاء التي تظهر في قسم "الوسطاء الموصى بهم" في الصفحة الرئيسية
           </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-sm text-blue-800">
+              💡 <strong>نصيحة:</strong> يمكنك أيضاً إضافة الوسطاء إلى قائمة الموصى بهم مباشرة من صفحة مراجعة الوسيط أو من صفحة إدارة الوسطاء.
+            </p>
+          </div>
           
           <div className="space-y-3">
             {(bestBrokers || []).map((broker) => (

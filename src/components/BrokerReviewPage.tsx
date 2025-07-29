@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Star, CheckCircle, ArrowRight, User, ThumbsUp, Plus, X } from "@phosphor-icons/react";
+import { Star, CheckCircle, ArrowRight, User, ThumbsUp, Plus, X, Settings, Heart } from "@phosphor-icons/react";
 import { brokers, reviews } from "@/lib/data";
 import { brokerLogos } from "@/lib/logos";
 import { useEffect, useState } from "react";
@@ -26,9 +26,26 @@ import {
 export function BrokerReviewPage() {
   const { brokerId } = useParams<{ brokerId: string }>();
   
-  // Get admin-managed brokers
+  // Get admin-managed brokers and recommended brokers
   const [adminBrokers] = useKV("admin-brokers", []);
   const [rawBrokerContent] = useKV(`broker-content-${brokerId}`, {});
+  const [bestBrokers, setBestBrokers] = useKV("admin-best-brokers", []);
+  
+  // Get current user to check if admin
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  
+  useEffect(() => {
+    // Check if user is admin
+    const checkUser = async () => {
+      try {
+        const user = await spark.user();
+        setCurrentUser(user);
+      } catch (error) {
+        console.log('User not authenticated');
+      }
+    };
+    checkUser();
+  }, []);
   
   // Map admin content to expected format for the review page
   const brokerContent = rawBrokerContent ? {
@@ -56,6 +73,29 @@ export function BrokerReviewPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Check if broker is already in recommended list
+  const isInRecommended = bestBrokers.some((b: any) => b.id === brokerId);
+  
+  // Function to add/remove broker from recommended list
+  const toggleRecommended = () => {
+    if (isInRecommended) {
+      // Remove from recommended
+      setBestBrokers((current: any[]) => 
+        current.filter(b => b.id !== brokerId)
+      );
+      toast.success(`تم إزالة ${broker.nameAr} من قائمة الوسطاء الموصى بهم`);
+    } else {
+      // Add to recommended
+      const newRecommendedBroker = {
+        id: broker.id,
+        name: broker.name,
+        enabled: true
+      };
+      setBestBrokers((current: any[]) => [...current, newRecommendedBroker]);
+      toast.success(`تم إضافة ${broker.nameAr} إلى قائمة الوسطاء الموصى بهم`);
+    }
+  };
 
   // Get reviews for this broker
   const brokerReviews = reviews.filter(review => review.brokerId === brokerId);
@@ -498,6 +538,45 @@ export function BrokerReviewPage() {
           </div>
         </div>
       </div>
+
+      {/* Admin Controls - Only show for admins */}
+      {currentUser?.isOwner && (
+        <div className="bg-blue-50 border-b border-blue-200">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Settings className="h-5 w-5 text-blue-600" />
+                <span className="text-sm font-medium text-blue-900">إدارة الوسيط</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={toggleRecommended}
+                  size="sm"
+                  variant={isInRecommended ? "destructive" : "default"}
+                  className="gap-2"
+                >
+                  <Heart 
+                    size={16} 
+                    weight={isInRecommended ? "fill" : "regular"}
+                  />
+                  {isInRecommended ? "إزالة من الموصى بهم" : "إضافة للموصى بهم"}
+                </Button>
+                <Link to={`/cadmin/brokers/${broker.id}`}>
+                  <Button size="sm" variant="outline" className="gap-2">
+                    <Settings className="h-4 w-4" />
+                    تحرير المحتوى
+                  </Button>
+                </Link>
+                <Link to="/cadmin/brokers">
+                  <Button size="sm" variant="outline" className="gap-2">
+                    إدارة الوسطاء
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Hero Section */}
       <div className="bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

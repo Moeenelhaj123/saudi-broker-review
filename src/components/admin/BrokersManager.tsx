@@ -18,7 +18,8 @@ import {
   ExternalLink,
   Save,
   X,
-  RefreshCw
+  RefreshCw,
+  Heart
 } from "lucide-react";
 
 interface AdminBroker {
@@ -72,11 +73,17 @@ export function BrokersManager() {
   const initialBrokers = staticBrokers.map(convertToAdminBroker);
 
   const [brokers, setBrokers] = useKV<AdminBroker[]>("admin-brokers", initialBrokers);
+  const [bestBrokers, setBestBrokers] = useKV("admin-best-brokers", []); // Get recommended brokers list
   const [editingBroker, setEditingBroker] = useState<AdminBroker | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   
   // Ensure brokers is always an array
   const safeBrokers = Array.isArray(brokers) ? brokers : initialBrokers;
+  
+  // Check if broker is in recommended list
+  const isRecommended = (brokerId: string) => {
+    return bestBrokers.some((b: any) => b.id === brokerId && b.enabled);
+  };
   const [newBroker, setNewBroker] = useState<Partial<AdminBroker>>({
     name: "",
     nameAr: "",
@@ -207,12 +214,34 @@ export function BrokersManager() {
     );
   };
 
+  const toggleRecommended = (brokerId: string) => {
+    const broker = safeBrokers.find(b => b.id === brokerId);
+    if (!broker) return;
+
+    if (isRecommended(brokerId)) {
+      // Remove from recommended
+      setBestBrokers((current: any[]) => 
+        current.filter(b => b.id !== brokerId)
+      );
+      toast.success(`تم إزالة ${broker.nameAr} من قائمة الوسطاء الموصى بهم`);
+    } else {
+      // Add to recommended
+      const newRecommendedBroker = {
+        id: broker.id,
+        name: broker.name,
+        enabled: true
+      };
+      setBestBrokers((current: any[]) => [...current, newRecommendedBroker]);
+      toast.success(`تم إضافة ${broker.nameAr} إلى قائمة الوسطاء الموصى بهم`);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">إدارة الوسطاء</h2>
-          <p className="text-muted-foreground">إضافة وتعديل وحذف الوسطاء الماليين ({safeBrokers.length} وسيط)</p>
+          <p className="text-muted-foreground">إضافة وتعديل وحذف الوسطاء الماليين والتحكم في قائمة الموصى بهم ({safeBrokers.length} وسيط)</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={handleSyncWithStaticData} variant="outline" className="gap-2">
@@ -467,6 +496,9 @@ export function BrokersManager() {
                       {broker.isFeatured && (
                         <Badge className="bg-green-100 text-green-800">مميز</Badge>
                       )}
+                      {isRecommended(broker.id) && (
+                        <Badge className="bg-blue-100 text-blue-800">موصى به</Badge>
+                      )}
                       {broker.isScam && (
                         <Badge variant="destructive">محتال</Badge>
                       )}
@@ -488,6 +520,15 @@ export function BrokersManager() {
                       onClick={() => toggleFeatured(broker.id)}
                     >
                       {broker.isFeatured ? "إلغاء التمييز" : "تمييز"}
+                    </Button>
+
+                    <Button
+                      variant={isRecommended(broker.id) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => toggleRecommended(broker.id)}
+                      className={isRecommended(broker.id) ? "bg-blue-600 hover:bg-blue-700" : ""}
+                    >
+                      {isRecommended(broker.id) ? "في الموصى بهم" : "أضف للموصى بهم"}
                     </Button>
                     
                     <Button

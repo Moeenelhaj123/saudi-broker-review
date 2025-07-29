@@ -47,28 +47,36 @@ export function BestBrokersPage() {
   const rawDisplayBrokers = enabledBestBrokers.length > 0 
     ? enabledBestBrokers.map(adminBroker => {
         // Find the broker data from admin-brokers or fallback to static brokers
-        const fullBrokerData = adminBrokers.find((broker: any) => broker.id === adminBroker.id) || 
-                              brokers.find(broker => broker.id === adminBroker.id);
-        return fullBrokerData || { 
-          id: adminBroker.id, 
-          name: adminBroker.name, 
-          nameAr: adminBroker.name,
-          rating: 4.5,
-          reviewCount: 100,
-          regulation: ["مرخص"],
-          minDeposit: 100,
-          spreads: "متغيرة",
-          platforms: ["MetaTrader"],
-          accountTypes: ["حساب قياسي"],
-          website: "",
-          phone: "",
-          email: "",
-          description: "",
-          descriptionAr: "",
-          pros: [],
-          cons: [],
-          fees: { commission: "0%", withdrawal: "مجاني", inactivity: "غير متاح" }
-        };
+        const adminBrokerData = adminBrokers.find((broker: any) => broker.id === adminBroker.id);
+        
+        if (adminBrokerData) {
+          // Convert admin broker data to standard broker format
+          return convertAdminBrokerToBroker(adminBrokerData);
+        } else {
+          // Fallback to static broker data
+          const staticBrokerData = brokers.find(broker => broker.id === adminBroker.id);
+          return staticBrokerData || { 
+            id: adminBroker.id, 
+            name: adminBroker.name, 
+            nameAr: adminBroker.name,
+            logo: "",
+            rating: 4.5,
+            reviewCount: 100,
+            regulation: ["مرخص"],
+            minDeposit: 100,
+            spreads: "متغيرة",
+            platforms: ["MetaTrader"],
+            accountTypes: ["حساب قياسي"],
+            website: "",
+            phone: "",
+            email: "",
+            description: "",
+            descriptionAr: "",
+            pros: [],
+            cons: [],
+            fees: { commission: "0%", withdrawal: "مجاني", inactivity: "غير متاح" }
+          };
+        }
       })
     : brokers;
   

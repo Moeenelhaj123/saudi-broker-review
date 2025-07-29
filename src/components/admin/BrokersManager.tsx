@@ -89,7 +89,7 @@ export function BrokersManager() {
     accountTypes: broker.accountTypes,
     pros: broker.pros,
     cons: broker.cons,
-    logoUrl: broker.logoUrl || defaultLogos[broker.id] || ''
+    logoUrl: broker.logo || defaultLogos[broker.id] || ''
   });
 
   const initialBrokers = staticBrokers.map(convertToAdminBroker);
@@ -156,7 +156,8 @@ export function BrokersManager() {
         return {
           ...convertToAdminBroker(staticBroker),
           isFeatured: existingBroker.isFeatured,
-          isScam: existingBroker.isScam
+          isScam: existingBroker.isScam,
+          logoUrl: existingBroker.logoUrl || convertToAdminBroker(staticBroker).logoUrl
         };
       }
       return convertToAdminBroker(staticBroker);
@@ -200,16 +201,18 @@ export function BrokersManager() {
     toast.success("تم إضافة الوسيط بنجاح");
   };
 
-  const handleUpdateBroker = () => {
+    const handleUpdateBroker = () => {
     if (!editingBroker) return;
 
+    console.log("Updating broker with logo:", editingBroker.logoUrl);
+    
     setBrokers((prev: AdminBroker[] | undefined) => 
       (prev || []).map(broker => 
         broker.id === editingBroker.id ? editingBroker : broker
       )
     );
     setEditingBroker(null);
-    toast.success("تم تحديث الوسيط بنجاح");
+    toast.success(`تم تحديث بيانات الوسيط ${editingBroker.nameAr || editingBroker.name} بنجاح. قم بإعادة تحميل الصفحة الرئيسية لرؤية التغييرات.`);
   };
 
   const handleDeleteBroker = (brokerId: string) => {
@@ -467,8 +470,14 @@ export function BrokersManager() {
                     <Label>شعار الوسيط</Label>
                     <LogoUploader
                       selectedLogo={editingBroker.logoUrl}
-                      onLogoSelect={(logoUrl) => setEditingBroker(prev => ({ ...prev!, logoUrl }))}
-                      onLogoRemove={() => setEditingBroker(prev => ({ ...prev!, logoUrl: "" }))}
+                      onLogoSelect={(logoUrl) => {
+                        setEditingBroker(prev => ({ ...prev!, logoUrl }));
+                        toast.success("تم تحديث الشعار - سيظهر التغيير بعد حفظ البيانات");
+                      }}
+                      onLogoRemove={() => {
+                        setEditingBroker(prev => ({ ...prev!, logoUrl: "" }));
+                        toast.success("تم حذف الشعار - سيظهر التغيير بعد حفظ البيانات");
+                      }}
                     />
                   </div>
 

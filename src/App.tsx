@@ -13,13 +13,14 @@ import { BrokerContentManager } from "@/components/admin/BrokerContentManager";
 import { ArticlesManager } from "@/components/admin/ArticlesManager";
 import { ContactManager } from "@/components/admin/ContactManager";
 import { Toaster } from "@/components/ui/sonner";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 function Layout() {
   return (
-    <>
+    <ErrorBoundary>
       <Outlet />
       <Toaster />
-    </>
+    </ErrorBoundary>
   );
 }
 

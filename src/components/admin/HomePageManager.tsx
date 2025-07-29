@@ -137,7 +137,7 @@ export function HomePageManager() {
         ...current,
         tips: {
           ...current.tips,
-          items: [...current.tips.items, newFraudTip.trim()]
+          items: [...(current.tips?.items || []), newFraudTip.trim()]
         }
       }));
       setNewFraudTip("");
@@ -150,7 +150,7 @@ export function HomePageManager() {
       ...current,
       tips: {
         ...current.tips,
-        items: current.tips.items.filter((_, i) => i !== index)
+        items: (current.tips?.items || []).filter((_, i) => i !== index)
       }
     }));
     toast.success("تم حذف النصيحة بنجاح");
@@ -364,7 +364,7 @@ export function HomePageManager() {
                         size="sm"
                         variant="ghost"
                         onClick={() => {
-                          const newItems = tempContent.tips.items.filter((_, i) => i !== index);
+                          const newItems = tempContent.tips?.items?.filter((_, i) => i !== index) || [];
                           setTempContent(prev => ({
                             ...prev,
                             tips: { ...prev.tips, items: newItems }
@@ -374,7 +374,7 @@ export function HomePageManager() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  ))}
+                  )) || []}
                 </div>
               </div>
 
@@ -660,9 +660,9 @@ export function HomePageManager() {
               <div>
                 <h3 className="font-medium mb-2">نموذج التواصل:</h3>
                 <div className="p-4 bg-muted rounded-lg space-y-2">
-                  <p><strong>العنوان:</strong> {faqSection.contactCta.title}</p>
-                  <p><strong>النص:</strong> {faqSection.contactCta.subtitle}</p>
-                  <p><strong>الزر:</strong> {faqSection.contactCta.buttonText}</p>
+                  <p><strong>العنوان:</strong> {faqSection.contactCta?.title || "لديك سؤال آخر؟"}</p>
+                  <p><strong>النص:</strong> {faqSection.contactCta?.subtitle || "لا تتردد في التواصل معنا"}</p>
+                  <p><strong>الزر:</strong> {faqSection.contactCta?.buttonText || "اطرح سؤالك الآن"}</p>
                 </div>
               </div>
             </div>

@@ -107,8 +107,8 @@ export function HomePage() {
     : brokers;
   const displayBrokers = Array.isArray(rawDisplayBrokers) 
     ? rawDisplayBrokers.map((broker: any) => 
-        broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
-      )
+        broker && broker.hasOwnProperty('isFeatured') ? convertAdminBrokerToBroker(broker) : broker
+      ).filter(Boolean)
     : [];
   
   // Get scam brokers for warning section

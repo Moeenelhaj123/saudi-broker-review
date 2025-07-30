@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { List, X, Gear } from "@phosphor-icons/react";
+import { List, X } from "@phosphor-icons/react";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -39,15 +38,6 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-4">
-            {/* Admin Panel Link */}
-            <Link 
-              to="/cadmin" 
-              className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-primary"
-              title="لوحة التحكم"
-            >
-              <Gear size={20} />
-            </Link>
-            
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -92,14 +82,6 @@ export function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 تواصل معنا
-              </Link>
-              
-              <Link 
-                to="/cadmin" 
-                className="block px-4 py-2 text-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                لوحة التحكم
               </Link>
             </nav>
           </div>

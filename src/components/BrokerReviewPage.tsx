@@ -167,13 +167,6 @@ export function BrokerReviewPage() {
           <div className="text-center py-12">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">الوسيط غير موجود</h1>
             <p className="text-gray-600 mb-4">عذراً، لم نتمكن من العثور على الوسيط المطلوب.</p>
-            <p className="text-sm text-gray-500 mb-6">معرف الوسيط: {brokerId}</p>
-            <p className="text-sm text-gray-500 mb-6">
-              الوسطاء المتاحة: {brokers.map(b => b.id).join(", ")}
-            </p>
-            <p className="text-sm text-gray-500 mb-6">
-              وسطاء الإدارة: {adminBrokers.map((b: any) => b.id).join(", ")}
-            </p>
             <Link to="/" className="inline-block">
               <Button>العودة إلى الرئيسية</Button>
             </Link>
@@ -707,13 +700,6 @@ export function BrokerReviewPage() {
                 </div>
               </div>
             </section>
-
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-              <p className="text-yellow-800 font-medium">ملاحظة للإدارة</p>
-              <p className="text-yellow-700 text-sm mt-1">
-                يمكن إضافة محتوى مخصص لهذا الوسيط من لوحة التحكم لتحسين تجربة الزوار
-              </p>
-            </div>
           </div>
         );
     }

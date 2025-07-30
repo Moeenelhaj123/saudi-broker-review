@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Block admin area from search engines
+User-agent: *
+Disallow: /cadmin/
+
+# Block test pages
+User-agent: *
+Disallow: /test/
+Disallow: /admin/
